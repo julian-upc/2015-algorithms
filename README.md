@@ -1,5 +1,5 @@
-# 2015-symmetries
-support site for a course on symmetries and representation theory
+# 2015-algorithms
+support site for a course on implementing geometric algorithms
 
 by Julian Pfeifle and the participants of the course
 
