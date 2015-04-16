@@ -6,18 +6,13 @@ class TestPentominoMethods(unittest.TestCase):
 
 #    def setUp(self):
 
-    def test_translate(self):
-        self.assertEqual([[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]], pentominos.I().translate_one(0).coos)
-        self.assertEqual([[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]], pentominos.I().translate_one(1).coos)
-
     def test_normalize(self):
         for p in pentominos.all_pentominos():
             self.assertEqual(p.coos, p.normalize().coos, "test_normalize failed for polyomino " + p.name)
 
-    def test_flip(self):
-        c0 = copy.deepcopy(pentominos.I().coos)
-        self.assertEqual(c0, pentominos.I().flip(0).coos)
-        self.assertEqual([[0, 2], [1, 0], [1, 1], [1, 2], [2, 1]], pentominos.F().flip(0).coos)
+    def test_translate(self):
+        self.assertEqual([[c[0]+1,c[1]] for c in pentominos.I().coos], pentominos.I().translate_one(0).coos)
+        self.assertEqual([[c[0],c[1]+1] for c in pentominos.I().coos], pentominos.I().translate_one(1).coos)
 
     def test_TileSet(self):
         s = pentominos.TileSet([pentominos.I(), pentominos.I()])
@@ -47,8 +42,8 @@ class TestPentominoMethods(unittest.TestCase):
         
 
     def test_turn90(self):
-        self.assertEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]], pentominos.I().turn90().coos)
-        self.assertEqual(pentominos.I().coos, pentominos.I().turn90().turn90().coos)
+        c0 = copy.deepcopy(pentominos.I().coos)
+        self.assertEqual(c0, pentominos.I().turn90().turn90().coos)
 
         p = pentominos.Y()
         s = pentominos.TileSet()
