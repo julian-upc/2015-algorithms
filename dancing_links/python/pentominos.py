@@ -5,6 +5,7 @@ class Pentomino(object):
         self.name = name
         self.coos = coos #coordinates
         self.dim = len(coos[0])
+        return self
         
     def normalize_coo(self, coo):
         pass
@@ -36,56 +37,60 @@ class Pentomino(object):
             self.coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
         else:
             #error
-            pass
+            print "This is not a pentomino, I cannot normalize it."
+        return self
 
     def flip(self, coo):
         #0 : x-axis
         #1 : y-axis
+        # flip along outer axis or inner one?
         pass
-        if self.name == "F":
-            self.coos = [[0,1],[1,0],[1,1],[1,2],[2,2]]
-        elif self.name == "I":
-            
-        elif self.name == "L":
-            first_field = self.coos[0]
-            next_horizontal = [first_field[0]+2,first_field[1]]
-            next_vertical = [first_field[0],first_field[1]+2]
-            
-            if (next_horizontal in self.coos && coo == 1): #L lies horizontally and we flip 
-            
-            elif
-            self.coos = [[0,0],[0,1],[0,2],[0,3],[1,0]]
-        elif self.name == "P":
-            self.coos = [[0,0],[0,1],[0,2],[1,1],[1,2]]
-        elif self.name == "N":
-            self.coos = [[0,0],[0,1],[1,1],[1,2],[1,3]]
-        elif self.name == "T":
-            self.coos = [[0,2],[1,0],[1,1],[1,2],[2,2]]
-        elif self.name == "U":
-            self.coos = [[0,0],[0,1],[1,0],[2,0],[2,1]]
-        elif self.name == "V":
-            self.coos = [[0,0],[1,0],[2,0],[2,1],[2,2]]
-        elif self.name == "W":
-            self.coos = [[0,0],[1,0],[1,1],[2,1],[2,2]]
-        elif self.name == "X":
-            self.coos = [[0,1],[1,0],[1,1],[1,2],[2,1]]
-        elif self.name == "Y":
-            self.coos = [[0,0],[1,0],[2,0],[2,1],[3,0]]
-        elif self.name == "Z":
-            self.coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
-        else:
-            #error
-            pass
+        #if self.name == "F":
+        #    self.coos = [[0,1],[1,0],[1,1],[1,2],[2,2]]
+        #elif self.name == "I":
+        #   pass #I does not change with flipping
+        #elif self.name == "L":
+        #    first_field = self.coos[0]
+        #    next_horizontal = [first_field[0]+2,first_field[1]]
+        #    next_vertical = [first_field[0],first_field[1]+2]
+        #    
+        #    if (next_horizontal in self.coos and coo == 1): #L lies horizontally and we flip 
+        #    
+        #    elif
+        #    self.coos = [[0,0],[0,1],[0,2],[0,3],[1,0]]
+        #elif self.name == "P":
+        #    self.coos = [[0,0],[0,1],[0,2],[1,1],[1,2]]
+        #elif self.name == "N":
+        #    self.coos = [[0,0],[0,1],[1,1],[1,2],[1,3]]
+        #elif self.name == "T":
+        #    self.coos = [[0,2],[1,0],[1,1],[1,2],[2,2]]
+        #elif self.name == "U":
+        #    self.coos = [[0,0],[0,1],[1,0],[2,0],[2,1]]
+        #elif self.name == "V":
+        #    self.coos = [[0,0],[1,0],[2,0],[2,1],[2,2]]
+        #elif self.name == "W":
+        #    self.coos = [[0,0],[1,0],[1,1],[2,1],[2,2]]
+        #elif self.name == "X":
+        #    self.coos = [[0,1],[1,0],[1,1],[1,2],[2,1]]
+        #elif self.name == "Y":
+        #    self.coos = [[0,0],[1,0],[2,0],[2,1],[3,0]]
+        #elif self.name == "Z":
+        #    self.coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
+        #else:
+        #    #error
+        #    pass
         
     def translate_one(self, coo):
         #0: move one on x-axis
         #1: move one on y-axis
         for c in self.coos:
             c[coo] = c[coo]+1
+        return self
 
     def translate_coo(self, coo, amount):
         for c in self.coos:
             c[coo] = c[coo]+ amount
+        return self
 
     def translate_by(self, by_vector):
         x_shift = by_vector[0]
@@ -93,6 +98,7 @@ class Pentomino(object):
         for c in self.coos:
             c[0] = c[0]+ x_shift
             c[1] = c[1]+ y_shift
+        return self
 
     def turn90(self):
         pass
@@ -101,10 +107,14 @@ class Pentomino(object):
         pass
 
     def __hash__(self):
-        pass
+        val = 0
+        for p in self.coos:
+            val = val+ p[0]
+            val = val+ p[1]
+        return val
 
     def __eq__(self, other):
-        pass
+        return self.__hash__() == other.__hash__()
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -173,8 +183,8 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        if p not in self.set:
-            self.set.append(p)
+        if p.__hash__() not in self.set:
+            self.set.add(p.__hash__())
         else:
             pass
 
