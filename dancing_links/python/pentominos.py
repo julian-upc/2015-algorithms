@@ -104,7 +104,15 @@ class Pentomino(object):
         pass
 
     def max(self):
-        pass
+        max_value = 0
+        max_coos = [0,0]
+        for c in self.coos:
+            x = c[0]
+            y = c[1]
+            if max_value < x+y:
+                max_value = x+y
+                max_coos = [x,y]
+        return max_coos
 
     def __hash__(self):
         val = 0
