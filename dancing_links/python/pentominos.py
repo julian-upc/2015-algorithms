@@ -41,44 +41,16 @@ class Pentomino(object):
         return self
 
     def flip(self, coo):
-        #0 : x-axis
-        #1 : y-axis
-        # flip along outer axis or inner one?
-        pass
-        #if self.name == "F":
-        #    self.coos = [[0,1],[1,0],[1,1],[1,2],[2,2]]
-        #elif self.name == "I":
-        #   pass #I does not change with flipping
-        #elif self.name == "L":
-        #    first_field = self.coos[0]
-        #    next_horizontal = [first_field[0]+2,first_field[1]]
-        #    next_vertical = [first_field[0],first_field[1]+2]
-        #    
-        #    if (next_horizontal in self.coos and coo == 1): #L lies horizontally and we flip 
-        #    
-        #    elif
-        #    self.coos = [[0,0],[0,1],[0,2],[0,3],[1,0]]
-        #elif self.name == "P":
-        #    self.coos = [[0,0],[0,1],[0,2],[1,1],[1,2]]
-        #elif self.name == "N":
-        #    self.coos = [[0,0],[0,1],[1,1],[1,2],[1,3]]
-        #elif self.name == "T":
-        #    self.coos = [[0,2],[1,0],[1,1],[1,2],[2,2]]
-        #elif self.name == "U":
-        #    self.coos = [[0,0],[0,1],[1,0],[2,0],[2,1]]
-        #elif self.name == "V":
-        #    self.coos = [[0,0],[1,0],[2,0],[2,1],[2,2]]
-        #elif self.name == "W":
-        #    self.coos = [[0,0],[1,0],[1,1],[2,1],[2,2]]
-        #elif self.name == "X":
-        #    self.coos = [[0,1],[1,0],[1,1],[1,2],[2,1]]
-        #elif self.name == "Y":
-        #    self.coos = [[0,0],[1,0],[2,0],[2,1],[3,0]]
-        #elif self.name == "Z":
-        #    self.coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
-        #else:
-        #    #error
-        #    pass
+        #1 : flip along x-axis (y-values change)
+        #0 : flip along y-axis (x-values change)
+        # flip along axis of the first coordinate
+        flip_point = self.coos[0] #get reference point
+        flip_value = flip_point[coo] #get reference coordinate value
+        offset = 0 #how far away from reference point
+        for c in self.coos:
+            offset = c[coo] - flip_value
+            c[coo] = c[coo] - 2*offset
+        return self
         
     def translate_one(self, coo):
         #0: move one on x-axis
