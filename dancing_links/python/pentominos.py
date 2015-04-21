@@ -87,14 +87,240 @@ class Pentomino(object):
         return max_coos
 
     def __hash__(self):
-        val = 0
-        for p in self.coos:
-            val = val+ p[0]
-            val = val+ p[1]
-        return val
+        ref_point = self.coos[0]
+        if self.name == "F":
+            return hashF(self)
+        elif self.name == "I":
+            if [ref_point[0],ref_point[1]+1] in self.coos or [ref_point[0],ref_point[1]-1] in self.coos: #field over or under ref is taken -> vertical I
+                return 21
+            else: #horizontal I
+                return 22
+        elif self.name == "L":
+            return hashL(self)
+        elif self.name == "P":
+            return hashP(self)
+        elif self.name == "N":
+            normalized_coos = [[0,0],[0,1],[1,1],[1,2],[1,3]]
+        elif self.name == "T":
+            return hashT(self)
+        elif self.name == "U":
+            return hashU(self)
+        elif self.name == "V":
+            return hashV(self)
+        elif self.name == "W":
+            return hashW(self)
+        elif self.name == "X":
+            return 9
+        elif self.name == "Y":
+            if [ref_point[0]+1,ref_point[1]] in self.coos: #field right of ref
+                if [ref_point[0]+2,ref_point[1]+1] in self.coos: #Y goes up
+                    return 101
+                else:
+                    return 102
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #field left of ref
+                if [ref_point[0]-2,ref_point[1]+1] in self.coos: #Y goes up
+                    return 103
+                else:
+                    return 104
+            if [ref_point[0],ref_point[1]+1] in self.coos: #field over ref
+                if [ref_point[0]+1,ref_point[1]+2] in self.coos: #Y goes right
+                    return 106
+                else:
+                    return 105
+            if [ref_point[0],ref_point[1]-1] in self.coos: #field under ref
+                if [ref_point[0]+1,ref_point[1]-2] in self.coos: #Y goes right
+                    return 108
+                else:
+                    return 107
+        elif self.name == "Z":
+            normalized_coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
+        else:
+            #error
+            print "This is not a pentomino, I cannot hash it."
+        return self
 
+    def hashF(self):
+        if [ref_point[0],ref_point[1]+1] in self.coos: #field over ref taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 12
+                else:
+                    return 11
+            if [ref_point[0],ref_point[1]-1] in self.coos: #field under ref is taken
+                if [ref_point[0]+1,ref_point[1]-1] in self.coos:
+                    return 14
+                else:
+                    return 13
+            if [ref_point[0]+1,ref_point[1]] in self.coos: #field right of ref is taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 16
+                else:
+                    return 18
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #field left of ref is taken
+                if [ref_point[0]-1,ref_point[1]-1] in self.coos:
+                    return 17
+                else:
+                    return 15
+            print "unreachable code reached"
+            #error if code reaches here
+
+    def hashL(self):
+        if [ref_point[0],ref_point[1]+2] in self.coos: #field two above ref is taken -> long end to top
+                if [ref_point[0]+1,ref_point[1]] in self.coos: #right to ref is taken -> normal L
+                    return 31
+                else:
+                    return 32
+            if [ref_point[0],ref_point[1]-2] in self.coos: #field two below ref is taken -> long end to bottom
+                if [ref_point[0]+1,ref_point[1]] in self.coos: #right to ref is taken
+                    return 33
+                else:
+                    return 34
+            if [ref_point[0]+2,ref_point[1]] in self.coos: #field two to the right of ref is taken -> L lying to the right
+                if [ref_point[0],ref_point[1]+1] in self.coos: #short end looks up
+                    return 37
+                else:
+                    return 38
+            if [ref_point[0]-2,ref_point[1]] in self.coos: #field two to the left of ref is taken -> L lying to the left
+                if [ref_point[0],ref_point[1]+1] in self.coos: #short end look up
+                    return 35
+                else:
+                    return 36
+            #error if code reaches here
+            print "unreachable code reached"
+
+    def hashP(self):
+        if [ref_point[0],ref_point[1]+1] in self.coos: #field over ref is taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 41
+                else:
+                    return 42
+            if [ref_point[0],ref_point[1]-1] in self.coos: #field under ref is taken
+                if [ref_point[0]+1,ref_point[1]-1] in self.coos:
+                    return 43
+                else:
+                    return 44
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #field left of ref is taken
+                if [ref_point[0]-1,ref_point[1]+1] in self.coos:
+                    return 45
+                else:
+                    return 46
+            if [ref_point[0]+1,ref_point[1]] in self.coos: #field right of ref is taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 47
+                else:
+                    return 48
+
+    def hashT(self):
+        if [ref_point[0]+1,ref_point[1]] in self.coos: #field right to ref is taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 52
+                else:
+                    return 51
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #field left to ref is taken
+                if [ref_point[0]-1,ref_point[1]-1] in self.coos:
+                    return 51
+                else:
+                    return 52
+            if [ref_point[0],ref_point[1]+1] in self.coos: #field over ref is taken
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 53
+                else:
+                    return 54
+            if [ref_point[0],ref_point[1]-1] in self.coos: #field under ref is taken
+                if [ref_point[0]-1,ref_point[1]-1] in self.coos:
+                    return 54
+                else:
+                    return 53
+            #error if code is reached
+            print "unreachable code reached"
+
+    def hashU(self):
+        if [ref_point[0]+2,ref_point[1]] in self.coos: #field two right from ref is taken
+                if [ref_point[0],ref_point[1]+1] in self.coos:
+                    return 61
+                else:
+                    return 62
+            if [ref_point[0]-2,ref_point[1]] in self.coos: #field two left from ref is taken
+                if [ref_point[0],ref_point[1]+1] in self.coos:
+                    return 61
+                else:
+                    return 62
+            if [ref_point[0],ref_point[1]+2] in self.coos: #field two above ref is taken
+                if [ref_point[0]+1,ref_point[1]] in self.coos:
+                    return 63
+                else:
+                    return 64
+            if [ref_point[0],ref_point[1]-2] in self.coos: #field two below ref is taken
+                if [ref_point[0]+1,ref_point[1]] in self.coos:
+                    return 63
+                else:
+                    return 64
+            #error if code is reached
+            print "unreachable code reached"
+
+    def hashV(self):
+        if [ref_point[0]+1,ref_point[1]] in self.coos: #field right of ref
+                if [ref_point[0]+2,ref_point[1]+1] in self.coos: #V goes up
+                    return 71
+                else:
+                    return 74
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #field left of ref
+                if [ref_point[0]-2,ref_point[1]+1] in self.coos: #V goes up
+                    return 72
+                else:
+                    return 73
+            if [ref_point[0],ref_point[1]+1] in self.coos: #field over ref
+                if [ref_point[0]+1,ref_point[1]+2] in self.coos: #V goes right
+                    return 73
+                else:
+                    return 74
+            if [ref_point[0],ref_point[1]-1] in self.coos: #field under ref
+                if [ref_point[0]+1,ref_point[1]-2] in self.coos: #V goes right
+                    return 72
+                else:
+                    return 71
+            #error if code is reached
+            print "unreachable code reached"
+
+    def hashW(self):
+        if [ref_point[0],ref_point[1]+1] in self.coos: #taken field over ref
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 83
+                else:
+                    return 84
+            if [ref_point[0],ref_point[1]-1] in self.coos: #taken field under ref
+                if [ref_point[0]+1,ref_point[1]-1] in self.coos:
+                    return 82
+                else:
+                    return 81
+            if [ref_point[0]+1,ref_point[1]] in self.coos: #taken field right of ref
+                if [ref_point[0]+1,ref_point[1]+1] in self.coos:
+                    return 81
+                else:
+                    return 84
+            if [ref_point[0]-1,ref_point[1]] in self.coos: #taken field left of ref
+                if [ref_point[0]-1,ref_point[1]-1] in self.coos:
+                    return 83
+                else:
+                    return 82
+            #error if code is reached
+            print "unreachable code reached"
+
+    #two different pentominos are equal iff they have same name and orientation
     def __eq__(self, other):
-        return self.__hash__() == other.__hash__()
+        return __hash__(self)==__hash__(other)
+        # equal = 1
+        # if self.name != other.name:
+        #     equal = 0
+        # diff_coo_x = self.coos[0][0]-other.coos[0][0]
+        # diff_coo_y = self.coos[0][1]-other.coos[0][1]
+        # for i in [0,len(self.coos)-1]:
+        #     c = self.coos[i]
+        #     o = self.coos[i]
+        #     if c[0]-o[0] != diff_coo_x:
+        #         equal = 0
+        #     if c[1]-o[1] != diff_coo_y:
+        #         equal = 0
+        # return equal == 1
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -152,7 +378,8 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
-
+#The purpose of TileSet is to store one representative of each orientation of a pentomino, in normalized coordinates.
+#That is to say, two translated copies should be merged into one, but a chiral pentomino and its reflected copy should be two different elements in the set.
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
@@ -163,10 +390,16 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        if p.__hash__() not in self.set:
-            self.set.add(p.__hash__())
-        else:
-            pass
+        present = 0
+        for q in self.set:
+            if __eq__(p,q):
+                present = 1
+        if present == 0:
+            set.add(p)
+        # if p.__hash__() not in self.set:
+        #     self.set.add(p.__hash__())
+        # else:
+        #     pass
 
     def size(self):
         return len(self.set)
