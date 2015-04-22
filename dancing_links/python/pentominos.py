@@ -477,18 +477,40 @@ class Z(Pentomino):
     def __init__(self):
         Pentomino.__init__(self, "Z", [[0,2],[1,0],[1,1],[1,2],[2,0]])
 
-def fixed_pentominos_of(p):
+def fixed_pentominos_of(f):
     pent = TileSet()
-    f= F()
-    pent.add(f)
-    pent.add(f.turn90())
-    pent.add(f.turn90())
-    pent.add(f.turn90())
+    pent.add(copy.deepcopy(f))
     f.turn90()
-    pent.add(f.flip(0))
-    pent.add(f.turn90())
-    pent.add(f.turn90())
-    pent.add(f.turn90())
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    f.flip(0)
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    pent.add(copy.deepcopy(f))
+    f.turn90()
+    pent.add(copy.deepcopy(f))
+    return pent
+
+def all_fixed_pentominos():
+    pent = TileSet()
+    pent.update(fixed_pentominos_of(F()))
+    pent.update(fixed_pentominos_of(I()))
+    pent.update(fixed_pentominos_of(L()))
+    pent.update(fixed_pentominos_of(P()))
+    pent.update(fixed_pentominos_of(N()))
+    pent.update(fixed_pentominos_of(T()))
+    pent.update(fixed_pentominos_of(U()))
+    pent.update(fixed_pentominos_of(V()))
+    pent.update(fixed_pentominos_of(W()))
+    pent.update(fixed_pentominos_of(X()))
+    pent.update(fixed_pentominos_of(Y()))
+    pent.update(fixed_pentominos_of(Z()))
     return pent
 
 
@@ -512,7 +534,7 @@ class TileSet(object):
             if p.__eq__(q):
                 present = 1
         if present == 0:
-            self.set.add(p)
+            self.set.add(copy.deepcopy(p))
         # if p.__hash__() not in self.set:
         #     self.set.add(p.__hash__())
         # else:
@@ -520,6 +542,10 @@ class TileSet(object):
 
     def size(self):
         return len(self.set)
+
+    def update(self,other):
+        self.set |= other.set
+        return self
 
     def representation(self):
         rep = "["
