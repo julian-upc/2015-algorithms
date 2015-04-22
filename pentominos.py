@@ -14,18 +14,15 @@ class Pentomino(object):
         if coo >=self.dim | coo<0:
             print "Invalid argument for coo"
         selbst = copy.deepcopy(self)
+        mini = sys.maxint
         for c in selbst.coos:
-            #for i in range(self.dim):
-            #    c[i]*=-1
-            c[coo]*=-1
-
-        self.translate_coo(coo,max(selbst)[coo])
-        #self.translate_by(max(selbst))
+            if c[coo] < mini:
+                mini = c[coo]
+        self.translate_coo(coo,mini*(-1))
         
     def normalize(self):
-        if ~self.consistent():
-            print "polyomino non consistent"
-        self=nameInit[self.name]
+        for i in range(self.dim):
+            normalize_coo(i)
 
     def flip(self, coo):
         if ~self.consistent():
@@ -245,6 +242,13 @@ class Z(Pentomino):
 
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
+
+def fixed_pentominos_of(p):
+    t=TileSet([])
+    pp= copy.deepcopy(p)
+    for i in range(4):
+        t.add(pp.turn90())
+    return t
 
 nameInit= {
     "F":F
