@@ -479,22 +479,22 @@ class Z(Pentomino):
 
 def fixed_pentominos_of(f):
     pent = TileSet()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
     f.flip(0)
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     f.turn90()
-    pent.add(copy.deepcopy(f))
+    pent.add(f)
     return pent
 
 def all_fixed_pentominos():
