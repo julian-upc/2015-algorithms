@@ -7,36 +7,84 @@ class Pentomino(object):
         self.dim = len(coos[0])
         
     def normalize_coo(self, coo):
-        pass
+        coo_min = self.coos[len(self.coos) - 1][coo]
+        for i in range(len(self.coos) - 1):
+            if coo_min > self.coos[i][coo]:
+                coo_min = self.coos[i][coo]
+        self.translate_coo(coo, -coo_min)
+        return self
 
     def normalize(self):
-        pass
+        for coo in range(self.dim):
+            self.normalize_coo(coo)
+        self.coos.sort()
+        return self
 
     def flip(self, coo):
-        pass
+        for i in range(len(self.coos)):
+            self.coos[i][(coo+1)%2] = - self.coos[i][(coo+1)%2];
+        self.normalize()
+        return self
         
     def translate_one(self, coo):
-        for i in range(5):
+        for i in range(len(self.coos)):
             self.coos[i][coo] = self.coos[i][coo] + 1;
         return self
 
     def translate_coo(self, coo, amount):
-        pass
+        for i in range(len(self.coos)):
+            self.coos[i][coo] = self.coos[i][coo] + amount;
+        return self
 
     def translate_by(self, by_vector):
-        pass
+        for i in range(len(self.coos)):
+            for coo in range(self.dim):
+                self.coos[i][coo] = self.coos[i][coo] + by_vector[coo];
+        return self
 
     def turn90(self):
-        pass
+        x = 0
+        for i in range(len(self.coos)):
+            x = self.coos[i][0]
+            self.coos[i][0] = - self.coos[i][1]
+            self.coos[i][1] = x
+        self.normalize()
+        return self
 
     def max(self):
-        pass
+        compmax = self.coos[len(self.coos) - 1]
+        for coo in range(self.dim):
+            for i in range(len(self.coos) - 1):
+                if compmax[coo] < self.coos[i][coo]:
+                    compmax[coo] = self.coos[i][coo]
+        return compmax
 
     def __hash__(self):
-        pass
+        hashstr = ""
+        #TODO sort?
+        for i in range(len(self.coos)):
+            for coo in range(self.dim):
+                hashstr += str(self.coos[i][coo])
+        return int(hashstr)
 
     def __eq__(self, other):
-        pass
+        if self.dim != other.dim or self.name != other.name or len(self.coos) != len(other.coos):
+            return False
+        #return hash(self) == hash(other)
+        for i in range(len(self.coos)):
+            j = 0
+            i_eq_j = False
+            while (not i_eq_j) and j < len(self.coos):
+                i_eq_j = True
+                for coo in range(self.dim):
+                    if self.coos[i][coo] != other.coos[j][coo]:
+                        i_eq_j = False
+                        break
+                j = j + 1
+
+            if i_eq_j == False:
+                return False
+        return True
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -94,6 +142,27 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
+def fixed_pentominos_of(p):
+    reps = TileSet()
+    for i in range(4):
+        reps.add(p)
+        p.flip(0)
+        reps.add(p)
+        p.flip(1)
+        reps.add(p)
+        p.flip(0)
+        reps.add(p)
+        p.flip(1)
+
+        p.turn90()
+    return reps
+
+def all_fixed_pentominos():
+    reps = TileSet()
+    for p in all_pentominos():
+        for fixp in fixed_pentominos_of(p):
+            reps.add(fixp)
+    return reps
 
 class TileSet(object):
     def __init__(self, plist=[]):
@@ -105,10 +174,10 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        pass
+        self.set.add( copy.deepcopy(p) )
 
     def size(self):
-        pass
+        return len(self.set)
 
     def representation(self):
         rep = "["
