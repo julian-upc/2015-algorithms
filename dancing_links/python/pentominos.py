@@ -16,7 +16,9 @@ class Pentomino(object):
         pass
         
     def translate_one(self, coo):
-        pass
+        for i in range(5):
+            self.coos[i][coo] = self.coos[i][coo] + 1;
+        return self
 
     def translate_coo(self, coo, amount):
         pass
