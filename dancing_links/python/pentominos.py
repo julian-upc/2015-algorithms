@@ -135,7 +135,7 @@ class Pentomino(object):
 
     #two different pentominos are equal iff they have same name and orientation
     def __eq__(self, other):
-        return self.__hash__()==other.__hash__()
+        return self.__hash__() == other.__hash__()
         #to use the hashfunction for equality checks is only ok, because it is perfect and no collisions can happen
 
     def representation(self):
@@ -245,7 +245,7 @@ class TileSet(object):
     def add(self, p):
         present = 0
         for q in self.set:
-            if p.__eq__(q):
+            if p==q:
                 present = 1
         if present == 0:
             self.set.add(copy.deepcopy(p))
