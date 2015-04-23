@@ -89,14 +89,24 @@ class IncidenceMatrix(object):
         return rowRep
 
     def insertColumnObject(self, left, right, name):
+        """ insert a column header object into the circular linked list that contains the "root" node """
         pass
 
     def appendRow(self, tileName, placement):
-        """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
+        """ 
+        a placement is a list of coordinates that indicates which squares the piece named `tileName` covers.
+        This function appends a row to the incidence matrix. A row consists of
+        - one IncidenceCell in the column corresponding to tileName
+        - one IncidenceCell in each column corresponding to a coordinate in `placement`.
+        These must be assembled into a circularly linked list, and each cell must be inserted into the 
+        circular linked list of its corresponding column.
+        """
         pass
 
     def coverColumn(self, c):
+        """ implement and document the algorithm in Knuth's paper. """
         pass
 
     def uncoverColumn(self, c):
+        """ implement and document the algorithm in Knuth's paper. """
         pass
