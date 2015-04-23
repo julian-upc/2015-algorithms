@@ -7,6 +7,7 @@ class Pentomino(object):
         self.dim = len(coos[0])
         return self
         
+    #moves pentomino back to one axis
     def normalize_coo(self, coo):
         ref = self.min_box() #current position
         offset = ref[coo]
@@ -16,34 +17,10 @@ class Pentomino(object):
             self.translate_by[min_box[0],0]
         return self
 
+    #moves pentomino back to origin
     def normalize(self):
-        if self.name == "F":
-            self.coos = [[0,1],[1,0],[1,1],[1,2],[2,2]]
-        elif self.name == "I":
-            self.coos = [[0,0],[0,1],[0,2],[0,3],[0,4]]
-        elif self.name == "L":
-            self.coos = [[0,0],[0,1],[0,2],[0,3],[1,0]]
-        elif self.name == "P":
-            self.coos = [[0,0],[0,1],[0,2],[1,1],[1,2]]
-        elif self.name == "N":
-            self.coos = [[0,0],[0,1],[1,1],[1,2],[1,3]]
-        elif self.name == "T":
-            self.coos = [[0,2],[1,0],[1,1],[1,2],[2,2]]
-        elif self.name == "U":
-            self.coos = [[0,0],[0,1],[1,0],[2,0],[2,1]]
-        elif self.name == "V":
-            self.coos = [[0,0],[1,0],[2,0],[2,1],[2,2]]
-        elif self.name == "W":
-            self.coos = [[0,0],[1,0],[1,1],[2,1],[2,2]]
-        elif self.name == "X":
-            self.coos = [[0,1],[1,0],[1,1],[1,2],[2,1]]
-        elif self.name == "Y":
-            self.coos = [[0,0],[1,0],[2,0],[2,1],[3,0]]
-        elif self.name == "Z":
-            self.coos = [[0,2],[1,0],[1,1],[1,2],[2,0]]
-        else:
-            #error
-            print "This is not a pentomino, I cannot normalize it."
+        pos = self.min_box()
+        self.translate_by([-pos[0],-pos[1]])
         return self
 
     def flip(self, coo):
@@ -87,12 +64,7 @@ class Pentomino(object):
             y = c[1]
             c[0] = y
             c[1] = -x
-        pos = self.min_box()
-        #normalise back into positive space
-        if pos[0]<0:
-            self.translate_coo(0,-pos[0])
-        if pos[1]<0:
-            self.translate_coo(1,-pos[1])
+        self.normalize()
         self.translate_by(ref_point) #move back to former position
         return self
 

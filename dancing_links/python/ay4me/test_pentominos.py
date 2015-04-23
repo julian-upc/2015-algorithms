@@ -43,7 +43,12 @@ class TestPentominoMethods(unittest.TestCase):
 
     def test_turn90(self):
         c0 = copy.deepcopy(pentominos.I().coos)
-        self.assertEqual(c0, pentominos.I().turn90().turn90().coos)
+        #self.assertEqual(c0, pentominos.I().turn90().turn90().coos)
+        cnew = pentominos.I().turn90().turn90().coos
+        for c in c0:
+            self.assertTrue(c in cnew)
+        for c in cnew:
+            self.assertTrue(c in c0)
 
         p = pentominos.Y()
         s = pentominos.TileSet()
