@@ -13,7 +13,7 @@ class IncidenceCell(object):
         self.right = right
         self.up = up
         self.down = down
-        self.listHeader = listHeader
+        self.listHeader = listHeader #points to ColumnObject of the relevant column
         self.name = name
 
     def representation(self):
@@ -26,7 +26,7 @@ class IncidenceCell(object):
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
-        self.size = 0 #what is the size for?
+        self.size = 0 #number of 1s in the column
 
     def representation(self):
         hrep = ["h(" + str(self.size) + ")", self.name]
@@ -45,7 +45,7 @@ class ColumnObject(IncidenceCell):
 class IncidenceMatrix(object):
     def __init__(self, names):
         self.h = ColumnObject(None, None, None, None, "root")
-        self.h.left = self.h.right = self.h.up = self.h.down = self.h
+        self.h.left = self.h.right = self.h.up = self.h.down = self.h #unused fields all point to h itself
 
         currentColumnObject = self.h
         self.columnObjectOfName = dict()
@@ -92,13 +92,35 @@ class IncidenceMatrix(object):
     def insertColumnObject(self, left, right, name):
         # __init__(self, left, right, up, down, name)
         newColumnObject = ColumnObject(left, right, None, None, name)
+        newColumnObject.up = newColumnObject.down = newColumnObject #right now the column has only this element
         #change links in left and right
         left.right = newColumnObject
         right.left = newColumnObject
 
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
-        pass
+        for p in placement:
+            if p not in columnObjectOfName: #add columns for placements, we not yet have in the matrix
+                #error
+                pass
+        currentColumnObject = self.columnObjectOfName[tileName] #pentomino column
+        #def __init__(self, left, right, up, down, listHeader, name):
+        currentCell = self.IncidenceCell(None,None,currentColumnObject.up,currentColumnObject,currentColumnObject,"")
+        currentCell.left = currentCell.right = currentCell #right now the row has only this element
+        currentColumnObject.up.down = currentCell
+        currentColumnObject.up = currentCell
+
+
+        for col in placement:
+            currentColumnObject = self.columnObjectOfName[col]
+            newCell = self.IncidenceCell(currentCell,currentCell.right,currentColumnObject.up,currentColumnObject,currentColumnObject,"")
+            currentColumnObject.up.down = newCell
+            currentColumnObject.up = newCell
+            currentCell.left.right = newCell
+            currentCell.right = newCell
+            currentCell = newCell
+
+    #def insertIncidenceCell(self,):
 
     def coverColumn(self, c):
         pass
