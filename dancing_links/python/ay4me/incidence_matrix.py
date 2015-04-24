@@ -91,6 +91,7 @@ class IncidenceMatrix(object):
 
     #creates new ColumnObject and inserts it between left and right
     def insertColumnObject(self, left, right, name):
+        """ insert a column header object into the circular linked list that contains the "root" node """
         # ColumnObject(self, left, right, up, down, name)
         newColumnObject = ColumnObject(left, right, None, None, name)
         newColumnObject.up = newColumnObject.down = newColumnObject #right now the column has only this element
@@ -99,7 +100,14 @@ class IncidenceMatrix(object):
         right.left = newColumnObject
 
     def appendRow(self, tileName, placement):
-        """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
+        """ 
+        a placement is a list of coordinates that indicates which squares the piece named `tileName` covers.
+        This function appends a row to the incidence matrix. A row consists of
+        - one IncidenceCell in the column corresponding to tileName
+        - one IncidenceCell in each column corresponding to a coordinate in `placement`.
+        These must be assembled into a circularly linked list, and each cell must be inserted into the 
+        circular linked list of its corresponding column.
+        """
         currentColumnObject = self.columnObjectOfName[tileName] #pentomino column
         rowName = tileName + '[' + str(currentColumnObject.initCounter) + ']'
         currentColumnObject.initCounter += 1
@@ -124,6 +132,7 @@ class IncidenceMatrix(object):
 
     #for further documentation see "Dancing Links" paper by Knuth p.6
     def coverColumn(self, c):
+        """ implement and document the algorithm in Knuth's paper. """
         #c is ColumnObject of the column to be covered
         #remove columnObject from headerList
         c.right.left = c.left #L[R[c]] <- L[c]
@@ -137,10 +146,10 @@ class IncidenceMatrix(object):
                 currentColumn.listHeader.size -= 1 #S[C[j]] <- S[C[j]]-1
                 currentColumn = currentColumn.right
             currentRow = currentRow.down
-        #self.updateNames()
 
     #for further documentation see "Dancing Links" paper by Knuth p.6
     def uncoverColumn(self, c):
+        """ implement and document the algorithm in Knuth's paper. """
         #c is ColumnObject of the column to be uncovered
         currentRow = c.up #i
         while currentRow is not c: #go through all rows of the column in reverse order
@@ -153,15 +162,4 @@ class IncidenceMatrix(object):
             currentRow = currentRow.up
         c.right.left = c #L[R[c]] <- c
         c.left.right = c #R[L[c]] <- c
-        #self.updateNames()
 
-    def updateNames(self):
-        currentColumn = self.h.right
-        currentRow = currentColumn.down
-        while currentRow is not currentColumn:
-            currentObject = currentRow.right
-            currentObject.name = currentColumn.name + '[' + str(currentColumn.size) + ']'
-            while currentObject is not currentRow:
-                currentObject.name = currentRow.name + currentObject.listHeader.name
-                currentObject = currentObject.right
-            currentRow = currentRow.down
