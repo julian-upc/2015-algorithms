@@ -10,25 +10,12 @@ class Pentomino(object):
     
     # the function "find_min_coo(self, coo) finds the minimal coos of one given coo
     def find_min_coo(self, coo):
-        min = self.coos(coo)
+        min = 0
         for c in self.coos:
-            if c(coo)<min:
-                min=c(coo)
-            return self
-                
-    # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
-    def normalize_coo(self, coo):
-        dist_to_axis = find_min_coo(self, coo)
-        translate_coo(self, coo, dist_to_axis)
-        return self
-
-    # the function "normalize(self)" founds the representive pentomino of its equivalent class
-    # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
-    def normalize(self):
-        for c in self.coos:
-            normalize_coo(self, c)
-        return self
-
+            if c[coo] < min:
+                min = c[coo]
+        return min
+            
     # the function flip mirrors the pentomino on the given coordinate/axis
     # hence for coo=0 it flips over the x-axis, for coo=1 over the y-axis
     def flip(self, coo):
@@ -43,20 +30,41 @@ class Pentomino(object):
         #denormalize back into the boundingbox
         self.normalize()
         self.translate_by(lowercoos)
+        return self  
+    
+    # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
+    def normalize_coo(self, coo):
+        dist_to_axis = self.find_min_coo(coo)
+        self.translate_coo(coo, dist_to_axis)
         return self
-        
+    
+    # the function "normalize(self)" founds the representive pentomino of its equivalent class
+    # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
+    def normalize(self):
+        for i in range(self.dim):
+            self.normalize_coo(i)
+        return self
+
+    # the function "translate_one(self, coo)" translates the given self
+    # by 1 in direction coo    
     def translate_one(self, coo):
         for co in self.coos:
             co[coo] += 1
         return self
 
+    # the function "translate_coo(self, coo, amount)" translates the given self
+    # by amount in direction coo
     def translate_coo(self, coo, amount):
         for co in self.coos:
             co[coo] += amount
         return self
 
+    # the function "translate_by(self, by_vector)" translates the given self
+    # by an vector by_vector
     def translate_by(self, by_vector):
-        pass
+        for i in range(len(by_vector)):
+            self.translate_coo(i, by_vector[i])
+        return self
 
     #the function turn90 
     def turn90(self):
@@ -70,12 +78,20 @@ class Pentomino(object):
                 if c[i] > upper_coos[i]:
                     upper_coos[i] = c[i]               
         return upper_coos
-
+    
+    # our hash has the form "dim | coordinate of normalized pentomino | translate vector".
+    # translate vector is bounded by [0:999,0:999].
+    # example:  the pentomino: [[12,4],[13,3],[13,4],[13,5],[14,5]]
+    #           is F = [[0,1],[1,0],[1,1],[1,2],[2,2]] translated by [12,3]
+    #           hash is: 2|0110111222|012003 (without "|" of course)
     def __hash__(self):
+        
         pass
 
     def __eq__(self, other):
-        pass
+        return self.__hash__() == other.__hash__()
+            
+        
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -154,19 +170,15 @@ class TileSet(object):
 
     # this function adds a pentomino to this TileSet    
     def add(self, p):
-        present = 0
-        for q in self.set:
-            if p==q:
-                present = 1
-        if present == 0:
-            self.set.add(copy.deepcopy(p))
-        
+        if p not in self.set:
+            self.set.insert(self.size()+1,p)
+
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
         pass
 
     def size(self):
-        pass
+        return len(self.set)
 
     def representation(self):
         rep = "["
