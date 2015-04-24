@@ -27,6 +27,7 @@ class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
         self.size = 0 #number of 1s in the column
+        self.initCounter = 0
 
     def representation(self):
         hrep = ["h(" + str(self.size) + ")", self.name]
@@ -100,7 +101,9 @@ class IncidenceMatrix(object):
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
         currentColumnObject = self.columnObjectOfName[tileName] #pentomino column
-        rowName = tileName + '[' + str(currentColumnObject.size) + ']'
+        rowName = tileName + '[' + str(currentColumnObject.initCounter) + ']'
+        currentColumnObject.initCounter += 1
+        #rowName = tileName + '[' + str(currentColumnObject.size) + ']'
         #IncidenceCell(self, left, right, up, down, listHeader, name):
         currentCell = IncidenceCell(None,None,currentColumnObject.up,currentColumnObject,currentColumnObject, rowName)#construct new Cell
         currentColumnObject.size += 1
@@ -119,6 +122,7 @@ class IncidenceMatrix(object):
             currentCell.right = newCell
             currentCell = newCell
 
+    #for further documentation see "Dancing Links" paper by Knuth p.6
     def coverColumn(self, c):
         #c is ColumnObject of the column to be covered
         #remove columnObject from headerList
@@ -133,7 +137,31 @@ class IncidenceMatrix(object):
                 currentColumn.listHeader.size -= 1 #S[C[j]] <- S[C[j]]-1
                 currentColumn = currentColumn.right
             currentRow = currentRow.down
+        #self.updateNames()
 
-
+    #for further documentation see "Dancing Links" paper by Knuth p.6
     def uncoverColumn(self, c):
-        pass
+        #c is ColumnObject of the column to be uncovered
+        currentRow = c.up #i
+        while currentRow is not c: #go through all rows of the column in reverse order
+            currentColumn = currentRow.left #j
+            while currentColumn is not currentRow: #go through all columns of row in reverse order
+                currentColumn.listHeader.size += 1 #S[C[j]] <- S[C[j]]+1
+                currentColumn.down.up = currentColumn #U[D[j]] <- j
+                currentColumn.up.down = currentColumn #D[U[j]] <- j
+                currentColumn = currentColumn.left
+            currentRow = currentRow.up
+        c.right.left = c #L[R[c]] <- c
+        c.left.right = c #R[L[c]] <- c
+        #self.updateNames()
+
+    def updateNames(self):
+        currentColumn = self.h.right
+        currentRow = currentColumn.down
+        while currentRow is not currentColumn:
+            currentObject = currentRow.right
+            currentObject.name = currentColumn.name + '[' + str(currentColumn.size) + ']'
+            while currentObject is not currentRow:
+                currentObject.name = currentRow.name + currentObject.listHeader.name
+                currentObject = currentObject.right
+            currentRow = currentRow.down
