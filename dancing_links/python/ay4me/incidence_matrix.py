@@ -90,7 +90,7 @@ class IncidenceMatrix(object):
 
     #creates new ColumnObject and inserts it between left and right
     def insertColumnObject(self, left, right, name):
-        # __init__(self, left, right, up, down, name)
+        # ColumnObject(self, left, right, up, down, name)
         newColumnObject = ColumnObject(left, right, None, None, name)
         newColumnObject.up = newColumnObject.down = newColumnObject #right now the column has only this element
         #change links in left and right
@@ -119,10 +119,21 @@ class IncidenceMatrix(object):
             currentCell.right = newCell
             currentCell = newCell
 
-    #def insertIncidenceCell(self,):
-
     def coverColumn(self, c):
-        pass
+        #c is ColumnObject of the column to be covered
+        #remove columnObject from headerList
+        c.right.left = c.left #L[R[c]] <- L[c]
+        c.left.right = c.right #R[L[c]] <- R[c]
+        currentRow = c.down #i
+        while currentRow is not c: #go through all rows of column
+            currentColumn = currentRow.right #j
+            while currentColumn is not currentRow: #go through all columns of row
+                currentColumn.down.up = currentColumn.up #U[D[j]] <- U[j]
+                currentColumn.up.down = currentColumn.down #D[U[j]] <- D[j]
+                currentColumn.listHeader.size -= 1 #S[C[j]] <- S[C[j]]-1
+                currentColumn = currentColumn.right
+            currentRow = currentRow.down
+
 
     def uncoverColumn(self, c):
         pass
