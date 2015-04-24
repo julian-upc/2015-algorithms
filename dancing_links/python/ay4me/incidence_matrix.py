@@ -99,24 +99,23 @@ class IncidenceMatrix(object):
 
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
-        for p in placement:
-            if p not in columnObjectOfName: #add columns for placements, we not yet have in the matrix
-                #error
-                pass
         currentColumnObject = self.columnObjectOfName[tileName] #pentomino column
-        #def __init__(self, left, right, up, down, listHeader, name):
-        currentCell = self.IncidenceCell(None,None,currentColumnObject.up,currentColumnObject,currentColumnObject,"")
+        rowName = tileName + '[' + str(currentColumnObject.size) + ']'
+        #IncidenceCell(self, left, right, up, down, listHeader, name):
+        currentCell = IncidenceCell(None,None,currentColumnObject.up,currentColumnObject,currentColumnObject, rowName)#construct new Cell
+        currentColumnObject.size += 1
         currentCell.left = currentCell.right = currentCell #right now the row has only this element
         currentColumnObject.up.down = currentCell
         currentColumnObject.up = currentCell
 
 
         for col in placement:
-            currentColumnObject = self.columnObjectOfName[col]
-            newCell = self.IncidenceCell(currentCell,currentCell.right,currentColumnObject.up,currentColumnObject,currentColumnObject,"")
+            currentColumnObject = self.columnObjectOfName[col] #find corresponding column
+            newCell = IncidenceCell(currentCell,currentCell.right,currentColumnObject.up,currentColumnObject,currentColumnObject,tileName + currentColumnObject.name)
+            currentColumnObject.size += 1
             currentColumnObject.up.down = newCell
             currentColumnObject.up = newCell
-            currentCell.left.right = newCell
+            currentCell.right.left = newCell
             currentCell.right = newCell
             currentCell = newCell
 
