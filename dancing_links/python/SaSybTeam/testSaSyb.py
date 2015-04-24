@@ -6,8 +6,12 @@ class TestSaSyb(unittest.TestCase):
     def test_SaSyb(self):
         pentomino = pentominos.F()
         print(pentomino.representation())
-        testSet = pentominos.TileSet([pentominos.I(),pentominos.X()])
-        print(testSet.representation())
+        
+        testSet = set([pentominos.I(), pentominos.I()])
+        print(len(testSet) + testSet.representation())
+
+    def test_flip
+        pass
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestSaSyb)
 

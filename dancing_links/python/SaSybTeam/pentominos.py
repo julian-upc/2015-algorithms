@@ -5,44 +5,71 @@ class Pentomino(object):
         self.name = name
         self.coos = coos
         self.dim = len(coos[0])
+        return self
         
+    
     # the function "find_min_coo(self, coo) finds the minimal coos of one given coo
     def find_min_coo(self, coo):
         min = self.coos(coo)
         for c in self.coos:
             if c(coo)<min:
                 min=c(coo)
+            return self
+                
     # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
     def normalize_coo(self, coo):
         dist_to_axis = find_min_coo(self, coo)
         translate_coo(self, coo, dist_to_axis)
+        return self
 
     # the function "normalize(self)" founds the representive pentomino of its equivalent class
     # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
     def normalize(self):
         for c in self.coos:
             normalize_coo(self, c)
+        return self
 
-
+    # the function flip mirrors the pentomino on the given coordinate/axis
+    # hence for coo=0 it flips over the x-axis, for coo=1 over the y-axis
     def flip(self, coo):
-        pass
+        #lower left corner of the boundingbox of pentomino
+        lower_coos = [self.find_min_coo(c) for c in self.coos]
+        #normalize
+        self.normalize()
+        #flip
+        for c in self.coos:
+            a = -c[coo]
+            c[coo] = a  
+        #denormalize back into the boundingbox
+        self.normalize()
+        self.translate_by(lowercoos)
+        return self
         
     def translate_one(self, coo):
-        for co in self.coos
+        for co in self.coos:
             co[coo] += 1
+        return self
 
     def translate_coo(self, coo, amount):
-        for co in self.coos
+        for co in self.coos:
             co[coo] += amount
+        return self
 
     def translate_by(self, by_vector):
         pass
 
+    #the function turn90 
     def turn90(self):
         pass
 
+    #the function max returns the maximum coordinate in each axis
     def max(self):
-        pass
+        upper_coos = [0]*self.dim
+        for i in range(self.dim):
+            for c in self.coos:
+                if c[i] > upper_coos[i]:
+                    upper_coos[i] = c[i]               
+        return upper_coos
 
     def __hash__(self):
         pass
@@ -127,8 +154,13 @@ class TileSet(object):
 
     # this function adds a pentomino to this TileSet    
     def add(self, p):
-        pass
-
+        present = 0
+        for q in self.set:
+            if p==q:
+                present = 1
+        if present == 0:
+            self.set.add(copy.deepcopy(p))
+        
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
         pass
