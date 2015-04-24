@@ -6,20 +6,33 @@ class Pentomino(object):
         self.coos = coos
         self.dim = len(coos[0])
         
-    def normalize_coo(self, coo):
-        pass
+    # the function "find_min_coo(self, coo) finds the minimal coos of one given coo
+    def find_min_coo(self, coo)
+        min = self.coos(coo)
+	for c in self.coos:
+            if c(coo)<min: min=c(coo)
 
+    # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
+    def normalize_coo(self, coo):
+        dist_to_axis = find_min_coo(self, coo)
+        translate_coo(self, coo, dist_to_axis)
+
+    # the function "normalize(self)" founds the representive pentomino of its equivalent class
+    # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
     def normalize(self):
-        pass
+        for c in self.coos:
+	    normalize_coo(self, c)
 
     def flip(self, coo):
         pass
         
     def translate_one(self, coo):
-        pass
+        for co in self.coos:
+            co[coo] += 1
 
     def translate_coo(self, coo, amount):
-        pass
+        for co in self.coos:
+            co[coo] += amount
 
     def translate_by(self, by_vector):
         pass
