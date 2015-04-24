@@ -94,7 +94,7 @@ class IncidenceMatrix(object):
         newColumnObject = ColumnObject(left, right, None, None, name)
         #change links in left and right
         left.right = newColumnObject
-        pass
+        right.left = newColumnObject
 
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
