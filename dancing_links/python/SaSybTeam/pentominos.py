@@ -10,7 +10,12 @@ class Pentomino(object):
     def find_min_coo(self, coo):
         min = self.coos(coo)
         for c in self.coos:
+<<<<<<< HEAD
             if c(coo)<min: min=c(coo)
+=======
+            if c(coo)<min:
+                min=c(coo)
+>>>>>>> 0391ac770e6a4aace35cf4b756f3c3f3c6251dcb
 
     # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
     def normalize_coo(self, coo):
@@ -20,8 +25,13 @@ class Pentomino(object):
     # the function "normalize(self)" founds the representive pentomino of its equivalent class
     # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
     def normalize(self):
+<<<<<<< HEAD
         for c in self.coos
 	    normalize_coo(self, c)
+=======
+        for c in self.coos:
+            normalize_coo(self, c)
+>>>>>>> 0391ac770e6a4aace35cf4b756f3c3f3c6251dcb
 
     def flip(self, coo):
         pass
@@ -100,13 +110,22 @@ class Y(Pentomino):
 class Z(Pentomino):
     def __init__(self):
         Pentomino.__init__(self, "Z", [[0,2],[1,0],[1,1],[1,2],[2,0]])
+"""
+# this function creates a TileSet of all normalized representatives of the given pentomino p
+def fixed_pentominos_of(p):
+pass
 
-
+def all_fixed_pentominos():
+    all_pSet = Tileset(all_pentominos())
+    #all_p = all_pentominos()
+    while(all_pSet.__iter__()!=
+        all_pSet.add(self,fixed_pentominos_of(p))
+"""
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
-
 class TileSet(object):
+    
     def __init__(self, plist=[]):
         self.set = set()
         for p in plist:
@@ -114,8 +133,13 @@ class TileSet(object):
 
     def __iter__(self):
         return iter(self.set)
-        
+
+    # this function adds a pentomino to this TileSet    
     def add(self, p):
+        pass
+
+    # this function adds a TileSet to this TileSet
+    def add_TileSet(self, tileSet):
         pass
 
     def size(self):
