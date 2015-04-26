@@ -208,19 +208,16 @@ class TileSet(object):
     # this function adds a pentomino to this TileSet    
     def add(self, p):
         if p not in self.set:
-"""
-            self.set.insert(self.size()+1,p)
-        return self
-"""
             self.set.add(copy.deepcopy(p))
-
-
+        return self.set
+    
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
         self.set.add(copy.deepcopy(tileSet)
-		
-    def size(self)
-	    return len(self.set)
+	return self.set
+                     
+    def size(self):
+	return len(self.set)
 
     def representation(self):
         rep = "["
