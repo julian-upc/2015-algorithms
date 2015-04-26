@@ -6,70 +6,104 @@ class Pentomino(object):
         self.coos = coos
         self.dim = len(coos[0])
         return self
-        
     
-    # the function "find_min_coo(self, coo) finds the minimal coos of one given coo
-    def find_min_coo(self, coo):
-        min = 0
-        for c in self.coos:
-            if c[coo] < min:
-                min = c[coo]
-        return min
-            
-    # the function flip mirrors the pentomino on the given coordinate/axis
-    # hence for coo=0 it flips over the x-axis, for coo=1 over the y-axis
-    def flip(self, coo):
-        #lower left corner of the boundingbox of pentomino
-        lower_coos = [self.find_min_coo(c) for c in self.coos]
-        #normalize
-        self.normalize()
-        #flip
-        for c in self.coos:
-            a = -c[coo]
-            c[coo] = a  
-        #denormalize back into the boundingbox
-        self.normalize()
-        self.translate_by(lowercoos)
-        return self  
-    
-    # the function "normalize_coo(self, coo)" moves the pentomino straight to the coo-axis, till its touching the coo-axis
+   
     def normalize_coo(self, coo):
-        dist_to_axis = self.find_min_coo(coo)
-        self.translate_coo(coo, dist_to_axis)
+        """ moves the given self straight to the given coo-axis.
+            returns an axis touching self, with only positiv coo-coordinates
+            coo: given axis
+        """
+        dist_to_axes = self.min()
+        self.translate_coo(coo, (-1)*self.min()[coo])
         return self
     
-    # the function "normalize(self)" founds the representive pentomino of its equivalent class
-    # it is the one nearest the origin with only positiv coordinates, using only translating  (no rotations)     
+    # it seams like "normalize does not work correct"
     def normalize(self):
+        """ normalize the given self. 
+            returns an all axes touching self, with only positiv coordinates,
+            with lexicographical orderd coordinates
+        """
+        self.coos.sort()
         for i in range(self.dim):
             self.normalize_coo(i)
         return self
-
-    # the function "translate_one(self, coo)" translates the given self
-    # by 1 in direction coo    
+    
     def translate_one(self, coo):
+        """ translates the given self by one along the given coo-axis
+            coo: gives the axis
+        """
         for co in self.coos:
             co[coo] += 1
         return self
 
-    # the function "translate_coo(self, coo, amount)" translates the given self
-    # by amount in direction coo
     def translate_coo(self, coo, amount):
+        """ translates the given self by amount along the given coo-axis
+            coo: axis to translate along
+            amount: translaing distance
+        """
         for co in self.coos:
             co[coo] += amount
         return self
 
-    # the function "translate_by(self, by_vector)" translates the given self
-    # by an vector by_vector
     def translate_by(self, by_vector):
-        for i in range(len(by_vector)):
-            self.translate_coo(i, by_vector[i])
+        """ translates the given self by an given vector
+            by_vector: vactor to translate the self with
+        """
+        if len(by_vector) != self.dim:
+            print("dimension missmatch")
+        else:
+            for i in range(len(by_vector)):
+                self.translate_coo(i, by_vector[i])
+            return self
+
+    def flip(self, coo):
+        """ mirrors the given self over the given coo-axis
+            coo: given axis
+            hence for coo=0 it flips over the x-axis, for coo=1 over the y-axis   
+        """
+        # remember the place of it self and normalize
+        lower_coos = self.min()
+        self.normalize()
+        # flip it over the coo-axis
+        for c in self.coos:
+            a = -c[coo]
+            c[coo] = a
+        # bring it back to where it was before
+        self.normalize()
+        self.translate_by(lower_coos)
         return self
-
-    #the function turn90 
+    
     def turn90(self):
-        pass
+        """ turns the given self clockwise around 90 degree.
+            the lower-bounding box stays where it was
+        """
+        if self.dim == 2:
+            # remember the place of it and normalize it
+            re_place = self.min()
+            self.normalize()
+            # flip it along the identity line
+            for c in self.coos:
+                temp = c[0]
+                c[0] = c[1]
+                c[1] = temp
+            # flip it along the x-axis to turn clockwise
+            self.flip(0)
+            # replace it, to where it was before
+            self.normalize()
+            self.translate_by(re_place)
+            return self
+        else:
+            print("turn90 is only defined in dimension 2")  
 
+    #the function min returns the minimum coordinate in each axis
+    def min(self):
+        lower_coos = [999]*self.dim
+        for i in range(self.dim):
+            for c in self.coos:
+                if c[i] < lower_coos[i]:
+                    lower_coos[i] = c[i]
+        return lower_coos
+    
     #the function max returns the maximum coordinate in each axis
     def max(self):
         upper_coos = [0]*self.dim
@@ -85,6 +119,8 @@ class Pentomino(object):
     #           is F = [[0,1],[1,0],[1,1],[1,2],[2,2]] translated by [12,3]
     #           hash is: 2|0110111222|012003 (without "|" of course)
     def __hash__(self):
+        # sort the coordinates in lexikografic order
+        self.coos.sort()
         
         pass
 
@@ -144,9 +180,10 @@ class Y(Pentomino):
 class Z(Pentomino):
     def __init__(self):
         Pentomino.__init__(self, "Z", [[0,2],[1,0],[1,1],[1,2],[2,0]])
-"""
+'''
 # this function creates a TileSet of all normalized representatives of the given pentomino p
 def fixed_pentominos_of(p):
+    
 pass
 
 def all_fixed_pentominos():
@@ -154,7 +191,7 @@ def all_fixed_pentominos():
     #all_p = all_pentominos()
     while(all_pSet.__iter__()!=
         all_pSet.add(self,fixed_pentominos_of(p))
-"""
+'''
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
@@ -172,6 +209,7 @@ class TileSet(object):
     def add(self, p):
         if p not in self.set:
             self.set.insert(self.size()+1,p)
+        return self
 
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
