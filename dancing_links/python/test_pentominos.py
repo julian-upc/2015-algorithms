@@ -4,7 +4,7 @@ import copy
 
 class TestPentominoMethods(unittest.TestCase):
 
-#    def setUp(self):
+ #   def setUp(self):
 
     def test_normalize(self):
         for p in pentominos.all_pentominos():
@@ -63,10 +63,13 @@ class TestPentominoMethods(unittest.TestCase):
     def test_fixed_pentominos(self):
         orbitSize = dict()
         for p in pentominos.all_pentominos():
-            orbitSize[p.name] = pentominos.fixed_pentominos_of(p).size()
+            #orbitSize[p.name] = pentominos.fixed_pentominos_of(p).size()
+            orbitSize[p.name] = len(pentominos.fixed_pentominos_of(p))
 
         self.assertEqual(dict({'F': 8, 'I': 2, 'L': 8, 'N': 8, 'P': 8, 'U': 4, 'T': 4, 'W': 4, 'V': 4, 'Y': 8, 'X': 1, 'Z': 4}), orbitSize)
-        self.assertEqual(pentominos.all_fixed_pentominos().size(), 63)
+        #self.assertEqual(pentominos.all_fixed_pentominos().size(), 63)
+        self.assertEqual(len(pentominos.all_fixed_pentominos()), 63)
+
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestPentominoMethods)
 
