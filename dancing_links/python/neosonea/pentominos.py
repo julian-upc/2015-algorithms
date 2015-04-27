@@ -7,8 +7,8 @@ class Pentomino(object):
         self.dim = len(coos[0])
         
     def normalize_coo(self, coo):
-        coo_min = self.coos[len(self.coos) - 1][coo]
-        for i in range(len(self.coos) - 1):
+        coo_min = self.coos[0][coo]
+        for i in range(1,len(self.coos)):
             if coo_min > self.coos[i][coo]:
                 coo_min = self.coos[i][coo]
         self.translate_coo(coo, -coo_min)
@@ -60,8 +60,9 @@ class Pentomino(object):
         return compmax
 
     def __hash__(self):
+        self.coos.sort()
         hashstr = ""
-        #TODO sort?
+        #TODO padding for coos bigger than 9
         for i in range(len(self.coos)):
             for coo in range(self.dim):
                 hashstr += str(self.coos[i][coo])
