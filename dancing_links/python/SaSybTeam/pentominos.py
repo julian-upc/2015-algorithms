@@ -17,7 +17,6 @@ class Pentomino(object):
         self.translate_coo(coo, (-1)*self.min()[coo])
         return self
     
-    # it seams like "normalize does not work correct"
     def normalize(self):
         """ normalize the given self. 
             returns an all axes touching self, with only positiv coordinates,
@@ -222,11 +221,15 @@ class TileSet(object):
     def add(self, p):
         if p not in self.set:
             self.set.add(copy.deepcopy(p))
-        return self
-
+        return self.set
+    
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
-        return self.set.add(copy.deepcopy(tileSet))
+        self.set.add(copy.deepcopy(tileSet)
+	return self.set
+                     
+    def size(self):
+	return len(self.set)
 
     def size(self):
         return len(self.set)
