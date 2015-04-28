@@ -119,15 +119,24 @@ class Pentomino(object):
     #           is F = [[0,1],[1,0],[1,1],[1,2],[2,2]] translated by [12,3]
     #           hash is: 2|0110111222|012003 (without "|" of course)
     def __hash__(self):
+        #save the origin position of self and normalize it
+        lower_coos = self.min()
+        self.normalize()
         # sort the coordinates in lexikografic order
         self.coos.sort()
-        
-        pass
+        #construct the hash code in the describted way
+        hash = self.dim
+        for c in self.coos:
+            for i in range(self.dim):
+                hash = hash*10 + c[i]
+        for i in range(self.dim):
+            hash = 1000*hash + lower_coos[i]
+        # bring self back to where it was before
+        self.translate_by(lower_coos)
+        return hash
 
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()
-            
-        
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -180,18 +189,22 @@ class Y(Pentomino):
 class Z(Pentomino):
     def __init__(self):
         Pentomino.__init__(self, "Z", [[0,2],[1,0],[1,1],[1,2],[2,0]])
-'''
+
 # this function creates a TileSet of all normalized representatives of the given pentomino p
 def fixed_pentominos_of(p):
-    
-pass
+    allReps = TileSet()
+    for i in range(4):
+        allReps.add(p.turn90())
+    allReps.add(p.flip(0))
+    for i in range(3):
+        allReps.add(p.turn90())
 
 def all_fixed_pentominos():
-    all_pSet = Tileset(all_pentominos())
-    #all_p = all_pentominos()
-    while(all_pSet.__iter__()!=
-        all_pSet.add(self,fixed_pentominos_of(p))
-'''
+    all_pSet = Tileset()
+    pento_list = all_pentominos()
+    for p in pento_list:
+        all_pSet.add(fixed_pentominos(p))
+
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
@@ -208,20 +221,16 @@ class TileSet(object):
     # this function adds a pentomino to this TileSet    
     def add(self, p):
         if p not in self.set:
-"""
-            self.set.insert(self.size()+1,p)
-        return self
-"""
             self.set.add(copy.deepcopy(p))
-
+        return self
 
     # this function adds a TileSet to this TileSet
     def add_TileSet(self, tileSet):
-        self.set.add(copy.deepcopy(tileSet)
-		
-    def size(self)
-	    return len(self.set)
+        return self.set.add(copy.deepcopy(tileSet))
 
+    def size(self):
+        return len(self.set)
+                     
     def representation(self):
         rep = "["
         i = 0
