@@ -8,7 +8,7 @@ class Pentomino(object):
         
     def normalize_coo(self, coo):
         pass
-#penis
+#hallowelt
     def normalize(self):
         pass
 
