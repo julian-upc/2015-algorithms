@@ -11,7 +11,18 @@ class Pentomino(object):
         pass
 
     def normalize(self):
-        pass
+        # find bounding box left bottom corner
+        minX = self.coos[0][0]
+        minY = self.coos[0][1]
+
+        for i in range(1,5):
+            if minX > self.coos[i][0]:
+                minX = self.coos[i][0]
+            if minY > self.coos[i][1]:
+                minY = self.coos[i][1]
+
+        # translate this object to origin
+        self.translate_by( [-minX,-minY] )
 
     def flip(self, coo):
         pass
@@ -23,14 +34,24 @@ class Pentomino(object):
         pass
 
     def translate_by(self, by_vector):
-        pass
+        for i in range(0,5):
+            self.coos[i][0] += by_vector[0]
+            self.coos[i][1] += by_vector[1]
 
     def turn90(self):
-        rotMatrix = np.matrix([[0,1],[1,0]])
+        # create a rotation matrix
+        rotMatrix = np.matrix([[0,1],[-1,0]])
 
+        # rotate each vector
         for i in range(0,5):
-            tmp = np.transpose(np.matrix(self.coos[i]))
-            self.coos[i] = np.transpose(rotMatrix * tmp)
+            convert = np.transpose(np.matrix(self.coos[i]))
+            self.coos[i] = np.transpose(rotMatrix * convert)
+
+        # convert back to native list
+        self.coos = np.array(self.coos).reshape(5,2).tolist()
+
+        # normale position
+        self.normalize()
 
     def max(self):
         pass
@@ -125,6 +146,8 @@ class TileSet(object):
         rep += "]"
         return rep
 
+
 tmpL = L()
+print tmpL.representation()
 tmpL.turn90()
 print tmpL.representation()
