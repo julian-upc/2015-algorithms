@@ -97,21 +97,21 @@ class IncidenceMatrix(object):
         
 
     def appendRow(self, tileName, placement):
-        #print(tileName)
-        #print(placement)
+        self.indexOfPiecePlacement[tileName]+=1
         columnTile=self.columnObjectOfName[tileName]
         columnTile.size+=1
-        tileNameCell=IncidenceCell(columnTile,columnTile,columnTile.up,columnTile,columnTile,tileName)
+        tileNameCell=IncidenceCell(columnTile,columnTile,columnTile.up,columnTile,columnTile,str(tileName)+str([self.indexOfPiecePlacement[tileName]-1]))
         tileNameCell.up.down=tileNameCell
         columnTile.up=tileNameCell
         listOfPlacementCells = []
         for position in placement:
             columnPlacement=self.columnObjectOfName[position]
-            listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, tileName+position))
+            listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
         for k in listOfPlacementCells:
             columnPlacement=self.columnObjectOfName[k.listHeader.name]   
             columnPlacement.up=k
             k.up.down=k
+            columnPlacement.size+=1
         n=len(listOfPlacementCells)
         rep = [n]
         for k in listOfPlacementCells:
@@ -127,32 +127,14 @@ class IncidenceMatrix(object):
                 listOfPlacementCells[i].right=tileNameCell
             elif i in range(n-1):
                 listOfPlacementCells[i].right=listOfPlacementCells[i+1]
-           # print("nachher" + str(listOfPlacementCells[i].representation()))
+            #print("nachher" + str(listOfPlacementCells[i].representation()))
         rep = [n]
         for k in listOfPlacementCells:
             rep.append(k.representation())
         #print("nachher: " + str(rep))
         tileNameCell.left=listOfPlacementCells[n-1]
         tileNameCell.right=listOfPlacementCells[0]
-        
-        #columPositionTile0=self.columnObjectOfName[placement[0]]
-        #positionTile0=IncidenceCell(cellTile, columnTile, columPositionTile0.up, columPositionTile0, columPositionTile0, placement[0])
-        #columPositionTile1=self.columnObjectOfName[placement[0]]
-        #positionTile1=IncidenceCell(positionTile0, columnTile, columPositionTile0.up, columPositionTile0, columPositionTile0, placement[1])
-        #columPositionTile2=self.columnObjectOfName[placement[0]]
-        #positionTile2=IncidenceCell(positionTile1, columnTile, columPositionTile0.up, columPositionTile0, columPositionTile0, placement[2])
-        #columPositionTile3=self.columnObjectOfName[placement[0]]
-        #positionTile3=IncidenceCell(positionTile2, columnTile, columPositionTile0.up, columPositionTile0, columPositionTile0, placement[3])
-        #columPositionTile4=self.columnObjectOfName[placement[0]]
-        #positionTile4=IncidenceCell(positionTile3, cellTile, columPositionTile0.up, columPositionTile0, columPositionTile0, placement[4])
-        #positionTile0.right=positionTile1
-        #positionTile1.right=positionTile2
-        #positionTile2.right=positionTile3
-        #positionTile3.right=positionTile4
-        #cellTile.left=positionTile4
-        #cellTile.right=positionTile0
-        #self.rows+=1
-        #self.indexOfPiecePlacement[tileName]+=1
+
         
         
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
@@ -163,24 +145,25 @@ class IncidenceMatrix(object):
         columnTile.right.left=columnTile.left
         currentIncidentCell=columnTile.down
         currentIncidentCellHorizontal=columnTile.down
-        while currentIncidentCell is not columnTile:
-            currentIncidentCellHorizontal=currentIncidentCellHorizontal.right
-            while currentIncidentCellHorizontal is not currentIncidentCell:
+        while currentIncidentCell != columnTile:
+            currentIncidentCellHorizontal=currentIncidentCell.right
+            while currentIncidentCellHorizontal != currentIncidentCell:
                 currentIncidentCellHorizontal.up.down=currentIncidentCellHorizontal.down
                 currentIncidentCellHorizontal.down.up=currentIncidentCellHorizontal.up
+                currentIncidentCellHorizontal.listHeader.size-=1
                 currentIncidentCellHorizontal=currentIncidentCellHorizontal.right
             currentIncidentCell=currentIncidentCell.down
         
     def uncoverColumn(self, c):
-        columnTile=self.columnObjectOfName[c]
-        currentIncidentCell=columnTile.up
-        currentIncidentCellHorizontal=columnTile.up
-        while currentIncidentCell is not columnTile.up:
-            currentIncidentCellHorizontal=currentIncidentCellHorizontal.left
-            while currentIncidentCellHorizontal is not currentIncidentCell:
+        currentIncidentCell=c.up
+        currentIncidentCellHorizontal=c.up
+        while currentIncidentCell != c:
+            currentIncidentCellHorizontal=currentIncidentCell.left
+            while currentIncidentCellHorizontal != currentIncidentCell:
                 currentIncidentCellHorizontal.up.down=currentIncidentCellHorizontal
                 currentIncidentCellHorizontal.down.up=currentIncidentCellHorizontal
+                currentIncidentCellHorizontal.listHeader.size+=1
                 currentIncidentCellHorizontal=currentIncidentCellHorizontal.left
             currentIncidentCell=currentIncidentCell.up 
-        columnTile.left.right=columnTile
-        columnTile.right.left=columnTile
+        c.left.right=c
+        c.right.left=c
