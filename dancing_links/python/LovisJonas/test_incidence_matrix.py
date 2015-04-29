@@ -8,7 +8,7 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
 
     def setUp(self):
         pass
-    
+    #test
     def test_init(self):
         I = incidence_matrix.IncidenceMatrix(["0", "1", "2"])
         self.assertEqual([[['h(0)', 'root', '2', '0', 'root', 'root']], [['h(0)', '0', 'root', '1', '0', '0']], [['h(0)', '1', '0', '2', '1', '1']], [['h(0)', '2', '1', 'root', '2', '2']]], I.representation())
