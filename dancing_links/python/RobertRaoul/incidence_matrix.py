@@ -1,3 +1,5 @@
+from tkinter.constants import LEFT
+from pip._vendor.requests.packages.chardet.utf8prober import ONE_CHAR_PROB
 def is_number(string):
     try:
         float(string)
@@ -90,7 +92,11 @@ class IncidenceMatrix(object):
 
     def insertColumnObject(self, left, right, name):
         """ insert a column header object into the circular linked list that contains the "root" node """
-        pass
+        object = ColumnObject(left, right, None, None, name)
+        object.up = object
+        object.down = object
+        object.left.right = object
+        object.right.left = object
 
     def appendRow(self, tileName, placement):
         """ 
@@ -101,8 +107,23 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        pass
-
+        headerName = self.columnObjectOfName[tileName]
+        pento = IncidenceCell(None, None, headerName.up, headerName, headerName, tileName)
+        pento.left = pento
+        pento.right = pento
+        headerName.up = pento
+        headerName.up.down = pento
+        
+        headerOne = self.columnObjectOfName[placement[0]]
+        one = IncidenceCell(pento, None, headerOne.up, headerOne, headerOne, placement[0])
+        headerOne.up = one
+        headerOne.up.down = one
+        
+        #headerTwo = self.columnObjectOfName[placement[1]]
+        #two = IncidenceCell(one, None, headerTwo.up, headerTwo, headerTwo, placement[1])
+        #headerOne.up = one
+        
+        
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
         pass
