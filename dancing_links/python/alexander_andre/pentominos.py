@@ -6,10 +6,18 @@ class Pentomino(object):
         self.name = name
         self.coos = coos
         self.dim = len(coos[0])
-        
-    def normalize_coo(self, coo):
-        pass
+        self.coos.sort() # safety first ;)
 
+    # normalize only one dimension
+    def normalize_coo(self, coo):
+        min = self.coos[0][coo]
+        for i in range(1,5):
+            if min > self.coos[0][coo]:
+                min = self.coos[0][coo]
+        self.translate_coo( coo, -min )
+        self.coos.sort()
+
+    # normalize object
     def normalize(self):
         # find bounding box left bottom corner
         minX = self.coos[0][0]
@@ -23,15 +31,19 @@ class Pentomino(object):
 
         # translate this object to origin
         self.translate_by( [-minX,-minY] )
+        self.coos.sort()
 
     def flip(self, coo):
-        pass
+        for i in range(len(self.coos)):
+            self.coos[i][coo] = -self.coos[i][coo]
+        self.normalize(coo)
         
     def translate_one(self, coo):
-        pass
+        self.translate_coo(coo, 1)
 
     def translate_coo(self, coo, amount):
-        pass
+        for i in range(0,5):
+            self.coos[i][coo] += by_vector[coo]
 
     def translate_by(self, by_vector):
         for i in range(0,5):
@@ -57,10 +69,10 @@ class Pentomino(object):
         pass
 
     def __hash__(self):
-        pass
+        return hash(str(self.coos))
 
     def __eq__(self, other):
-        pass
+        return hash(self) == hash(other)
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -145,9 +157,3 @@ class TileSet(object):
             rep += str(p.coos)
         rep += "]"
         return rep
-
-
-tmpL = L()
-print tmpL.representation()
-tmpL.turn90()
-print tmpL.representation()
