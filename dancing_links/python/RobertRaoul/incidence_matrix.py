@@ -90,7 +90,14 @@ class IncidenceMatrix(object):
 
     def insertColumnObject(self, left, right, name):
         """ insert a column header object into the circular linked list that contains the "root" node """
-        pass
+        
+        
+        newColumn=ColumnObject(left,right,None,None,name)
+        newColumn.up=newColumn.down=newColumn
+        newColumn.left.right=newColumn
+        newColumn.right.left=newColumn
+
+
 
     def appendRow(self, tileName, placement):
         """ 
@@ -105,8 +112,47 @@ class IncidenceMatrix(object):
 
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        
+        #c dances horizontally out of the list
+        c.left.right=c.right
+        c.right.left=c.left
+        #initialize a field current_c_cell to travel down the column c
+        current_d_cell=c.down
+        #in every row of c let all cells but the cell in column c dance vertically out of the list
+        while current_d_cell != c:
+            current_r_cell=current_d_cell.right
+            while current_r_cell != current_d_cell:
+                #the dance out and update size(-1)
+                current_r_cell.up.down=current_r_cell.down
+                current_r_cell.down.up=current_r_cell.up
+                current_r_cell.listHeader.size-=1
+                #travel right in the row
+                current_r_cell=current_r_cell.right
+            
+            #travel down column c
+            current_d_cell=current_d_cell.down
 
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+
+        #we just undo the covering of c, so we start by going UP!
+        #initialize a field current_c_cell to travel up the column c
+        current_u_cell=c.up
+        #in every row of c let all cells but the cell in column c dance vertically out of the list
+        while current_u_cell != c:
+            current_l_cell=current_u_cell.left
+            while current_l_cell != current_u_cell:
+                #the dance back in line and update size(+1)
+                current_l_cell.up.down=current_l_cell
+                current_l_cell.down.up=current_l_cell
+                current_l_cell.listHeader.size+=1
+                #travel LEFT in the row
+                current_l_cell=current_l_cell.left
+            
+            #travel up column c
+            current_u_cell=current_u_cell.up
+            
+        #finally c dances horizontally back in the header list    
+        c.left.right=c
+        c.right.left=c   
+            
