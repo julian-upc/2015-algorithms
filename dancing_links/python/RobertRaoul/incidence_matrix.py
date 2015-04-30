@@ -108,7 +108,45 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        pass
+        #TODO selber
+        self.indexOfPiecePlacement[tileName]+=1
+        columnTile=self.columnObjectOfName[tileName]
+        columnTile.size+=1
+        tileNameCell=IncidenceCell(columnTile,columnTile,columnTile.up,columnTile,columnTile,str(tileName)+str([self.indexOfPiecePlacement[tileName]-1]))
+        tileNameCell.up.down=tileNameCell
+        columnTile.up=tileNameCell
+        listOfPlacementCells = []
+        for position in placement:
+            columnPlacement=self.columnObjectOfName[position]
+            listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
+        for k in listOfPlacementCells:
+            columnPlacement=self.columnObjectOfName[k.listHeader.name]   
+            columnPlacement.up=k
+            k.up.down=k
+            columnPlacement.size+=1
+        n=len(listOfPlacementCells)
+        rep = [n]
+        for k in listOfPlacementCells:
+            rep.append(k.representation())
+        #print("vorher: " + str(rep))
+        for i in range(n):
+            #print(str(i)+":vorher" + str(listOfPlacementCells[i].representation()))
+            if i==0:
+                listOfPlacementCells[i].left=tileNameCell
+            elif i in range(1,n):
+                listOfPlacementCells[i].left=listOfPlacementCells[i-1]
+            if i==n-1:
+                listOfPlacementCells[i].right=tileNameCell
+            elif i in range(n-1):
+                listOfPlacementCells[i].right=listOfPlacementCells[i+1]
+            #print("nachher" + str(listOfPlacementCells[i].representation()))
+        rep = [n]
+        for k in listOfPlacementCells:
+            rep.append(k.representation())
+        #print("nachher: " + str(rep))
+        tileNameCell.left=listOfPlacementCells[n-1]
+        tileNameCell.right=listOfPlacementCells[0]
+
 
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
