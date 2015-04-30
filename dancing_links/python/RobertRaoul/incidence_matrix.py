@@ -147,7 +147,7 @@ class IncidenceMatrix(object):
         tileNameCell.left=listOfPlacementCells[n-1]
         tileNameCell.right=listOfPlacementCells[0]
 
-
+    #Hallo Welt
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
         
