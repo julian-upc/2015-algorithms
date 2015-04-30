@@ -15,7 +15,7 @@ class Pentomino(object):
             if min > self.coos[0][coo]:
                 min = self.coos[0][coo]
         self.translate_coo( coo, -min )
-        self.coos.sort()
+        return self
 
     # normalize object
     def normalize(self):
@@ -31,24 +31,31 @@ class Pentomino(object):
 
         # translate this object to origin
         self.translate_by( [-minX,-minY] )
-        self.coos.sort()
+        return self
 
     def flip(self, coo):
         for i in range(len(self.coos)):
             self.coos[i][coo] = -self.coos[i][coo]
-        self.normalize(coo)
+        self.normalize()
+        return self
         
     def translate_one(self, coo):
         self.translate_coo(coo, 1)
+        self.coos.sort()
+        return self
 
     def translate_coo(self, coo, amount):
         for i in range(0,5):
-            self.coos[i][coo] += by_vector[coo]
+            self.coos[i][coo] += amount
+        self.coos.sort()
+        return self
 
     def translate_by(self, by_vector):
         for i in range(0,5):
             self.coos[i][0] += by_vector[0]
             self.coos[i][1] += by_vector[1]
+        self.coos.sort()
+        return self
 
     def turn90(self):
         # create a rotation matrix
@@ -64,9 +71,17 @@ class Pentomino(object):
 
         # normale position
         self.normalize()
+        return self
 
     def max(self):
-        pass
+        max = [self.coos[0][0], self.coos[0][1]]
+        for i in range(1,len(self.coos)):
+            if max[0] < self.coos[i][0]:
+                max[0] = self.coos[i][0]
+            if max[1] < self.coos[i][1]:
+                max[1] = self.coos[i][1]
+
+        return max
 
     def __hash__(self):
         return hash(str(self.coos))
@@ -130,6 +145,25 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
+def fixed_pentominos_of(pentomino):
+    c = copy.deepcopy(pentomino)
+    s = TileSet()
+
+    for i in range(4):
+        s.add(c.turn90())
+        s.add(c.flip(i%2))
+        c.flip(i%2) # flip back for rotation
+
+    return s
+
+def all_fixed_pentominos():
+    all = TileSet()
+
+    for p in all_pentominos():
+        pentSet = fixed_pentominos_of(p)
+        all.add_all(pentSet)
+
+    return all
 
 class TileSet(object):
     def __init__(self, plist=[]):
@@ -141,10 +175,18 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        pass
+        # test first, if this p is still known
+        for q in self.set:
+            if q == p:
+                return
+        self.set.add(copy.deepcopy(p))
+
+    def add_all(self, set):
+        for p in set:
+            self.add(p)
 
     def size(self):
-        pass
+        return len(self.set)
 
     def representation(self):
         rep = "["
