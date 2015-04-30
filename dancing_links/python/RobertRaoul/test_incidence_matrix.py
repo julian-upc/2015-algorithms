@@ -1,5 +1,5 @@
 import unittest
-import incidence_matrix_part
+import incidence_matrix
 import pentominos
 import examples
 import copy
