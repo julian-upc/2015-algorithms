@@ -92,11 +92,13 @@ class IncidenceMatrix(object):
 
     def insertColumnObject(self, left, right, name):
         """ insert a column header object into the circular linked list that contains the "root" node """
-        object = ColumnObject(left, right, None, None, name)
-        object.up = object
-        object.down = object
-        object.left.right = object
-        object.right.left = object
+        
+        
+        newColumn=ColumnObject(left,right,None,None,name)
+        newColumn.up=newColumn.down=newColumn
+        newColumn.left.right=newColumn
+        newColumn.right.left=newColumn
+
 
     def appendRow(self, tileName, placement):
         """ 
@@ -107,27 +109,89 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        headerName = self.columnObjectOfName[tileName]
-        pento = IncidenceCell(None, None, headerName.up, headerName, headerName, tileName)
-        pento.left = pento
-        pento.right = pento
-        headerName.up = pento
-        headerName.up.down = pento
-        
-        headerOne = self.columnObjectOfName[placement[0]]
-        one = IncidenceCell(pento, None, headerOne.up, headerOne, headerOne, placement[0])
-        headerOne.up = one
-        headerOne.up.down = one
-        
-        #headerTwo = self.columnObjectOfName[placement[1]]
-        #two = IncidenceCell(one, None, headerTwo.up, headerTwo, headerTwo, placement[1])
-        #headerOne.up = one
-        
-        
+        #TODO selber
+        self.indexOfPiecePlacement[tileName]+=1
+        columnTile=self.columnObjectOfName[tileName]
+        columnTile.size+=1
+        tileNameCell=IncidenceCell(columnTile,columnTile,columnTile.up,columnTile,columnTile,str(tileName)+str([self.indexOfPiecePlacement[tileName]-1]))
+        tileNameCell.up.down=tileNameCell
+        columnTile.up=tileNameCell
+        listOfPlacementCells = []
+        for position in placement:
+            columnPlacement=self.columnObjectOfName[position]
+            listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
+        for k in listOfPlacementCells:
+            columnPlacement=self.columnObjectOfName[k.listHeader.name]   
+            columnPlacement.up=k
+            k.up.down=k
+            columnPlacement.size+=1
+        n=len(listOfPlacementCells)
+        rep = [n]
+        for k in listOfPlacementCells:
+            rep.append(k.representation())
+        #print("vorher: " + str(rep))
+        for i in range(n):
+            #print(str(i)+":vorher" + str(listOfPlacementCells[i].representation()))
+            if i==0:
+                listOfPlacementCells[i].left=tileNameCell
+            elif i in range(1,n):
+                listOfPlacementCells[i].left=listOfPlacementCells[i-1]
+            if i==n-1:
+                listOfPlacementCells[i].right=tileNameCell
+            elif i in range(n-1):
+                listOfPlacementCells[i].right=listOfPlacementCells[i+1]
+            #print("nachher" + str(listOfPlacementCells[i].representation()))
+        rep = [n]
+        for k in listOfPlacementCells:
+            rep.append(k.representation())
+        #print("nachher: " + str(rep))
+        tileNameCell.left=listOfPlacementCells[n-1]
+        tileNameCell.right=listOfPlacementCells[0]
+
+    #Hallo Welt
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        
+        #c dances horizontally out of the list
+        c.left.right=c.right
+        c.right.left=c.left
+        #initialize a field current_c_cell to travel down the column c
+        current_d_cell=c.down
+        #in every row of c let all cells but the cell in column c dance vertically out of the list
+        while current_d_cell != c:
+            current_r_cell=current_d_cell.right
+            while current_r_cell != current_d_cell:
+                #the dance out and update size(-1)
+                current_r_cell.up.down=current_r_cell.down
+                current_r_cell.down.up=current_r_cell.up
+                current_r_cell.listHeader.size-=1
+                #travel right in the row
+                current_r_cell=current_r_cell.right
+            
+            #travel down column c
+            current_d_cell=current_d_cell.down
 
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+
+        #we just undo the covering of c, so we start by going UP!
+        #initialize a field current_c_cell to travel up the column c
+        current_u_cell=c.up
+        #in every row of c let all cells but the cell in column c dance vertically out of the list
+        while current_u_cell != c:
+            current_l_cell=current_u_cell.left
+            while current_l_cell != current_u_cell:
+                #the dance back in line and update size(+1)
+                current_l_cell.up.down=current_l_cell
+                current_l_cell.down.up=current_l_cell
+                current_l_cell.listHeader.size+=1
+                #travel LEFT in the row
+                current_l_cell=current_l_cell.left
+            
+            #travel up column c
+            current_u_cell=current_u_cell.up
+            
+        #finally c dances horizontally back in the header list    
+        c.left.right=c
+        c.right.left=c   
+            
