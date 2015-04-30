@@ -1,3 +1,5 @@
+import pentominos
+
 from copy import deepcopy
 def is_number(string):
     try:
@@ -167,3 +169,15 @@ class IncidenceMatrix(object):
             currentIncidentCell=currentIncidentCell.up 
         c.left.right=c
         c.right.left=c
+    
+    def insertAllPlacements(self, pentomino, legal):
+        pentomino.normalize()
+        for i in range(10):
+            for k in range(10):
+                if legal(pentmino.coos):
+                    self.appendRow(pentomino.name, pentomino.coos)
+                pentomino.translate_one(1)
+            pentomino.translate_by([0,-10])
+            pentomino.translate_one(0)
+            
+        

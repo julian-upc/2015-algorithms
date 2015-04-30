@@ -238,4 +238,20 @@ class TileSet(object):
         rep += "]"
         return rep
 
-
+    def legal(self, coos):
+            for p in coos:
+                if p[0]<0:
+                    return False
+                if p[0]>8:
+                    return False
+                if p[1]<0:
+                    return False
+                if p[1]>8:
+                    return False
+            for p in [[3,3],[3,4],[4,3],[4,4]]:
+                    if p in coos:
+                        return False
+            return True
+    
+                
+        
