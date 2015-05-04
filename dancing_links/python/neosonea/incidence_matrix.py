@@ -88,9 +88,16 @@ class IncidenceMatrix(object):
             currentColumnObject = currentColumnObject.right
         return rowRep
 
+    """ insert a column header object into the circular linked list that contains the "root" node """
     def insertColumnObject(self, left, right, name):
-        """ insert a column header object into the circular linked list that contains the "root" node """
-        pass
+        newCO = ColumnObject(left, right, None, None, name)
+        #newCO = ColumnObject(None, None, None, None, name)
+        newCO.up = newCO.down = newCO
+        #newCO.left = left
+        #newCO.right = right
+        left.right = newCO
+        right.left = newCO
+        return newCO
 
     def appendRow(self, tileName, placement):
         """ 
@@ -101,12 +108,70 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        pass
+        pentoHeader = self.columnObjectOfName[tileName]
+        # create pentoCell
+        pentoCell = IncidenceCell(None, None, pentoHeader.up, pentoHeader, pentoHeader,
+                tileName+"["+str(self.indexOfPiecePlacement[tileName])+"]")
+        pentoHeader.up.down = pentoCell
+        pentoHeader.up = pentoCell
+        pentoHeader.size = pentoHeader.size + 1
+        self.indexOfPiecePlacement[tileName] += 1
+
+        # create placementCells
+        left = pentoCell
+        for placeName in placement:
+            placeHeader = self.columnObjectOfName[placeName]
+            placementCell = IncidenceCell(left, None, placeHeader.up,
+                    placeHeader, placeHeader, tileName+placeName)
+            placeHeader.up.down = placementCell
+            placeHeader.up = placementCell
+            placeHeader.size = placeHeader.size + 1
+            #self.indexOfPiecePlacement[placeName] += 1
+            left.right = placementCell
+            left = placementCell
+
+        left.right = pentoCell
+        pentoCell.left = left
+
+        self.rows = self.rows + 1
+        #return self
 
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        # cover head c vertically
+        c.left.right = c.right
+        c.right.left = c.left
+
+        # go through all rows in which c had a cell
+        rowhead = c.down
+        while rowhead is not c:
+            cell = rowhead.right
+            while cell is not rowhead:
+                # cover the cells horizontally in these rows
+                cell.up.down = cell.down
+                cell.down.up = cell.up
+                cell.listHeader.size -= 1
+                cell = cell.right
+            self.rows -= 1
+            rowhead = rowhead.down
+        #return self
 
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        # uncover head c vertically
+        c.left.right = c
+        c.right.left = c
+
+        # go through all rows in which c had a cell
+        rowhead = c.up
+        while rowhead is not c:
+            cell = rowhead.right
+            while cell is not rowhead:
+                # uncover the cells horizontally in these rows
+                cell.up.down = cell
+                cell.down.up = cell
+                cell.listHeader.size += 1
+                cell = cell.right
+            self.rows += 1
+            rowhead = rowhead.up
+        #return self
