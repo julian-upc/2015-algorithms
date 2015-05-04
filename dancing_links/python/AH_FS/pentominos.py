@@ -1,6 +1,7 @@
 import copy
 from array import *
 import numpy as np
+from sets import ImmutableSet
 
 class Pentomino(object):
     def __init__(self, name, coos):
@@ -10,68 +11,72 @@ class Pentomino(object):
         
     def normalize_coo(self, coo):
         a = np.array(self.coos)
-        minimum = np.amin(a[coo])
+        minimum = np.amin(a[:,coo])
         a[:,coo] -= minimum
         self.coos = a.tolist()
          
 
     def normalize(self):
         for i in range(self.dim):
-            normalize_coo(self,i)
+            self.normalize_coo(i)
+        return self
 
     def flip(self, coo):
         a = np.array(self.coos)
         minimum = np.amin(a[coo])
         a[:,coo] -= (a[:,coo]- minimum) * 2
         self.coos = a.tolist()
-        nomalize(self)
-        
+        self.normalize()
+        return self    
+    
     def translate_one(self, coo):
         a = np.array(self.coos)
         a[:,coo] += 1
         self.coos = a.tolist()
+        return self
 
     def translate_coo(self, coo, amount):
         a = np.array(self.coos)
         a[:,coo] += amount
         self.coos = a.tolist()
+        return self
 
     def translate_by(self, by_vector):
         a = np.array(self.coos)
         a += by_vector
         self.coos = a.tolist()
+        return self
 
-    def turn90(self):
-        pass
+    def turn90(self, coo1=0, coo2=1):
+        a = np.array(self.coos)
+        a[:,[coo1, coo2]] = a[:,[coo2, coo1]]
+        a[:,coo2] *= -1
+        self.coos = a.tolist()
+        self.normalize()
+        return self
 
     def max(self):
-        pass
+        a = np.array(self.coos)
+        return [ np.amax(a[:,0]),np.amax(a[:,1]) ]
 
     def __hash__(self):
-        pass
+        h = 0 
+        for p in self.coos:
+            h += hash(str(p))   
+        return hash((h,self.name))
 
     def __eq__(self, other):
-        pass
+        return isinstance(other,self.__class__) and self.coosToSet() == other.coosToSet() and self.name == other.name        
+
+    def coosToSet(self):
+        s = set()
+	for p in self.coos:
+            s.add(str(p))
+        return s
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
     
-
-
-c = [[-4,1],[1,0],[1,1],[1,2],[2,2]]
-a = np.array(c)
-minimum = np.amin(a[0])
-print minimum
-a[:,1] -= minimum
-print a.tolist()
-
-
-c = [[-12,1],[-11,0],[-11,1],[-11,2],[-10,2]]
-a = np.array(c)
-#minimum = np.amin(a[0])
-#a[:,0] -= (a[:,0]- minimum) * 2
-a += [1,1]
-print a.tolist()         
 
 class F(Pentomino):
     def __init__(self):
@@ -126,6 +131,21 @@ def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
 
+def fixed_pentominos_of(p):
+    ts = TileSet() 
+    for i in range(4):
+	ts.add(p.turn90())
+        for i in range(2):
+            ts.add(p.flip(i))
+    return ts
+
+def all_fixed_pentominos():
+    ts = TileSet()
+    for p in all_pentominos():
+        for q in fixed_pentominos_of(p): 
+            ts.add(q)
+    return ts
+
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
@@ -136,10 +156,13 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        pass
+        self.set.add(copy.deepcopy(p))
+
+    def union(self, s):
+        self.set.union(s.set)
 
     def size(self):
-        pass
+        return len(self.set)
 
     def representation(self):
         rep = "["
@@ -152,5 +175,4 @@ class TileSet(object):
             rep += str(p.coos)
         rep += "]"
         return rep
-
 
