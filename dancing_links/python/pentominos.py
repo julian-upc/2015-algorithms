@@ -22,7 +22,7 @@ class Pentomino(object):
 	    self.coos = [[c[0],-c[1]] for c in self.coos]
 	else:
 	    self.coos = [[-c[0],c[1]] for c in self.coos]
-	self.normalize
+	self.normalize()
 	return self
         
     def translate_one(self, coo):
@@ -45,7 +45,7 @@ class Pentomino(object):
 
     def turn90(self):
         self.coos = [[-c[1],c[0]] for c in self.coos] 
-        self.normalize
+        self.normalize()
         return self
 
     def max(self):
@@ -55,7 +55,7 @@ class Pentomino(object):
 
     def __hash__(self):
         self.coos = sorted(self.coos)
-        return hash(self.representation())
+        return hash(str(self.coos))
 
     def __eq__(self, other):
 	self.normalize()
@@ -119,20 +119,18 @@ def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
   
 def fixed_pentominos_of(p):
-    fp=[]
+    fp = TileSet()
     for i in range(4):
-	p.turn90
-	if fp.count(p)==0:
-	    fp.append(p)
-	if fp.count(p.flip(0))==0:
-	    fp.append(p)
-	    p.flip
+	p.turn90()
+	fp.add(p)
+	p.flip(0)
+	fp.add(p)
+	p.flip(0)
     return fp
     
 def all_fixed_pentominos():
-    return [p for p in self.fixed_pentominos_of(q) for q in self.all_pentominos]
-
-
+    pass
+  
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
