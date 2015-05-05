@@ -106,6 +106,7 @@ class IncidenceMatrix(object):
         tileNameCell.up.down=tileNameCell
         columnTile.up=tileNameCell
         listOfPlacementCells = []
+        self.rows+=1
         for position in placement:
             columnPlacement=self.columnObjectOfName[position]
             listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
@@ -169,15 +170,44 @@ class IncidenceMatrix(object):
             currentIncidentCell=currentIncidentCell.up 
         c.left.right=c
         c.right.left=c
-    
-    def insertAllPlacements(self, pentomino, legal):
-        pentomino.normalize()
-        for i in range(10):
-            for k in range(10):
-                if legal(pentmino.coos):
-                    self.appendRow(pentomino.name, pentomino.coos)
-                pentomino.translate_one(1)
-            pentomino.translate_by([0,-10])
-            pentomino.translate_one(0)
             
+    def insertAllPlacements(self, pentomino):
+        pentomino.normalize()
+        versionList=pentominos.fixed_pentominos_of(pentomino)
+        coordinatesListAsStrings=[]
+        for p in versionList:
+            for i in range(10):
+                for k in range(10):
+                    if p.legal():
+                        for k in range(5):
+                            coordinatesListAsStrings.append(str(p.coos[k][0])+str(p.coos[k][1]))
+                        print(coordinatesListAsStrings)
+                        self.appendRow(p.name, coordinatesListAsStrings)
+                    p.translate_one(1)
+                    coordinatesListAsStrings=[]
+                p.translate_by([0,-10])
+                p.translate_one(0)
+            
+        
+    def initializeTheIncidenceMatrix(self):
+        allPentos=pentominos.all_pentominos()
+        listWithNameOfPentosAndPositions=[]
+        for p in allPentos:
+            listWithNameOfPentosAndPositions.append(p.name)
+        for q in pentominos.all_positions():
+            listWithNameOfPentosAndPositions.append(q)
+        n=len(listWithNameOfPentosAndPositions)
+       # print(str(n)+"   "+str(listWithNameOfPentosAndPositions))
+       # self.insertColumnObject(self.columnObjectOfName["root"],self.columnObjectOfName["root"],str(listWithNameOfPentosAndPositions[0]))
+        #print(self.representation())
+       # print(str(listWithNameOfPentosAndPositions[0]))
+        #print(self.columnObjectOfName["F"].representation)
+        #for i in range(1,n-1):
+          #  self.insertColumnObject(self.columnObjectOfName[listWithNameOfPentosAndPositions[i-1]],self.columnObjectOfName["root"],str(listWithNameOfPentosAndPositions[i]))
+          #  self.columnObjectOfName[listWithNameOfPentosAndPositions[i-1]].right=self.columnObjectOfName[listWithNameOfPentosAndPositions[i]]
+        #print(self.representation())
+        #self.insertColumnObject(self.columnObjectOfName[listWithNameOfPentosAndPositions[n-2]], self.columnObjectOfName["root"], str(listWithNameOfPentosAndPositions[n-1]))
+        #self.columnObjectOfName[listWithNameOfPentosAndPositions[n-1]].right=self.columnObjectOfName[listWithNameOfPentosAndPositions[n-1]]        
+        for p in allPentos:
+            self.insertAllPlacements(p)
         

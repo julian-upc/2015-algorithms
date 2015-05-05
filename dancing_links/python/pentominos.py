@@ -92,6 +92,7 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
+def allVersionsOfPentomino(self,Pentomino):
 
 class TileSet(object):
     def __init__(self, plist=[]):
