@@ -1,3 +1,5 @@
+import pentominos
+
 def is_number(string):
     try:
         float(string)
@@ -192,5 +194,25 @@ class IncidenceMatrix(object):
             
         #finally c dances horizontally back in the header list    
         c.left.right=c
-        c.right.left=c   
+        c.right.left=c
+        
+    def appendPentominoRows(self, pentomino):
+        
+        coords = []
+        for p in pentominos.fixed_pentominos_of(pentomino):   
+            for i in range(8):
+                for j in range(8):
+                    if p.legal():
+                        for k in range(5):
+                            coords.append(str(p.coos[k][0])+str(p.coos[k][1])) 
+                        self.appendRow(p.name, coords)
+                    p.translate_one(0)
+                p.translate_by([-8,0])
+                p.translate_one(1)
+                
+                
+    def initializeIncidenceMatrix(self):
+        for p in pentominos.all_fixed_pentominos():
+            self.appendPentominoRows(p)
+                        
             

@@ -105,6 +105,23 @@ class Pentomino(object):
         return "[" + self.name + ":" + str(self.coos) + "]"
 
 
+    def legal(self):
+        for c in self.coos:
+            if c[0]<0: 
+                return False
+            if c[1]<0: 
+                return False
+            if c[0]>7: 
+                return False
+            if c[1]>7: 
+                return False
+            for p in [[3,3],[3,4],[4,3],[4,4]]:
+                if p in self.coos:
+                    return False
+         
+        return True        
+                
+
 class F(Pentomino):
     def __init__(self):
         Pentomino.__init__(self, "F", [[0,1],[1,0],[1,1],[1,2],[2,2]])
@@ -211,5 +228,7 @@ class TileSet(object):
             rep += str(p.coos)
         rep += "]"
         return rep
-
+    
+    
+    
 
