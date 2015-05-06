@@ -122,9 +122,9 @@ def fixed_pentominos_of(p):
     fp = TileSet()
     for i in range(4):
 	p.turn90()
-	fp.add(copy.deepcopy(p))
+	fp.add(p)
 	p.flip(0)
-	fp.add(copy.deepcopy(p))
+	fp.add(p)
 	p.flip(0)
     return fp
     
@@ -144,7 +144,7 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        self.set.add(copy.deepcopy(p))
+        self.set.add(copy.deepcopy(p))	#not desirable
         return self
 
     def size(self):
