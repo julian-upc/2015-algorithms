@@ -56,9 +56,9 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
     
     def test_calculatePentominoSolution(self):
         I = incidence_matrix.IncidenceMatrix(pentominos.all_pentominos_names()+pentominos.all_positions())
-        print(I.representation())
         I.initializeTheIncidenceMatrix()
-        I.calculatePentominoSolution(0)
+        I.calculatePentominoSolution(0,[])
+        print(incidence_matrix.IncidenceMatrix.solutions)
         
         
 suite = unittest.TestLoader().loadTestsFromTestCase(TestIncidenceMatrixMethods)
