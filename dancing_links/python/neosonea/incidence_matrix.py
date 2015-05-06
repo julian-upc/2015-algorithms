@@ -126,7 +126,6 @@ class IncidenceMatrix(object):
             placeHeader.up.down = placementCell
             placeHeader.up = placementCell
             placeHeader.size = placeHeader.size + 1
-            #self.indexOfPiecePlacement[placeName] += 1
             left.right = placementCell
             left = placementCell
 
@@ -175,3 +174,4 @@ class IncidenceMatrix(object):
             self.rows += 1
             rowhead = rowhead.up
         #return self
+
