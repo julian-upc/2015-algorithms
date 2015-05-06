@@ -177,8 +177,8 @@ class IncidenceMatrix(object):
         versionList=pentominos.fixed_pentominos_of(pentomino)
         coordinatesListAsStrings=[]
         for p in versionList:
-            for i in range(10):
-                for k in range(10):
+            for i in range(8):
+                for k in range(8):
                     if p.legal():
                         for k in range(5):
                             coordinatesListAsStrings.append(str(p.coos[k][0])+str(p.coos[k][1]))
@@ -194,34 +194,9 @@ class IncidenceMatrix(object):
         
     def initializeTheIncidenceMatrix(self):
         allPentos=pentominos.all_pentominos()
-        #listWithNameOfPentosAndPositions=[]
-        #for p in allPentos:
-        #    listWithNameOfPentosAndPositions.append(p.name)
-        #for q in pentominos.all_positions():
-        #    listWithNameOfPentosAndPositions.append(q)
-        #n=len(listWithNameOfPentosAndPositions)
-        # print(str(n)+"   "+str(listWithNameOfPentosAndPositions))
-        # self.insertColumnObject(self.columnObjectOfName["root"],self.columnObjectOfName["root"],str(listWithNameOfPentosAndPositions[0]))
-        #print(self.representation())
-        # print(str(listWithNameOfPentosAndPositions[0]))
-        #print(self.columnObjectOfName["F"].representation)
-        #for i in range(1,n-1):
-        #  self.insertColumnObject(self.columnObjectOfName[listWithNameOfPentosAndPositions[i-1]],self.columnObjectOfName["root"],str(listWithNameOfPentosAndPositions[i]))
-        #  self.columnObjectOfName[listWithNameOfPentosAndPositions[i-1]].right=self.columnObjectOfName[listWithNameOfPentosAndPositions[i]]
-        #print(self.representation())
-        #self.insertColumnObject(self.columnObjectOfName[listWithNameOfPentosAndPositions[n-2]], self.columnObjectOfName["root"], str(listWithNameOfPentosAndPositions[n-1]))
-        #self.columnObjectOfName[listWithNameOfPentosAndPositions[n-1]].right=self.columnObjectOfName[listWithNameOfPentosAndPositions[n-1]]        
         for p in allPentos:
             self.insertAllPlacements(p)
     
-#class solution(object):
-#
-#   def __init__(self):
-#      self.set=set()
-#
-#   def representation(self):
-#      rep = ["c", self.length, self.solutions]
-#     return rep
     solution = []
     solutions = []
     
@@ -237,17 +212,12 @@ class IncidenceMatrix(object):
         return smallestColumnObject
     
     def calculatePentominoSolution(self,k):
-        if k==len(pentominos.all_pentominos_names()):
-            print(self.solutions)
         
         if self.h.right == self.h:
             self.solutions.append(self.solution)
-            self.solution = []
+            self.solution = self.solution.pop
             return
-        
-        if k>len(pentominos.all_pentominos_names()):
-            self.solution=[]
-            return
+    
         
         singlePentomino=[]
         smallestColumnObject = self.smallestColumnObject()
@@ -256,28 +226,20 @@ class IncidenceMatrix(object):
         while currentIncidenceCell!=smallestColumnObject:
             walkingIncidenceCell=currentIncidenceCell.right
             singlePentomino.append(smallestColumnObject.name)
-            listheaders=[]
-            listheaders.append(smallestColumnObject.name)
-            while walkingIncidenceCell.listHeader.name not in listheaders:
+            while walkingIncidenceCell!=currentIncidenceCell:
                 self.coverColumn(walkingIncidenceCell.listHeader)
-                currentlistheader=walkingIncidenceCell.listHeader.name
-                singlePentomino.append(currentlistheader)
-                listheaders.append(currentlistheader)
+                singlePentomino.append(walkingIncidenceCell.listHeader.name)
                 walkingIncidenceCell=walkingIncidenceCell.right
-            #print(listheaders)
             self.solution.append(singlePentomino)
-            singlePentomino=[]
             #print("Eine Pentomino:   "+ str(self.solution))
             self.calculatePentominoSolution(k+1)
             walkingIncidenceCell=currentIncidenceCell.left
-            listheaders=[]
-            listheaders.append(smallestColumnObject.name)
-            currentlistheader=walkingIncidenceCell.listHeader
-            while walkingIncidenceCell.listHeader.name not in listheaders:
+            while walkingIncidenceCell!=currentIncidenceCell:
                 self.uncoverColumn(walkingIncidenceCell.listHeader)
-                currentlistheader=walkingIncidenceCell.listHeader.name
                 walkingIncidenceCell=walkingIncidenceCell.left
             currentIncidenceCell=currentIncidenceCell.down
+            
+        self.solution.pop
         #print("test")
         #self.uncoverColumn(smallestColumnObject)
         #return
