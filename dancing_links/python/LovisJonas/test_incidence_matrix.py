@@ -49,11 +49,18 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
 
         self.assertEqual([[['h(0)', 'root', 'F', 'B', 'root', 'root']], [['h(1)', 'B', 'root', 'C', 'B[0]', 'B[0]'], ['c', 'B[0]', 'BF', 'BC', 'B', 'B']], [['h(2)', 'C', 'B', 'E', 'BC', 'C[0]'], ['c', 'C[0]', 'CF', 'CE', 'C', 'BC'], ['c', 'BC', 'B[0]', 'BF', 'C[0]', 'C']], [['h(1)', 'E', 'C', 'F', 'CE', 'CE'], ['c', 'CE', 'C[0]', 'CF', 'E', 'E']], [['h(2)', 'F', 'E', 'root', 'BF', 'CF'], ['c', 'CF', 'CE', 'C[0]', 'F', 'BF'], ['c', 'BF', 'BC', 'B[0]', 'CF', 'F']]], I.representation())
 
-    def test_initializeMatrix(self):
+    #def test_initializeMatrix(self):
+    #    I = incidence_matrix.IncidenceMatrix(pentominos.all_pentominos_names()+pentominos.all_positions())
+    #    I.initializeTheIncidenceMatrix()
+    #    print(I.rows)
+    
+    def test_calculatePentominoSolution(self):
         I = incidence_matrix.IncidenceMatrix(pentominos.all_pentominos_names()+pentominos.all_positions())
         I.initializeTheIncidenceMatrix()
-        print(I.rows)
-
+        #print(I.rows)
+        I.calculatePentominoSolution(0)
+        
+        
 suite = unittest.TestLoader().loadTestsFromTestCase(TestIncidenceMatrixMethods)
 
 if __name__ == '__main__':

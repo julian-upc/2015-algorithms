@@ -220,6 +220,7 @@ def all_fixed_pentominos():
                 s.add(i.flip(0).normalize())
                 i.flip(1).normalize()
                 i.turn90().normalize()
+                k+=1
     return s
 
 def fixed_pentominos_of(p):
@@ -233,6 +234,7 @@ def fixed_pentominos_of(p):
                 s.add(i.flip(0).normalize())
                 i.flip(1).normalize()
                 i.turn90().normalize()
+                k+=1
     return s
 
 
