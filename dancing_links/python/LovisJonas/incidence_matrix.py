@@ -25,7 +25,14 @@ class IncidenceCell(object):
         for c in [self.left, self.right, self.up, self.down]:
             rep.append(c.name)
         return rep
-
+    
+    def rowToPentomino(self):
+        pentomino=[]
+        pentomino.append(self.listHeader.name)
+        walkingCell=self.right
+        while walkingCell!=self:
+            pentomino.append(walkingCell.listHeader.name)
+        return pentomino
         
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
@@ -203,46 +210,39 @@ class IncidenceMatrix(object):
     def smallestColumnObject(self):
         currentColumnObject = self.h.right
         currentSize = self.h.size
-        smallestColumnObject = currentColumnObject
+        selectedColumnObject = self.h
         while currentColumnObject != self.h:
             if currentSize > currentColumnObject.size:
                 currentSize = currentColumnObject.size
-                smallestColumnObject = currentColumnObject
+                selectedColumnObject = currentColumnObject
             currentColumnObject = currentColumnObject.right
-        return smallestColumnObject
+        return selectedColumnObject
     
     def calculatePentominoSolution(self,k):
         
         if self.h.right == self.h:
-            self.solutions.append(self.solution)
-            self.solution = self.solution.pop
+            for i in self.solution:
+                self.solutions.append(i.rowToPentomino())
             return
-    
-        
-        singlePentomino=[]
-        smallestColumnObject = self.smallestColumnObject()
-        currentIncidenceCell=smallestColumnObject.down
-        self.coverColumn(smallestColumnObject)
-        while currentIncidenceCell!=smallestColumnObject:
+        selectedColumnObject = self.smallestColumnObject()
+        currentIncidenceCell=selectedColumnObject.down
+        self.coverColumn(selectedColumnObject)
+        while currentIncidenceCell!=selectedColumnObject:
             walkingIncidenceCell=currentIncidenceCell.right
-            singlePentomino.append(smallestColumnObject.name)
+            self.solution.append(walkingIncidenceCell)
             while walkingIncidenceCell!=currentIncidenceCell:
                 self.coverColumn(walkingIncidenceCell.listHeader)
-                singlePentomino.append(walkingIncidenceCell.listHeader.name)
                 walkingIncidenceCell=walkingIncidenceCell.right
-            self.solution.append(singlePentomino)
             #print("Eine Pentomino:   "+ str(self.solution))
             self.calculatePentominoSolution(k+1)
+            self.solution.pop()
             walkingIncidenceCell=currentIncidenceCell.left
             while walkingIncidenceCell!=currentIncidenceCell:
                 self.uncoverColumn(walkingIncidenceCell.listHeader)
                 walkingIncidenceCell=walkingIncidenceCell.left
             currentIncidenceCell=currentIncidenceCell.down
-            
-        self.solution.pop
-        #print("test")
+                    #print("test")
         #self.uncoverColumn(smallestColumnObject)
         #return
-        
         
                     
