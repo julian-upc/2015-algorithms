@@ -8,9 +8,7 @@ class TestPentominoMethods(unittest.TestCase):
 
     def test_normalize(self):
         for p in pentominos.all_pentominos():
-            print(p.representation())
             self.assertEqual(p.coos, p.normalize().coos, "test_normalize failed for polyomino " + p.name)
-            
 
     def test_translate(self):
         self.assertEqual([[c[0]+1,c[1]] for c in pentominos.I().coos], pentominos.I().translate_one(0).coos)
