@@ -26,15 +26,6 @@ class IncidenceCell(object):
             rep.append(c.name)
         return rep
     
-    def rowToPentomino(self):
-        pentomino=[]
-        pentomino.append(self.listHeader.name)
-        walkingCell=self.right
-        print(pentomino)
-        while walkingCell!=self:
-            pentomino.append(walkingCell.listHeader.name)
-        return pentomino
-        
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
@@ -151,48 +142,47 @@ class IncidenceMatrix(object):
         tileNameCell.right=listOfPlacementCells[0]
 
             
-    def coverColumn(self, c):
-        columnTile=c
+    def coverColumn(self, columnTile):
         columnTile.left.right=columnTile.right
         columnTile.right.left=columnTile.left
-        currentincidenceCell=columnTile.down
-        currentincidenceCellHorizontal=columnTile.down
-        while currentincidenceCell != columnTile:
-            currentincidenceCellHorizontal=currentincidenceCell.right
-            while currentincidenceCellHorizontal != currentincidenceCell:
-                currentincidenceCellHorizontal.up.down=currentincidenceCellHorizontal.down
-                currentincidenceCellHorizontal.down.up=currentincidenceCellHorizontal.up
-                currentincidenceCellHorizontal.listHeader.size-=1
-                currentincidenceCellHorizontal=currentincidenceCellHorizontal.right
-            currentincidenceCell=currentincidenceCell.down
+        currentCell=columnTile.down
+        currentCellHorizontal=columnTile.down
+        while currentCell != columnTile:
+            currentCellHorizontal=currentCell.right
+            while currentCellHorizontal != currentCell:
+                currentCellHorizontal.up.down=currentCellHorizontal.down
+                currentCellHorizontal.down.up=currentCellHorizontal.up
+                currentCellHorizontal.listHeader.size-=1
+                currentCellHorizontal=currentCellHorizontal.right
+            currentCell=currentCell.down
         
     def uncoverColumn(self, c):
-        currentincidenceCell=c.up
-        currentincidenceCellHorizontal=c.up
-        while currentincidenceCell != c:
-            currentincidenceCellHorizontal=currentincidenceCell.left
-            while currentincidenceCellHorizontal != currentincidenceCell:
-                currentincidenceCellHorizontal.up.down=currentincidenceCellHorizontal
-                currentincidenceCellHorizontal.down.up=currentincidenceCellHorizontal
-                currentincidenceCellHorizontal.listHeader.size+=1
-                currentincidenceCellHorizontal=currentincidenceCellHorizontal.left
-            currentincidenceCell=currentincidenceCell.up 
+        currentCell=c.up
+        currentCellHorizontal=c.up
+        while currentCell != c:
+            currentCellHorizontal=currentCell.left
+            while currentCellHorizontal != currentCell:
+                currentCellHorizontal.up.down=currentCellHorizontal
+                currentCellHorizontal.down.up=currentCellHorizontal
+                currentCellHorizontal.listHeader.size+=1
+                currentCellHorizontal=currentCellHorizontal.left
+            currentCell=currentCell.up 
         c.left.right=c
         c.right.left=c
             
     def insertAllPlacements(self, pentomino):
         pentomino.normalize()
         versionList=pentominos.fixed_pentominos_of(pentomino)
-        coordinatesListAsStrings=[]
+        coordinatesAsStrings=[]
         for p in versionList:
             for i in range(8):
                 for k in range(8):
                     if p.legal():
                         for l in range(5):
-                            coordinatesListAsStrings.append(str(p.coos[l][0])+str(p.coos[l][1]))
-                        self.appendRow(p.name, coordinatesListAsStrings)
+                            coordinatesAsStrings.append(str(p.coos[l][0])+str(p.coos[l][1]))
+                        self.appendRow(p.name, coordinatesAsStrings)
                     p.translate_one(1)
-                    coordinatesListAsStrings=[]
+                    coordinatesAsStrings=[]
                 p.translate_by([0,-8])
                 p.translate_one(0)
             
@@ -201,6 +191,7 @@ class IncidenceMatrix(object):
         allPentos=pentominos.all_pentominos()
         for p in allPentos:
             self.insertAllPlacements(p)
+    
     
     def smallestColumnObject(self):
         currentColumn = self.h.right
@@ -212,6 +203,7 @@ class IncidenceMatrix(object):
             currentColumn = currentColumn.right
         return smallestColumn
     
+    #Global variable for valid solutions 
     solutions = []
     
     def calculatePentominoSolution(self,k,solution):
@@ -219,29 +211,27 @@ class IncidenceMatrix(object):
             self.solutions.append(solution)
             print(len(self.solutions))
             return
-        
         selectedColumn = self.smallestColumnObject()
         
         if selectedColumn.size <= 0:
             return
         
-        else:
-            currentIncidenceCell = selectedColumn.down
-            self.coverColumn(selectedColumn)
-            while currentIncidenceCell != selectedColumn:
-                walkingIncidenceCell = currentIncidenceCell.right
-                solution.append(walkingIncidenceCell)
-                while walkingIncidenceCell != currentIncidenceCell:
-                    self.coverColumn(walkingIncidenceCell.listHeader)
-                    walkingIncidenceCell = walkingIncidenceCell.right
-                self.calculatePentominoSolution(k+1,solution)
-                solution.pop(k)
-                walkingIncidenceCell=currentIncidenceCell.left
-                while walkingIncidenceCell!=currentIncidenceCell:
-                    self.uncoverColumn(walkingIncidenceCell.listHeader)
-                    walkingIncidenceCell=walkingIncidenceCell.left
-                currentIncidenceCell=currentIncidenceCell.down
-            self.uncoverColumn(selectedColumn)
+        currentCell = selectedColumn.down
+        self.coverColumn(selectedColumn)
+        while currentCell != selectedColumn:
+            walkingCell = currentCell.right
+            solution.append(walkingCell)
+            while walkingCell != currentCell:
+                self.coverColumn(walkingCell.listHeader)
+                walkingCell = walkingCell.right
+            self.calculatePentominoSolution(k+1,solution)
+            solution.pop(k)
+            walkingCell=currentCell.left
+            while walkingCell!=currentCell:
+                self.uncoverColumn(walkingCell.listHeader)
+                walkingCell=walkingCell.left
+            currentCell=currentCell.down
+        self.uncoverColumn(selectedColumn)
             
         return       
                     
