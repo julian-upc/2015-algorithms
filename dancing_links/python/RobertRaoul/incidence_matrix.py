@@ -1,4 +1,6 @@
+
 import pentominos
+
 
 def is_number(string):
     try:
@@ -61,6 +63,7 @@ class IncidenceMatrix(object):
             self.columnObjectOfName[n] = currentColumnObject
 
         self.rows = 0
+        print(names)
 
     def representation(self):
         currentColumnObject = self.h
@@ -98,7 +101,6 @@ class IncidenceMatrix(object):
         newColumn.up=newColumn.down=newColumn
         newColumn.left.right=newColumn
         newColumn.right.left=newColumn
-
 
 
     def appendRow(self, tileName, placement):
@@ -214,5 +216,49 @@ class IncidenceMatrix(object):
     def initializeIncidenceMatrix(self):
         for p in pentominos.all_fixed_pentominos():
             self.appendPentominoRows(p)
-                        
-            
+
+    def solve(self):
+        solution = []
+        self.algo(solution)
+        print(solution.size())
+        
+    def algo(self, solution):
+        print("hallo")
+        if(self.h.right == self.h):
+            for row in solution:
+                self.printRow(row)
+                return
+        column=self.chooseColumnObject()
+        self.coverColumn(column)
+        r = column.down
+        while r != column:
+            solution.append(r)
+            j = r.right
+            while j != r:
+                self.coverColumn(j.listHeader)
+            self.algo(solution)
+            solution.pop()
+            column = r.listHeader #ToDo check if line is really needed
+            j = r.left
+            while j != r:
+                self.uncoverColumn(j.listHeader)
+            self.uncoverColumn(column)
+            return
+                
+    def printRow(self, row):
+        string = ""
+        string.append(row.listHeader.name + " ")
+        current = row.right
+        while current != row:
+            string.append(current.listHeader.name + " ")
+        print(string)
+        
+    def chooseColumnObject(self):
+        size = self.h.right.size
+        column = self.h.right
+        current = self.h.right
+        while current != self.h:
+            if current.size < size:
+                size = current.size
+                #ToDo check if deep_copying is needed
+                column = current
