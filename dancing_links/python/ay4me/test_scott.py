@@ -35,6 +35,7 @@ class TestScottProblem(unittest.TestCase):
 		prob.completeMatrix()
 		str2 = prob.IncMatrix.representation()
 		self.assertFalse(str1 == str2)
+		print prob.solve()
 
 	def legal(self,coos):
 		if coos in [[3,3],[3,4],[4,3],[4,4]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
