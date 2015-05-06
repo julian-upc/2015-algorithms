@@ -10,11 +10,9 @@ class Pentomino(object):
         self.dim = len(coos[0])
         
     def normalize_coo(self, coo):
-        a = np.array(self.coos)
-        minimum = np.amin(a[:,coo])
-        a[:,coo] -= minimum
-        self.coos = a.tolist()
-         
+        minimum = min([c[coo] for c in self.coos])
+        for c in self.coos:
+            c[coo] -= minimum 
 
     def normalize(self):
         for i in range(self.dim):
@@ -22,42 +20,41 @@ class Pentomino(object):
         return self
 
     def flip(self, coo):
-        a = np.array(self.coos)
-        minimum = np.amin(a[coo])
-        a[:,coo] -= (a[:,coo]- minimum) * 2
-        self.coos = a.tolist()
+        minimum = min([c[coo] for c in self.coos])
+	for c in self.coos:
+            c[coo] -= (c[coo] - minimum) * 2
         self.normalize()
         return self    
     
     def translate_one(self, coo):
-        a = np.array(self.coos)
-        a[:,coo] += 1
-        self.coos = a.tolist()
+        for c in self.coos:
+            c[coo] += 1
         return self
 
     def translate_coo(self, coo, amount):
-        a = np.array(self.coos)
-        a[:,coo] += amount
-        self.coos = a.tolist()
+        for c in self.coos:
+            c[coo] += amount
         return self
 
     def translate_by(self, by_vector):
-        a = np.array(self.coos)
-        a += by_vector
-        self.coos = a.tolist()
+        for c in self.coos:
+            c += by_vector
         return self
 
     def turn90(self, coo1=0, coo2=1):
-        a = np.array(self.coos)
-        a[:,[coo1, coo2]] = a[:,[coo2, coo1]]
-        a[:,coo2] *= -1
-        self.coos = a.tolist()
+        for c in self.coos:
+            tmp = c[coo1]
+            c[coo1] = c[coo2]
+            c[coo2] = tmp*(-1)
         self.normalize()
         return self
 
     def max(self):
-        a = np.array(self.coos)
-        return [ np.amax(a[:,0]),np.amax(a[:,1]) ]
+        l = []
+        for coo in range(self.dim):
+            a = max([c[coo] for c in self.coos])
+            l.append(a)
+        return l
 
     def __hash__(self):
         h = 0 
