@@ -181,16 +181,16 @@ def fixed_pentominos_of(orig_p):
     pentoList.add(p)
     for i in range(3):
         p.turn90()
-        if not p.__eq__(orig_p):
-            pentoList.add(p)
+        if not p in pentoList:
+            pentoList.add(p.normalize())
     p.turn90()
     p.flip(1)
-    if not p.__eq__(orig_p):
-            pentoList.add(p)
+    if not p in pentoList:
+            pentoList.add(p.normalize())
     for i in range(3):
         p.turn90()
-        if not p.__eq__(orig_p):
-            pentoList.add(p)
+        if not p in pentoList:
+            pentoList.add(p.normalize())
             
     return pentoList
 
