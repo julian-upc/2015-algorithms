@@ -96,18 +96,41 @@ class IncidenceMatrix(object):
     def appendRow(self, tileName, placement):
         """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
         tileColHeader = self.columnObjectOfName[tileName]
-        rowCell = IncidenceCell(None, None, tileColHeader.up, tileColHeader, name)
+        rowCell = IncidenceCell(None, None, tileColHeader.up, tileColHeader, tileColHeader, tileColHeader.name+"["+str(self.indexOfPiecePlacement[tileName]) +"]")
+        tileColHeader.size += 1
+        self.indexOfPiecePlacement[tileName] += 1
         rowCell.left = rowCell.right = rowCell.up.down = rowCell.down.up = rowCell
         
         cell = rowCell
         for n in placement:
             header = self.columnObjectOfName[n]
-            newCell = IncidenceCell(cell, rowCell, header.up, header, header, n)
+            header.size += 1	    	
+            newCell = IncidenceCell(cell, rowCell, header.up, header, header, tileColHeader.name + n)
             cell.right = rowCell.left = header.up.down = header.up = newCell
             cell = newCell
 
     def coverColumn(self, c):
-        pass
+        c.right.left = c.left
+        c.left.right = c.right
+        cur = c.down
+	while cur is not c:
+            rowCell = cur.right
+            while rowCell is not cur:
+                rowCell.up.down = rowCell.down
+                rowCell.down.up = rowCell.up
+                rowCell.listHeader.size -= 1
+                rowCell = rowCell.right 
+            cur = cur.down
 
     def uncoverColumn(self, c):
-        pass
+        curr = c.up
+        while curr is not c:
+            columnCell = curr.left
+            while columnCell is not curr:
+                columnCell.down.up = columnCell
+                columnCell.up.down = columnCell
+                columnCell.listHeader.size += 1
+                columnCell = columnCell.left
+            curr = curr.up
+        c.right.left = c
+        c.left.right = c
