@@ -129,7 +129,10 @@ def fixed_pentominos_of(p):
     return fp
     
 def all_fixed_pentominos():
-    pass
+    plist = []
+    for p in all_pentominos():
+	plist += fixed_pentominos_of(p)
+    return TileSet(plist)
   
 class TileSet(object):
     def __init__(self, plist=[]):
@@ -141,7 +144,7 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        self.set.add(p.__hash__())
+        self.set.add(copy.deepcopy(p))	#not desirable
         return self
 
     def size(self):
