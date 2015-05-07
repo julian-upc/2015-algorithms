@@ -48,8 +48,23 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
 
         self.assertEqual([[['h(0)', 'root', 'F', 'B', 'root', 'root']], [['h(1)', 'B', 'root', 'C', 'B[0]', 'B[0]'], ['c', 'B[0]', 'BF', 'BC', 'B', 'B']], [['h(2)', 'C', 'B', 'E', 'BC', 'C[0]'], ['c', 'C[0]', 'CF', 'CE', 'C', 'BC'], ['c', 'BC', 'B[0]', 'BF', 'C[0]', 'C']], [['h(1)', 'E', 'C', 'F', 'CE', 'CE'], ['c', 'CE', 'C[0]', 'CF', 'E', 'E']], [['h(2)', 'F', 'E', 'root', 'BF', 'CF'], ['c', 'CF', 'CE', 'C[0]', 'F', 'BF'], ['c', 'BF', 'BC', 'B[0]', 'CF', 'F']]], I.representation())
 
+    def test_appendRos(self):
+        I = examples.scott_example()
+        I.initializeIncidenceMatrix()
+        total=0
+        column = I.h.right
+        while column != I.h:
+            print(column.size)
+            total += column.size
+            column = column.right
+        total = total/6
+        print(total, I.rows)
+        self.assertEqual(total,I.rows,"Sizes not equal")
+
     def test_solve(self):
         I = examples.scott_example()
+        print(I.representation())
+        I.initializeIncidenceMatrix()
         I.solve()
 
 

@@ -115,9 +115,9 @@ class Pentomino(object):
                 return False
             if c[1]>7: 
                 return False
-            for p in [[3,3],[3,4],[4,3],[4,4]]:
-                if p in self.coos:
-                    return False
+        for p in [[3,3],[3,4],[4,3],[4,4]]:
+            if p in self.coos:
+                return False
          
         return True        
                 
@@ -191,7 +191,7 @@ def fixed_pentominos_of(orig_p):
         p.turn90()
         if not p in pentoList:
             pentoList.add(p.normalize())
-            
+    #print(p.name + " " + str(len(pentoList.set)))
     return pentoList
 
 def all_fixed_pentominos():

@@ -47,6 +47,9 @@ class ColumnObject(IncidenceCell):
 
 
 class IncidenceMatrix(object):
+    
+    counter = 0
+    
     def __init__(self, names):
         self.h = ColumnObject(None, None, None, None, "root")
         self.h.left = self.h.right = self.h.up = self.h.down = self.h
@@ -120,6 +123,7 @@ class IncidenceMatrix(object):
         tileNameCell.up.down=tileNameCell
         columnTile.up=tileNameCell
         listOfPlacementCells = []
+        self.rows+=1
         for position in placement:
             columnPlacement=self.columnObjectOfName[position]
             listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
@@ -154,7 +158,8 @@ class IncidenceMatrix(object):
     #Hallo Welt
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        
+        if c != c.left.right:
+            print("falsches covern")
         #c dances horizontally out of the list
         c.left.right=c.right
         c.right.left=c.left
@@ -173,6 +178,7 @@ class IncidenceMatrix(object):
             
             #travel down column c
             current_d_cell=current_d_cell.down
+            self.rows-=1
 
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
@@ -180,6 +186,7 @@ class IncidenceMatrix(object):
         #we just undo the covering of c, so we start by going UP!
         #initialize a field current_c_cell to travel up the column c
         current_u_cell=c.up
+        current_u_cell_horizontal=c.up
         #in every row of c let all cells but the cell in column c dance vertically out of the list
         while current_u_cell != c:
             current_l_cell=current_u_cell.left
@@ -193,13 +200,13 @@ class IncidenceMatrix(object):
             
             #travel up column c
             current_u_cell=current_u_cell.up
-            
+            self.rows+=1
         #finally c dances horizontally back in the header list    
         c.left.right=c
         c.right.left=c
         
     def appendPentominoRows(self, pentomino):
-        
+        pentomino.normalize()
         coords = []
         for p in pentominos.fixed_pentominos_of(pentomino):   
             for i in range(8):
@@ -209,48 +216,61 @@ class IncidenceMatrix(object):
                             coords.append(str(p.coos[k][0])+str(p.coos[k][1])) 
                         self.appendRow(p.name, coords)
                     p.translate_one(0)
+                    coords=[]
                 p.translate_by([-8,0])
                 p.translate_one(1)
                 
                 
     def initializeIncidenceMatrix(self):
-        for p in pentominos.all_fixed_pentominos():
+        for p in pentominos.all_pentominos():
             self.appendPentominoRows(p)
+            print(str(self.rows))
 
     def solve(self):
         solution = []
         self.algo(solution)
-        print(solution.size())
+        print(len(solution))
         
     def algo(self, solution):
-        print("hallo")
         if(self.h.right == self.h):
+            self.counter = self.counter+1
+            print(self.counter)
             for row in solution:
                 self.printRow(row)
                 return
-        column=self.chooseColumnObject()
-        self.coverColumn(column)
-        r = column.down
-        while r != column:
-            solution.append(r)
-            j = r.right
-            while j != r:
-                self.coverColumn(j.listHeader)
-            self.algo(solution)
-            solution.pop()
-            column = r.listHeader #ToDo check if line is really needed
-            j = r.left
-            while j != r:
-                self.uncoverColumn(j.listHeader)
+        #print("solution: " + str(len(solution)))
+        
+        column = self.chooseColumnObject()
+        if column.name == "root":
+            return
+        else:
+            self.coverColumn(column)
+            r = column.down
+            while r != column:
+                solution.append(r)
+                j = r.right
+                while j != r:
+                    self.coverColumn(j.listHeader)
+                    j = j.right
+                self.algo(solution)
+                solution.pop(len(solution)-1)
+                #column = r.listHeader #ToDo check if line is really needed
+                j = r.left
+                while j != r:
+                    self.uncoverColumn(j.listHeader)
+                    j = j.left
+                r = r.down
             self.uncoverColumn(column)
+            
             return
                 
     def printRow(self, row):
         string = ""
-        string.append(row.listHeader.name + " ")
+        string = string + row.listHeader.name + " "
         current = row.right
         while current != row:
-            string.append(current.listHeader.name + " ")
+            string = string + current.listHeader.name + " "
+            current = current.right
         print(string)
         
     def chooseColumnObject(self):
@@ -262,3 +282,7 @@ class IncidenceMatrix(object):
                 size = current.size
                 #ToDo check if deep_copying is needed
                 column = current
+            current = current.right
+        if size < 1:
+            return self.h
+        return column
