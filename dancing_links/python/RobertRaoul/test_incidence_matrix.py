@@ -60,6 +60,7 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
         total = total/6
         print(total, I.rows)
         self.assertEqual(total,I.rows,"Sizes not equal")
+        
 
     def test_solve(self):
         I = examples.scott_example()

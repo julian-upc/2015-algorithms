@@ -174,6 +174,7 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
+
 def fixed_pentominos_of(orig_p):
     p = copy.deepcopy(orig_p)
     pentoList = TileSet()

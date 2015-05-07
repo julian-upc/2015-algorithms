@@ -221,6 +221,7 @@ class IncidenceMatrix(object):
                 p.translate_one(1)
                 
                 
+                
     def initializeIncidenceMatrix(self):
         for p in pentominos.all_pentominos():
             self.appendPentominoRows(p)

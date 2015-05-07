@@ -51,6 +51,7 @@ class TestPentominoMethods(unittest.TestCase):
             s.add(p)
             p.turn90()
         self.assertEqual(4, s.size())
+        
 
     def test_max(self):
         self.assertEqual([0,4], pentominos.I().max())
