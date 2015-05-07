@@ -15,7 +15,7 @@ class TestScottProblem(unittest.TestCase):
 			self.assertTrue(n in names)
 		for n in names:
 			self.assertTrue(n in ["F", "I", "L", "P", "N", "T", "U", "V", "W", "X", "Y", "Z"])
-		prob = scott.Problem(TSet,8,self.legal,1)
+		prob = scott.Problem(TSet,8,self.legal,1,0)
 		# IM = copy.deepcopy(prob.IncMatrix)
 		# IM.appendRow("I", ["00", "01", "02", "03", "04"])
 		# IM.appendRow("I", ["01", "02", "03", "04", "05"])
@@ -28,17 +28,62 @@ class TestScottProblem(unittest.TestCase):
 		# #print IM.representation()
 
 	def testMatrix(self):
-		TSet = pentominos.TileSet([pentominos.F(),pentominos.I(),pentominos.L(),pentominos.P(),pentominos.N(),pentominos.T(),pentominos.U(),pentominos.V(),pentominos.W(),pentominos.X(),pentominos.Y(),pentominos.Z()])
+		TSet = pentominos.TileSet([pentominos.F(),pentominos.I(),pentominos.L(),pentominos.P(),pentominos.N(),pentominos.T(),pentominos.U(),pentominos.V(),pentominos.W(),pentominos.Y(),pentominos.Z()])
 		names = [p.name for p in TSet]
-		prob = scott.Problem(TSet,8,self.legal,1)
-		str1 = prob.IncMatrix.representation()
-		prob.completeMatrix()
-		str2 = prob.IncMatrix.representation()
+		probX12 = scott.Problem(TSet,8,self.legal1,1,0)
+		probX13 = scott.Problem(TSet,8,self.legal2,1,0)
+		probX22 = scott.Problem(TSet,8,self.legal3,1,1)
+		str1 = probX12.IncMatrix.representation()
+		probX12.completeMatrix()
+		str2 = probX12.IncMatrix.representation()
 		self.assertFalse(str1 == str2)
-		print prob.solve()
+
+		str1 = probX13.IncMatrix.representation()
+		probX13.completeMatrix()
+		str2 = probX13.IncMatrix.representation()
+		self.assertFalse(str1 == str2)
+
+		str1 = probX22.IncMatrix.representation()
+		probX22.completeMatrix()
+		str2 = probX22.IncMatrix.representation()
+		self.assertFalse(str1 == str2)
+
+		probX12.solve()
+		sol12 = probX12.solutionList
+		self.assertEqual(len(sol12),19)
+		probX13.solve()
+		sol13 = probX13.solutionList
+		self.assertEqual(len(sol13),24)
+		probX22.solve()
+		sol22 = probX22.solutionList
+		self.assertEqual(len(sol22),33)
+		if sol12 != {}:
+			sol12 += "(X,[02,11,12,13,22])" #12
+		if sol13 != {}:
+			sol13 += "(X,[03,12,13,14,23])" #13
+		if sol22 != {}:
+			sol22 += "(X,[12,21,22,23,32])" #22
+		print sol12
+		print sol13
+		print sol22
 
 	def legal(self,coos):
 		if coos in [[3,3],[3,4],[4,3],[4,4]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
+			return False
+		return True
+
+	def legal1(self,coos):
+		if coos in [[3,3],[3,4],[4,3],[4,4],[0,2],[1,1],[1,2],[1,3],[2,2]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
+			return False
+		return True
+
+	def legal2(self,coos):
+		if coos in [[3,3],[3,4],[4,3],[4,4],[0,3],[1,2],[1,3],[1,4],[2,3]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
+			return False
+		return True
+
+	def legal3(self,coos):
+		if coos in [[3,3],[3,4],[4,3],[4,4],[1,2],[2,1],[2,2],[2,3],[3,2]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
 			return False
 		return True
 
