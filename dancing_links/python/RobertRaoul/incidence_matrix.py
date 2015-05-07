@@ -236,10 +236,10 @@ class IncidenceMatrix(object):
         if(self.h.right == self.h):
             self.counter = self.counter+1
             print(self.counter)
+            print("solution: " + str(len(solution)))
             for row in solution:
                 self.printRow(row)
-                return
-        #print("solution: " + str(len(solution)))
+            return
         
         column = self.chooseColumnObject()
         if column.name == "root":
