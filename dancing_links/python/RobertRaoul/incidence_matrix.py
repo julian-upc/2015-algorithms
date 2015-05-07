@@ -236,10 +236,13 @@ class IncidenceMatrix(object):
         if(self.h.right == self.h):
             self.counter = self.counter+1
             print(self.counter)
-            for row in solution:
-                self.printRow(row)
-                return
-        #print("solution: " + str(len(solution)))
+            if self.isLegalSolution(solution):
+                print("check")
+            #print("solution: " + str(len(solution)))
+            #for row in solution:
+               # self.printRow(row)
+            return
+        
         
         column = self.chooseColumnObject()
         if column.name == "root":
@@ -287,3 +290,18 @@ class IncidenceMatrix(object):
         if size < 1:
             return self.h
         return column
+    
+    def isLegalSolution(self, solution):
+        all = set()
+        for i in solution:
+            all.add(i.listHeader.name)
+            current = i.right
+            while current != i:
+                all.add(current.listHeader.name)
+                current = current.right
+                
+        if len(all) == 72:
+            return True
+        else: 
+            return False 
+            
