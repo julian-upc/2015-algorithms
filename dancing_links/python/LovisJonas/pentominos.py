@@ -203,7 +203,7 @@ def all_positions():
             "60","61","62","63","64","65","66","67",
             "70","71","72","73","74","75","76","77",]
 
-    
+
 def all_fixed_pentominos():
     s = TileSet()
     for i in all_pentominos() :

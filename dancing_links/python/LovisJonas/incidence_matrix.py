@@ -1,4 +1,5 @@
 import pentominos
+import sudoku
 import copy
 
 from copy import deepcopy
@@ -43,14 +44,6 @@ class ColumnObject(IncidenceCell):
             currentCell = currentCell.down
         
         return rep
-    
-    def sizze(self):
-            verticalColumnObject=self.down
-            counter=1
-            while verticalColumnObject!=self:
-                counter+=1
-                verticalColumnObject.down
-            return counter
 
 class IncidenceMatrix(object):
     def __init__(self, names):
@@ -192,7 +185,40 @@ class IncidenceMatrix(object):
         for p in allPentos:
             self.insertAllPlacements(p)
     
+    def initializeSudokuMatrix(self, sudoku):
+        self.sudokuListHeaders(sudoku)
+        pass
     
+    def sudokuListHeaders(self,sudoku):
+        names=[]
+        for row in range(9) :
+            for column in range(9) :
+                for square in range(9) :
+                    for value in range(1,10):
+                        if [row,column,value] not in sudoku:
+                            names.append(str(row)+str(column))
+                            names.append("r"+str(row)+str(value))
+                            names.append("c"+str(column)+str(value))
+                            names.append("sq"+str(sudoku.give_square(row,column))+str(value))
+        return names
+                            
+    def insertSudokuRows(self,givenSudoku):
+        for row in range(9) :
+            for column in range(9) :
+                for square in range(9) :
+                    for value in range(1,10):
+                        if [row,column,value] not in givenSudoku:
+                            self.appendRow(str(row)+str(column),["r"+str(row)+str(value),"c"+str(column)+str(value),"sq"+str(sudoku.cal_square(row,column))+str(value)])
+                        
+        
+    
+    
+    
+     
+        
+        
+        
+        
     def smallestColumnObject(self):
         currentColumn = self.h.right
         currentSize = 10000
