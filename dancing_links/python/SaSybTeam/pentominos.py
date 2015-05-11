@@ -241,14 +241,14 @@ class TileSet(object):
         return iter(self.set)
  
     def add(self, p):
-    """ adds the given pentomino to self
-    """
+        """ adds the given pentomino to self 
+        """
         if p not in self.set:
             self.set.add(copy.deepcopy(p))
     
     def add_TileSet(self, tileSet):
-    """ adds the given tileSet to self
-    """
+        """ adds the given tileSet to self
+        """
         for p in tileSet:
             if p not in self.set:
                 self.add(p)
@@ -258,8 +258,8 @@ class TileSet(object):
         return len(self.set)
                      
     def representation(self):
-    """ gives back a representation for tileSet
-    """
+        """ gives back a representation for tileSet
+        """
         rep = "["
         i = 0
         for p in self.set:

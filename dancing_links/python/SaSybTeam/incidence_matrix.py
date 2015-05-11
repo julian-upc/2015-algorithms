@@ -102,11 +102,54 @@ class IncidenceMatrix(object):
         circular linked list of its corresponding column.
         """
         pass
-
+    
+    # The operation of covering column c removes c from the header list and 
+    # removes all rows in c's own list from the other column lists they are in
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
-
+        # nehme den Header der Spalte c        
+        curr = c.listHeader
+        # setze fuer alle Objekte in c den Linken und rechten Zeiger um
+        c.right.left = c.left
+        c.left.right = c.right
+        # merke dir das erste Element unter dem Header
+        d = curr.down
+        # iteriere ueber die Spalte von oben nach unten
+        while d is not curr:
+            # merke dir das naechste Element in der Zeile
+            r = d.right
+            # iteriere ueber die Zeile von links nach rechts
+            while r is not d:
+                # setze fuer alle Elemente in dieser Zeile die Zeiger fuer up & down um
+                r.down.up = r.up
+                r.up.down = r.down
+                # gehe eins weiter die Zeile entlang
+                d.right = r.right
+            # gehe ein Element weiter die Spalte entlang
+            d = d.down
+            # verkuerze die Laenge der Spalte um 1, da eine Zeile abgearbeitet wurde
+            c.size = c.size-1 # koennte falsch sein
+        return self
+                      
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        curr = c.listHeader
+        i = curr.up
+        # iteriere ueber die Spalte von unten nach oben
+        while i is not curr:
+            j = i.left
+            # iteriere ueber die Zeile links nach rechts
+            while j is not i:
+                c.size = c.size+1 # koennte falsch sein
+                # 
+                j.down.up = j
+                j.up.down = j
+                # iteriere in der Zeile eins weiter
+                j = j.left
+            # dies mit der oberen Schleife tauschen!??!? Nochmal in Ruhe durchdenken    
+            curr.right.left = curr
+            curr.left.right = curr
+            curr = curr.up
+        return self
+        
+            
