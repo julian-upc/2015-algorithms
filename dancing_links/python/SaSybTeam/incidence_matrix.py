@@ -89,8 +89,15 @@ class IncidenceMatrix(object):
         return rowRep
 
     def insertColumnObject(self, left, right, name):
-        """ insert a column header object into the circular linked list that contains the "root" node """
-        pass
+        """ insert a column header object into the circular linked list 
+            that contains the "root" node """
+        newColumn = ColumnObject(left,right,None,None,name)
+        newColumn.listHeader = newColumn
+        newColumn.up = newColumn
+        newColumn.down = newColumn
+        newColumn.left.right = newColumn
+        newColumn.right.left = newColumn
+        return self
 
     def appendRow(self, tileName, placement):
         """ 
@@ -101,12 +108,49 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        pass
+        #try to insert a row on given columnOfName[tileName], 
+        # this could fail, if there is no such ColumnObject 
+        try:
+        # Add a cell (corresponding to pentomino) at the end of the 
+        # matching pentomino type Column
+            currentColumn = self.columnObjectOfName[tileName]
+            # The name is e.g. I[1] for the 2nd Pentomino of type I.
+            pentoCellName = tileName + '[' + str(currentColumn.size) + ']'
+            newPentoCell = IncidenceCell(None,None,currentColumn.up,
+                                currentColumn, currentColumn, pentoCellName)
+            # rearrange the links of the circularly list and upgrade the size            
+            currentColumn.up.down = newPentoCell            
+            currentColumn.up = newPentoCell
+            self.columnObjectOfName[tileName].size += 1
+        # add 5 cells (corresponding to placement of pentomino) at the 
+        # end of the matching Coordinate Columns
+            placement.sort()
+            leftNeighbour = newPentoCell
+            for co in placement:
+                currentColumn = self.columnObjectOfName[co]
+                # the name us e.g. I00, if this I pentomino covers the place 00
+                cooCellName = tileName + currentColumn.name 
+                newCooCell = IncidenceCell(leftNeighbour,None,currentColumn.up,
+                                currentColumn,currentColumn,cooCellName)
+                # rearrange the links of the current circular lists and 
+                # upgrade the size                 
+                leftNeighbour.right = newCooCell
+                currentColumn.up.down = newCooCell            
+                currentColumn.up = newCooCell
+                leftNeighbour = newCooCell
+                currentColumn.size += 1
+            # links the beginning of this row (the pentominoCell) with the end
+            # of this row (last placementCell) --> circular list
+            newPentoCell.left = leftNeighbour
+            leftNeighbour.right = newPentoCell
+            return self
+        except:
+            print('There accured a problem appending a row in column'+tileName)
     
     # The operation of covering column c removes c from the header list and 
     # removes all rows in c's own list from the other column lists they are in
     def coverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper. """
+        """ implement and document the algorithm in Knuth's paper.""" 
         # nehme den Header der Spalte c        
         curr = c.listHeader
         # setze fuer alle Objekte in c den Linken und rechten Zeiger um
@@ -132,7 +176,7 @@ class IncidenceMatrix(object):
         return self
                       
     def uncoverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper. """
+        """ implement and document the algorithm in Knuth's paper.""" 
         curr = c.listHeader
         i = curr.up
         # iteriere ueber die Spalte von unten nach oben
