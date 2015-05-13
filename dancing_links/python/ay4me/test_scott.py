@@ -30,42 +30,43 @@ class TestScottProblem(unittest.TestCase):
 	def testMatrix(self):
 		TSet = pentominos.TileSet([pentominos.F(),pentominos.I(),pentominos.L(),pentominos.P(),pentominos.N(),pentominos.T(),pentominos.U(),pentominos.V(),pentominos.W(),pentominos.Y(),pentominos.Z()])
 		names = [p.name for p in TSet]
-		#probX12 = scott.Problem(TSet,8,self.legal1,1,0)
+		probX12 = scott.Problem(TSet,8,self.legal1,1,0)
 		probX13 = scott.Problem(TSet,8,self.legal2,1,0)
-		#probX22 = scott.Problem(TSet,8,self.legal3,1,1)
-		# str1 = probX12.IncMatrix.representation()
-		# probX12.completeMatrix()
-		# str2 = probX12.IncMatrix.representation()
-		# self.assertFalse(str1 == str2)
+		probX22 = scott.Problem(TSet,8,self.legal3,1,1)
+		str1 = probX12.IncMatrix.representation()
+		probX12.completeMatrix()
+		str2 = probX12.IncMatrix.representation()
+		self.assertFalse(str1 == str2)
 
 		str1 = probX13.IncMatrix.representation()
 		probX13.completeMatrix()
 		str2 = probX13.IncMatrix.representation()
 		self.assertFalse(str1 == str2)
 
-		# str1 = probX22.IncMatrix.representation()
-		# probX22.completeMatrix()
-		# str2 = probX22.IncMatrix.representation()
-		# self.assertFalse(str1 == str2)
+		str1 = probX22.IncMatrix.representation()
+		probX22.completeMatrix()
+		str2 = probX22.IncMatrix.representation()
+		self.assertFalse(str1 == str2)
 
-		# probX12.solve()
-		# sol12 = probX12.solutionList
-		# self.assertEqual(len(sol12),19)
-		probX13.solve()
-		sol13 = probX13.solutionList
-		self.assertEqual(len(sol13),24)
+		probX12.solve()
+		sol12 = probX12.solutionList
+		self.assertEqual(len(sol12),19)
 		#print sol12
-		# probX22.solve()
-		# sol22 = probX22.solutionList
-		# self.assertEqual(len(sol22),33)
 		# if sol12 != {}:
 		# 	sol12 += "(X,[02,11,12,13,22])" #12
-		print sol13
-		if sol13 != {}:
-			sol13 += "(X,[03,12,13,14,23])" #13
+		
+		probX13.solve()
+		sol13 = probX13.solutionList
+		self.assertEqual(len(sol13),20)
+		#print sol13
+		# if sol13 != {}:
+		# 	sol13 += "(X,[03,12,13,14,23])" #13
+
+		probX22.solve()
+		sol22 = probX22.solutionList
+		self.assertEqual(len(sol22),26)
 		# if sol22 != {}:
 		# 	sol22 += "(X,[12,21,22,23,32])" #22
-		#print sol22
 
 	def legal(self,coos):
 		if coos in [[3,3],[3,4],[4,3],[4,4]] or coos[0]<0 or coos[0]>7 or coos[1]<0 or coos[1]>7:
