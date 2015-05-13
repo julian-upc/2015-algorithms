@@ -26,6 +26,7 @@ class Problem(object):
 		self.pFlip = pFlip
 		self.IncMatrix = self.createMatrix()
 		self.solutionList = []
+		self.searchNodes = 0
 		#self.usgNr = usgNr
 		#print "created new problem"
 
@@ -111,24 +112,25 @@ class Problem(object):
 		# 	while currentColumn is not currentRow:
 		# 		self.IncMatrix.uncoverColumn(currentColumn.listHeader)
 		# 		currentColumn = currentColumn.left
-		sol = self.search(0,O)
+		self.search(0,O)
 		if self.solutionList != []:
-			pass
-			#print "solutions found:" + str(len(self.solutionList))
+			print "solutions found:" + str(self.solutionList)
+			print "number of searchNodes:" + str(self.searchNodes)
 		else:
 			print "no solution"
-		return sol
+		# return sol
 
-	def has(self,value,currentRow):
-		isin = False
-		row = currentRow.right
-		while row is not currentRow:
-			if row.listHeader.name == str(value):
-				isin = True
-			row = row.right
-		return isin
+	# def has(self,value,currentRow):
+	# 	isin = False
+	# 	row = currentRow.right
+	# 	while row is not currentRow:
+	# 		if row.listHeader.name == str(value):
+	# 			isin = True
+	# 		row = row.right
+	# 	return isin
 
 	def search(self,k,O):
+		self.searchNodes += 1
 		if self.IncMatrix.h.right is self.IncMatrix.h:
 			#return solution as string
 			solution = ""
@@ -164,22 +166,22 @@ class Problem(object):
 				while currentColumn is not currentRow:
 					self.IncMatrix.coverColumn(currentColumn.listHeader)
 					currentColumn = currentColumn.right
-				ans = self.search(k+1,O)
+				self.search(k+1,O)
 				# if ans != {}:
 				# 	return ans
 				currentRow = O[k]
-				solutionc = ""
-				for ic in range(k+1):
-					currentRowc = O[ic]
-					solutionc += "(" + currentRowc.listHeader.name + ","
-					currentColumnc = currentRowc.right
-					while currentColumnc is not currentRowc:
-						solutionc += "[" + currentColumnc.listHeader.name + "],"
-						currentColumnc = currentColumnc.right
-					solutionc += ")"
+				# solutionc = ""
+				# for ic in range(k+1):
+				# 	currentRowc = O[ic]
+				# 	solutionc += "(" + currentRowc.listHeader.name + ","
+				# 	currentColumnc = currentRowc.right
+				# 	while currentColumnc is not currentRowc:
+				# 		solutionc += "[" + currentColumnc.listHeader.name + "],"
+				# 		currentColumnc = currentColumnc.right
+				# 	solutionc += ")"
 				#print "placement: " + solutionc + "did not work"
-				c = currentRow.listHeader #necessary?
-				currentColumn = currentRow.left #necessary?
+				c = currentRow.listHeader
+				currentColumn = currentRow.left
 				while currentColumn is not currentRow:
 					self.IncMatrix.uncoverColumn(currentColumn.listHeader)
 					currentColumn = currentColumn.left
@@ -197,10 +199,10 @@ class Problem(object):
 	# def restoreFlippedP(self):
 	# 	pass
 
-	def is_number(self,string):
-		try:
-			float(string)
-			return True
-		except ValueError:
-			pass
-		return False
+	# def is_number(self,string):
+	# 	try:
+	# 		float(string)
+	# 		return True
+	# 	except ValueError:
+	# 		pass
+	# 	return False
