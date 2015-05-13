@@ -113,7 +113,8 @@ class Problem(object):
 		# 		currentColumn = currentColumn.left
 		sol = self.search(0,O)
 		if self.solutionList != []:
-			print "solutions found:" + str(len(self.solutionList))
+			pass
+			#print "solutions found:" + str(len(self.solutionList))
 		else:
 			print "no solution"
 		return sol
@@ -142,10 +143,10 @@ class Problem(object):
 			self.solutionList.append(solution)
 			return solution
 		else:
-			print "we did not find a solution yet"
+			#print "we did not find a solution yet"
 			c = self.IncMatrix.h
-			print c.name
-			print c.right.name
+			#print c.name
+			#print c.right.name
 			s = sys.maxint
 			j = self.IncMatrix.h.right
 			#while not self.is_number(j.name):
@@ -155,7 +156,7 @@ class Problem(object):
 					s = j.size
 				j = j.right
 			self.IncMatrix.coverColumn(c)
-			print "covering column "+c.name
+			#print "covering column "+c.name
 			currentRow = c.down #r
 			while currentRow is not c:
 				O[k] = currentRow
@@ -176,7 +177,7 @@ class Problem(object):
 						solutionc += "[" + currentColumnc.listHeader.name + "],"
 						currentColumnc = currentColumnc.right
 					solutionc += ")"
-				print "placement: " + solutionc + "did not work"
+				#print "placement: " + solutionc + "did not work"
 				c = currentRow.listHeader #necessary?
 				currentColumn = currentRow.left #necessary?
 				while currentColumn is not currentRow:
