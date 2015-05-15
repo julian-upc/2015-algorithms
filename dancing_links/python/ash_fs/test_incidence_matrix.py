@@ -3,7 +3,6 @@ import incidence_matrix
 import pentominos
 import examples
 import copy
-
 class TestIncidenceMatrixMethods(unittest.TestCase):
 
     def setUp(self):
@@ -35,7 +34,7 @@ class TestIncidenceMatrixMethods(unittest.TestCase):
     def test_cover_running_example(self):
         I = examples.running_example()
         origRep = I.representation()
-        I.coverColumn(I.columnObjectOfName["A"])
+        I.coverColumn(I.columnObjectOfName["A"]) 
         self.assertEqual([[['h(0)', 'root', 'G', 'B', 'root', 'root']], [['h(2)', 'B', 'root', 'C', 'B[1]', 'B[0]'], ['c', 'B[0]', 'BF', 'BC', 'B', 'B[1]'], ['c', 'B[1]', 'BG', 'BG', 'B[0]', 'B']], [['h(2)', 'C', 'B', 'D', 'BC', 'C[0]'], ['c', 'C[0]', 'CF', 'CE', 'C', 'BC'], ['c', 'BC', 'B[0]', 'BF', 'C[0]', 'C']], [['h(1)', 'D', 'C', 'E', 'D[0]', 'D[0]'], ['c', 'D[0]', 'DG', 'DE', 'D', 'D']], [['h(2)', 'E', 'D', 'F', 'DE', 'CE'], ['c', 'CE', 'C[0]', 'CF', 'E', 'DE'], ['c', 'DE', 'D[0]', 'DG', 'CE', 'E']], [['h(2)', 'F', 'E', 'G', 'BF', 'CF'], ['c', 'CF', 'CE', 'C[0]', 'F', 'BF'], ['c', 'BF', 'BC', 'B[0]', 'CF', 'F']], [['h(2)', 'G', 'F', 'root', 'DG', 'BG'], ['c', 'BG', 'B[1]', 'B[1]', 'G', 'DG'], ['c', 'DG', 'DE', 'D[0]', 'BG', 'G']]], I.representation())
         
         I.uncoverColumn(I.columnObjectOfName["A"])
