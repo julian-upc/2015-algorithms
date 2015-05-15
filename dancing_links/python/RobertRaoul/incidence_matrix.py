@@ -236,20 +236,12 @@ class IncidenceMatrix(object):
         if(self.h.right == self.h):
             self.counter = self.counter+1
             print(self.counter)
-<<<<<<< HEAD
-            print("solution: " + str(len(solution)))
-            for row in solution:
-                self.printRow(row)
-            return
-=======
             if self.isLegalSolution(solution):
                 print("check")
             #print("solution: " + str(len(solution)))
             #for row in solution:
                # self.printRow(row)
             return
-        
->>>>>>> upstream/master
         
         column = self.chooseColumnObject()
         if column.name == "root":
