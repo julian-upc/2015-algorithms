@@ -243,7 +243,6 @@ class IncidenceMatrix(object):
                # self.printRow(row)
             return
         
-        
         column = self.chooseColumnObject()
         if column.name == "root":
             return
