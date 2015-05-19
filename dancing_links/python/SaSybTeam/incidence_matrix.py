@@ -151,49 +151,57 @@ class IncidenceMatrix(object):
     # removes all rows in c's own list from the other column lists they are in
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper.""" 
-        # nehme den Header der Spalte c        
-        curr = c.listHeader
+        # nehme den Header der Spalte c. Note to self: funktioniert nicht!      
+        # curr = c.listHeader
+        # nehme c als aktuelles Objekt!
         # setze fuer alle Objekte in c den Linken und rechten Zeiger um
         c.right.left = c.left
         c.left.right = c.right
         # merke dir das erste Element unter dem Header
-        d = curr.down
+        d = c.down
         # iteriere ueber die Spalte von oben nach unten
-        while d is not curr:
+        while d is not c:
+            #print('in Schleife 1 cover')
             # merke dir das naechste Element in der Zeile
             r = d.right
             # iteriere ueber die Zeile von links nach rechts
             while r is not d:
+                #print('in Schleife 2 cover')
                 # setze fuer alle Elemente in dieser Zeile die Zeiger fuer up & down um
                 r.down.up = r.up
                 r.up.down = r.down
                 # gehe eins weiter die Zeile entlang
-                d.right = r.right
+                r = r.right
+                # verkuerze die Laenge der Spalte um 1, da eine Zeile abgearbeitet wurde
+                r.listHeader.size -= 1 # koennte falsch sein
             # gehe ein Element weiter die Spalte entlang
             d = d.down
-            # verkuerze die Laenge der Spalte um 1, da eine Zeile abgearbeitet wurde
-            c.size = c.size-1 # koennte falsch sein
+            # verkuerze die Laenge der Zeilen um 1, da eine Spalte entfernt wurde
+            #self.rows = self.rows-1
         return self
                       
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper.""" 
-        curr = c.listHeader
-        i = curr.up
+        # nehme c und nicht c.listHeader!
+        # curr = c.listHeader
+        i = c.up
         # iteriere ueber die Spalte von unten nach oben
-        while i is not curr:
+        while i is not c:
             j = i.left
             # iteriere ueber die Zeile links nach rechts
             while j is not i:
-                c.size = c.size+1 # koennte falsch sein
-                # 
                 j.down.up = j
                 j.up.down = j
                 # iteriere in der Zeile eins weiter
                 j = j.left
-            # dies mit der oberen Schleife tauschen!??!? Nochmal in Ruhe durchdenken    
-            curr.right.left = curr
-            curr.left.right = curr
-            curr = curr.up
+                # setze die Laenge neu
+                j.listHeader.size += 1 # koennte falsch sein
+            # gehe eins weiter
+            c = c.up
+            # erhoehe die Laenge der Zeilen um 1, da eine Spalte hinzugefuegt
+           # self.rows = self.rows+1
+        c.right.left = c
+        c.left.right = c
         return self
         
             
