@@ -26,8 +26,15 @@ class IncidenceCell(object):
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
+        # size gives the number of Cells in total in a Column        
         self.size = 0
-
+        # masterSize gives the number of leading Cells in a Column
+        self.masterSize = 0        
+        # this is kind of confusing, because in our problem, there should be no 
+        # difference between size and masterSize
+        # this is only needed, if there is a column that is for a pentomnio AND 
+        # for a placement, which makes (at least in my head) no sence
+        
     def representation(self):
         hrep = ["h(" + str(self.size) + ")", self.name]
         for c in [self.left, self.right, self.up, self.down]:
@@ -57,7 +64,7 @@ class IncidenceMatrix(object):
             self.insertColumnObject(currentColumnObject, self.h, n)
             currentColumnObject = currentColumnObject.right
             self.columnObjectOfName[n] = currentColumnObject
-
+            
         self.rows = 0
 
     def representation(self):
@@ -92,7 +99,6 @@ class IncidenceMatrix(object):
         """ insert a column header object into the circular linked list 
             that contains the "root" node """
         newColumn = ColumnObject(left,right,None,None,name)
-        newColumn.listHeader = newColumn
         newColumn.up = newColumn
         newColumn.down = newColumn
         newColumn.left.right = newColumn
@@ -108,49 +114,103 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        #try to insert a row on given columnOfName[tileName], 
+        # try to append a row to the Incidence_Matirx,
+        # starting with a new IncidenceCell at the end of a given Column. 
         # this could fail, if there is no such ColumnObject 
         try:
-        # Add a cell (corresponding to pentomino) at the end of the 
-        # matching pentomino type Column
-            currentColumn = self.columnObjectOfName[tileName]
-            # The name is e.g. I[1] for the 2nd Pentomino of type I.
-            pentoCellName = tileName + '[' + str(currentColumn.size) + ']'
-            newPentoCell = IncidenceCell(None,None,currentColumn.up,
-                                currentColumn, currentColumn, pentoCellName)
-            # rearrange the links of the circularly list and upgrade the size            
-            currentColumn.up.down = newPentoCell            
-            currentColumn.up = newPentoCell
-            self.columnObjectOfName[tileName].size += 1
-        # add 5 cells (corresponding to placement of pentomino) at the 
-        # end of the matching Coordinate Columns
-            placement.sort()
-            leftNeighbour = newPentoCell
-            for co in placement:
-                currentColumn = self.columnObjectOfName[co]
-                # the name us e.g. I00, if this I pentomino covers the place 00
-                cooCellName = tileName + currentColumn.name 
-                newCooCell = IncidenceCell(leftNeighbour,None,currentColumn.up,
-                                currentColumn,currentColumn,cooCellName)
+        # Add a masterCell (corresponding to given tileName) at the end
+        # of the matching pentomino/coordinate type column
+            masterColumn = self.columnObjectOfName[tileName]
+            # The name is e.g. 'C[1]' for the 2nd Pentomino of type C.
+            # Notice: A possible columnObject C could be:
+            #        'C','C[0]','AC','IC', 'C[1]', size=4, masterSize=2 
+            masterCellName = tileName + '[' + str(masterColumn.masterSize) + ']'
+            newMasterCell = IncidenceCell(None,None,masterColumn.up,
+                                masterColumn, masterColumn, masterCellName)
+            # rearrange the links of the circularly lists and upgrade the sizes            
+            masterColumn.up.down = newMasterCell            
+            masterColumn.up = newMasterCell
+            masterColumn.size += 1
+            masterColumn.masterSize += 1
+        # add cells (corresponding to the list 'placement') at the 
+        # end of the matching Coordinate/Pentomino Columns
+            placement.sort() #this should make example-creating more easier
+            leftNeighbour = newMasterCell
+            for place in placement:
+                currColumn = self.columnObjectOfName[place]
+                # the name is e.g. I00, if this I pentomino covers the place 00
+                placeCellName = tileName + place 
+                newPlaceCell = IncidenceCell(leftNeighbour,None,currColumn.up,
+                                currColumn,currColumn,placeCellName)
                 # rearrange the links of the current circular lists and 
-                # upgrade the size                 
-                leftNeighbour.right = newCooCell
-                currentColumn.up.down = newCooCell            
-                currentColumn.up = newCooCell
-                leftNeighbour = newCooCell
-                currentColumn.size += 1
-            # links the beginning of this row (the pentominoCell) with the end
-            # of this row (last placementCell) --> circular list
-            newPentoCell.left = leftNeighbour
-            leftNeighbour.right = newPentoCell
+                # upgrade the size    
+                currColumn.up.down = newPlaceCell            
+                currColumn.up = newPlaceCell
+                currColumn.size += 1 
+                    # Notice: masterSize needs no upgrade here! a placeCell 
+                    #         is not a masterCell
+                leftNeighbour.right = newPlaceCell
+                leftNeighbour = newPlaceCell
+            # links the beginning of this row (the masterCell) with the end
+            # of this row (last placeCell) --> circular list
+            leftNeighbour.right = newMasterCell
+            newMasterCell.left = leftNeighbour            
+            self.rows += 1
             return self
         except:
             print('There accured a problem appending a row in column'+tileName)
     
+    def coverColumn(self, c):
+        """ removes c from the header list and removes all rows in c s own list
+            from the other column lists they are in 
+        """
+        if c!=self.h:
+            try:
+                c.left.right = c.right
+                c.right.left = c.left
+                currRow = c.listHeader
+                for i in range(c.size):
+                    currRow = currRow.down
+                    currPlacement = currRow.right
+                    while currPlacement.listHeader != c.listHeader:
+                        currPlacement.up.down = currPlacement.down
+                        currPlacement.down.up = currPlacement.up
+                        currPlacement.listHeader.size = currPlacement.listHeader.size-1
+                        currPlacement = currPlacement.right
+                    self.rows -= 1
+                return self
+            except:
+                print('No matching column found to cover')
+        else:
+            print('You cannot cover the root h')
+        
+    def uncoverColumn(self, c):
+        """ uncover a given column c, this is where the links do their dance
+        """
+        if c != self.h:
+            try:
+                currRow = c
+                for i in range(c.size):
+                    currRow = currRow.up
+                    currPlacement = currRow.left
+                    while currPlacement.listHeader != c.listHeader:                    
+                        currPlacement.listHeader.size = currPlacement.listHeader.size+1
+                        currPlacement.down.up = currPlacement
+                        currPlacement.up.down = currPlacement
+                        currPlacement = currPlacement.left
+                    self.rows += 1
+                c.right.left = c
+                c.left.right = c
+                return self
+            except:
+                print('No matching column found to uncover')
+        else:
+            print('you cannot uncover the root h')
+    """    
     # The operation of covering column c removes c from the header list and 
     # removes all rows in c's own list from the other column lists they are in
     def coverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper.""" 
+        # implement and document the algorithm in Knuth's paper. 
         # nehme den Header der Spalte c. Note to self: funktioniert nicht!      
         # curr = c.listHeader
         # nehme c als aktuelles Objekt!
@@ -170,18 +230,18 @@ class IncidenceMatrix(object):
                 # setze fuer alle Elemente in dieser Zeile die Zeiger fuer up & down um
                 r.down.up = r.up
                 r.up.down = r.down
-                # gehe eins weiter die Zeile entlang
-                r = r.right
                 # verkuerze die Laenge der Spalte um 1, da eine Zeile abgearbeitet wurde
                 r.listHeader.size -= 1 # koennte falsch sein
+                # gehe eins weiter die Zeile entlang
+                r = r.right
             # gehe ein Element weiter die Spalte entlang
             d = d.down
             # verkuerze die Laenge der Zeilen um 1, da eine Spalte entfernt wurde
             #self.rows = self.rows-1
         return self
-                      
+    
     def uncoverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper.""" 
+        # implement and document the algorithm in Knuth's paper.
         # nehme c und nicht c.listHeader!
         # curr = c.listHeader
         i = c.up
@@ -190,12 +250,12 @@ class IncidenceMatrix(object):
             j = i.left
             # iteriere ueber die Zeile links nach rechts
             while j is not i:
+                j.listHeader.size += 1 # koennte falsch sein
                 j.down.up = j
                 j.up.down = j
                 # iteriere in der Zeile eins weiter
                 j = j.left
                 # setze die Laenge neu
-                j.listHeader.size += 1 # koennte falsch sein
             # gehe eins weiter
             c = c.up
             # erhoehe die Laenge der Zeilen um 1, da eine Spalte hinzugefuegt
@@ -204,4 +264,4 @@ class IncidenceMatrix(object):
         c.left.right = c
         return self
         
-            
+        """    
