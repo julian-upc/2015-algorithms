@@ -3,6 +3,7 @@ import sudoku
 import copy
 
 from copy import deepcopy
+from sudoku import cal_square
 def is_number(string):
     try:
         float(string)
@@ -188,26 +189,14 @@ class IncidenceMatrix(object):
     def initializeSudokuMatrix(self, sudoku):
         self.sudokuListHeaders(sudoku)
         pass
-    
-    def sudokuListHeaders(self,sudoku):
-        names=[]
-        for row in range(9) :
-            for column in range(9) :
-                for square in range(9) :
-                    for value in range(1,10):
-                        if [row,column,value] not in sudoku:
-                            names.append(str(row)+str(column))
-                            names.append("r"+str(row)+str(value))
-                            names.append("c"+str(column)+str(value))
-                            names.append("sq"+str(sudoku.give_square(row,column))+str(value))
-        return names
+  
                             
-    def insertSudokuRows(self,givenSudoku):
+    def insertSudokuRows(self,givenSudoku,names):
         for row in range(9) :
             for column in range(9) :
-                for square in range(9) :
-                    for value in range(1,10):
-                        if [row,column,value] not in givenSudoku:
+                for value in range(1,10):
+                    if [row,column,value] not in givenSudoku:
+                        if ((str(row)+str(column)) in names and ("r"+str(row)+str(value)) in names and ("c"+str(column)+str(value)) in names and ("sq"+str(cal_square(row,column))+str(value)) in names):
                             self.appendRow(str(row)+str(column),["r"+str(row)+str(value),"c"+str(column)+str(value),"sq"+str(sudoku.cal_square(row,column))+str(value)])
                         
         
@@ -231,11 +220,13 @@ class IncidenceMatrix(object):
     
     #Global variable for valid solutions 
     solutions = []
-    
+    zacka = []
     def calculatePentominoSolution(self,k,solution):
         if self.h == self.h.right:
+        
             self.solutions.append(solution)
-            print(len(self.solutions))
+            for n in solution:
+                self.zacka.append(n.name)
             return
         selectedColumn = self.smallestColumnObject()
         
