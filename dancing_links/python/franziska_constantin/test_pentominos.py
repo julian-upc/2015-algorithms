@@ -40,6 +40,9 @@ class TestPentominoMethods(unittest.TestCase):
         reps.add(p)
         self.assertEqual(reps.size(), 4)
         
+        reps = pentominos.TileSet([pentominos.I(),pentominos.X()],{'I': 3})
+        self.assertEqual({'I': 3, 'X': 0},reps.stock)
+        
 
     def test_turn90(self):
         c0 = copy.deepcopy(pentominos.I().coos)
@@ -55,7 +58,7 @@ class TestPentominoMethods(unittest.TestCase):
     def test_max(self):
         self.assertEqual([0,4], pentominos.I().max())
         self.assertEqual([2,2], pentominos.F().max())
-
+    
     def test_set(self):
         s = set([pentominos.I(), pentominos.I()])
         self.assertEqual(len(s), 1)
