@@ -22,6 +22,14 @@ class IncidenceCell(object):
             rep.append(c.name)
         return rep
 
+    def rowRep(self):
+        rep = "row " + self.name + ","
+        curr = self.right
+        while curr != self:
+            rep += curr.name + ","
+            curr = curr.right
+        return rep
+
         
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
@@ -73,7 +81,7 @@ class IncidenceMatrix(object):
         return rep
 
     def rowRepresentation(self):
-        rowRep = []
+        rowRep = ""
         currentColumnObject = self.h.right
         while currentColumnObject.name is not "root" and not is_number(currentColumnObject.name):
             head_elt = currentColumnObject.down
@@ -83,7 +91,8 @@ class IncidenceMatrix(object):
                 while current_elt is not head_elt:
                     row.append(current_elt.listHeader.name)
                     current_elt = current_elt.right
-                rowRep.append(row)
+                rowRep += str(row) + "\n"
+                #rowRep.append(row)
                 head_elt = head_elt.down
             currentColumnObject = currentColumnObject.right
         return rowRep
@@ -91,10 +100,7 @@ class IncidenceMatrix(object):
     """ insert a column header object into the circular linked list that contains the "root" node """
     def insertColumnObject(self, left, right, name):
         newCO = ColumnObject(left, right, None, None, name)
-        #newCO = ColumnObject(None, None, None, None, name)
         newCO.up = newCO.down = newCO
-        #newCO.left = left
-        #newCO.right = right
         left.right = newCO
         right.left = newCO
         return newCO
