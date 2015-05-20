@@ -26,14 +26,16 @@ class IncidenceCell(object):
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
-        # size gives the number of Cells in total in a Column        
+        # size gives the number of cells in total in a column        
         self.size = 0
-        # masterSize gives the number of leading Cells in a Column
+        # masterSize gives the number of leading cells in a column
         self.masterSize = 0        
         # this is kind of confusing, because in our problem, there should be no 
         # difference between size and masterSize
         # this is only needed, if there is a column that is for a pentomnio AND 
-        # for a placement, which makes (at least in my head) no sence
+        # for a placement, which makes (at least in my head) no sense
+        # NOTE Sa to Syb: compare with page 5 'root h, 
+        # which serves as a master header for all active headers'
         
     def representation(self):
         hrep = ["h(" + str(self.size) + ")", self.name]
@@ -114,7 +116,7 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        # try to append a row to the Incidence_Matirx,
+        # try to append a row to the Incidence_Matrix,
         # starting with a new IncidenceCell at the end of a given Column. 
         # this could fail, if there is no such ColumnObject 
         try:
@@ -139,6 +141,7 @@ class IncidenceMatrix(object):
             for place in placement:
                 currColumn = self.columnObjectOfName[place]
                 # the name is e.g. I00, if this I pentomino covers the place 00
+                # NOTE: it would be better to use MasterCellName to get a unique representation
                 placeCellName = tileName + place 
                 newPlaceCell = IncidenceCell(leftNeighbour,None,currColumn.up,
                                 currColumn,currColumn,placeCellName)
@@ -160,22 +163,39 @@ class IncidenceMatrix(object):
         except:
             print('There accured a problem appending a row in column'+tileName)
     
+    # The operation of covering column c removes c from the header list and 
+    # removes all rows in c's own list from the other column lists they are in
     def coverColumn(self, c):
         """ removes c from the header list and removes all rows in c s own list
             from the other column lists they are in 
         """
+        # implement and document the algorithm in Knuth's paper. 
         if c!=self.h:
             try:
-                c.left.right = c.right
-                c.right.left = c.left
+                # take the header of column c
                 currRow = c.listHeader
+                 # change the left and right link of c 
+                c.right.left = c.left
+                c.left.right = c.right
+                # iterate over the column c from top to bottom
                 for i in range(c.size):
+                    # note: there should be no difference between runtime 
+                    # with a for or a while loop
+                    # while currRow is not c:
+                    # currRow == d in the paper
+                    # one step further down the column
                     currRow = currRow.down
+                    # remember the next element in the row
+                    # currPlacement == r in the paper
                     currPlacement = currRow.right
+                    # iterate over the row from left to right and change
+                    # the pointers for up & down for all elements in the row
                     while currPlacement.listHeader != c.listHeader:
-                        currPlacement.up.down = currPlacement.down
                         currPlacement.down.up = currPlacement.up
-                        currPlacement.listHeader.size = currPlacement.listHeader.size-1
+                        currPlacement.up.down = currPlacement.down
+                        # update size of column - one row has been 'finished'
+                        currPlacement.listHeader.size -= 1
+                        # one step further along the row
                         currPlacement = currPlacement.right
                     self.rows -= 1
                 return self
@@ -183,20 +203,26 @@ class IncidenceMatrix(object):
                 print('No matching column found to cover')
         else:
             print('You cannot cover the root h')
-        
+   
     def uncoverColumn(self, c):
         """ uncover a given column c, this is where the links do their dance
         """
+        # implement and document the algorithm in Knuth's paper.
         if c != self.h:
             try:
+                # currRow == i in the paper
                 currRow = c
+                # iterate over the column bottom to top
                 for i in range(c.size):
                     currRow = currRow.up
+                    # currPlacement == j in the paper
                     currPlacement = currRow.left
+                    # iterate over the row left to right
                     while currPlacement.listHeader != c.listHeader:                    
-                        currPlacement.listHeader.size = currPlacement.listHeader.size+1
+                        currPlacement.listHeader.size += 1
                         currPlacement.down.up = currPlacement
                         currPlacement.up.down = currPlacement
+                        # walk one step further in the row
                         currPlacement = currPlacement.left
                     self.rows += 1
                 c.right.left = c
@@ -206,62 +232,4 @@ class IncidenceMatrix(object):
                 print('No matching column found to uncover')
         else:
             print('you cannot uncover the root h')
-    """    
-    # The operation of covering column c removes c from the header list and 
-    # removes all rows in c's own list from the other column lists they are in
-    def coverColumn(self, c):
-        # implement and document the algorithm in Knuth's paper. 
-        # nehme den Header der Spalte c. Note to self: funktioniert nicht!      
-        # curr = c.listHeader
-        # nehme c als aktuelles Objekt!
-        # setze fuer alle Objekte in c den Linken und rechten Zeiger um
-        c.right.left = c.left
-        c.left.right = c.right
-        # merke dir das erste Element unter dem Header
-        d = c.down
-        # iteriere ueber die Spalte von oben nach unten
-        while d is not c:
-            #print('in Schleife 1 cover')
-            # merke dir das naechste Element in der Zeile
-            r = d.right
-            # iteriere ueber die Zeile von links nach rechts
-            while r is not d:
-                #print('in Schleife 2 cover')
-                # setze fuer alle Elemente in dieser Zeile die Zeiger fuer up & down um
-                r.down.up = r.up
-                r.up.down = r.down
-                # verkuerze die Laenge der Spalte um 1, da eine Zeile abgearbeitet wurde
-                r.listHeader.size -= 1 # koennte falsch sein
-                # gehe eins weiter die Zeile entlang
-                r = r.right
-            # gehe ein Element weiter die Spalte entlang
-            d = d.down
-            # verkuerze die Laenge der Zeilen um 1, da eine Spalte entfernt wurde
-            #self.rows = self.rows-1
-        return self
-    
-    def uncoverColumn(self, c):
-        # implement and document the algorithm in Knuth's paper.
-        # nehme c und nicht c.listHeader!
-        # curr = c.listHeader
-        i = c.up
-        # iteriere ueber die Spalte von unten nach oben
-        while i is not c:
-            j = i.left
-            # iteriere ueber die Zeile links nach rechts
-            while j is not i:
-                j.listHeader.size += 1 # koennte falsch sein
-                j.down.up = j
-                j.up.down = j
-                # iteriere in der Zeile eins weiter
-                j = j.left
-                # setze die Laenge neu
-            # gehe eins weiter
-            c = c.up
-            # erhoehe die Laenge der Zeilen um 1, da eine Spalte hinzugefuegt
-           # self.rows = self.rows+1
-        c.right.left = c
-        c.left.right = c
-        return self
-        
-        """    
+         
