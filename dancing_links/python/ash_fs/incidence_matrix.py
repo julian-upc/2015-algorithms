@@ -88,90 +88,49 @@ class IncidenceMatrix(object):
             currentColumnObject = currentColumnObject.right
         return rowRep
 
-    """ insert a column header object into the circular linked list that contains the "root" node """
     def insertColumnObject(self, left, right, name):
-        newCO = ColumnObject(left, right, None, None, name)
-        #newCO = ColumnObject(None, None, None, None, name)
-        newCO.up = newCO.down = newCO
-        #newCO.left = left
-        #newCO.right = right
-        left.right = newCO
-        right.left = newCO
-        return newCO
+        cur = ColumnObject(left, right, None, None, name);
+        cur.up = cur.down = cur
+        left.right = right.left = cur
 
     def appendRow(self, tileName, placement):
-        """ 
-        a placement is a list of coordinates that indicates which squares the piece named `tileName` covers.
-        This function appends a row to the incidence matrix. A row consists of
-        - one IncidenceCell in the column corresponding to tileName
-        - one IncidenceCell in each column corresponding to a coordinate in `placement`.
-        These must be assembled into a circularly linked list, and each cell must be inserted into the 
-        circular linked list of its corresponding column.
-        """
-        pentoHeader = self.columnObjectOfName[tileName]
-        # create pentoCell
-        pentoCell = IncidenceCell(None, None, pentoHeader.up, pentoHeader, pentoHeader,
-                tileName+"["+str(self.indexOfPiecePlacement[tileName])+"]")
-        pentoHeader.up.down = pentoCell
-        pentoHeader.up = pentoCell
-        pentoHeader.size = pentoHeader.size + 1
+        """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
+        tileColHeader = self.columnObjectOfName[tileName]
+        rowCell = IncidenceCell(None, None, tileColHeader.up, tileColHeader, tileColHeader, tileColHeader.name+"["+str(self.indexOfPiecePlacement[tileName]) +"]")
+        tileColHeader.size += 1
         self.indexOfPiecePlacement[tileName] += 1
-
-        # create placementCells
-        left = pentoCell
-        for placeName in placement:
-            placeHeader = self.columnObjectOfName[placeName]
-            placementCell = IncidenceCell(left, None, placeHeader.up,
-                    placeHeader, placeHeader, tileName+placeName)
-            placeHeader.up.down = placementCell
-            placeHeader.up = placementCell
-            placeHeader.size = placeHeader.size + 1
-            left.right = placementCell
-            left = placementCell
-
-        left.right = pentoCell
-        pentoCell.left = left
-
-        self.rows = self.rows + 1
-        #return self
+        rowCell.left = rowCell.right = rowCell.up.down = rowCell.down.up = rowCell
+        
+        cell = rowCell
+        for n in placement:
+            header = self.columnObjectOfName[n]
+            header.size += 1	    	
+            newCell = IncidenceCell(cell, rowCell, header.up, header, header, tileColHeader.name + n)
+            cell.right = rowCell.left = header.up.down = header.up = newCell
+            cell = newCell
 
     def coverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper. """
-        # cover head c vertically
-        c.left.right = c.right
         c.right.left = c.left
-
-        # go through all rows in which c had a cell
-        rowhead = c.down
-        while rowhead is not c:
-            cell = rowhead.right
-            while cell is not rowhead:
-                # cover the cells horizontally in these rows
-                cell.up.down = cell.down
-                cell.down.up = cell.up
-                cell.listHeader.size -= 1
-                cell = cell.right
-            self.rows -= 1
-            rowhead = rowhead.down
-        #return self
+        c.left.right = c.right
+        cur = c.down
+	while cur is not c:
+            rowCell = cur.right
+            while rowCell is not cur:
+                rowCell.up.down = rowCell.down
+                rowCell.down.up = rowCell.up
+                rowCell.listHeader.size -= 1
+                rowCell = rowCell.right 
+            cur = cur.down
 
     def uncoverColumn(self, c):
-        """ implement and document the algorithm in Knuth's paper. """
-        # uncover head c vertically
-        c.left.right = c
+        curr = c.up
+        while curr is not c:
+            columnCell = curr.left
+            while columnCell is not curr:
+                columnCell.down.up = columnCell
+                columnCell.up.down = columnCell
+                columnCell.listHeader.size += 1
+                columnCell = columnCell.left
+            curr = curr.up
         c.right.left = c
-
-        # go through all rows in which c had a cell
-        rowhead = c.up
-        while rowhead is not c:
-            cell = rowhead.right
-            while cell is not rowhead:
-                # uncover the cells horizontally in these rows
-                cell.up.down = cell
-                cell.down.up = cell
-                cell.listHeader.size += 1
-                cell = cell.right
-            self.rows += 1
-            rowhead = rowhead.up
-        #return self
-
+        c.left.right = c
