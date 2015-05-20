@@ -21,7 +21,7 @@ class Scott_matrix(object):
         for p in pentominos.all_fixed_pentominos():
             self.create_all_rows_for(p, legal)
         #    column = column.right
-        #print(self.IM.representation())
+        print(self.IM.rowRepresentation())
         self.solve_scott_matrix()
         return self.IM
 
@@ -36,7 +36,7 @@ class Scott_matrix(object):
             return
         #search column with min possibilities
         minPossibilities = curr = self.IM.h.right
-        while curr != self.IM.h:
+        while curr != self.IM.h and IncidenceMatrix.is_number(curr.name):
             if curr.size < minPossibilities.size:
                 minPossibilities = curr
             curr = curr.right
