@@ -1,40 +1,78 @@
 import copy
+import numpy as np
 
 class Pentomino(object):
     def __init__(self, name, coos):
         self.name = name
         self.coos = coos
         self.dim = len(coos[0])
-        
-    def normalize_coo(self, coo):
-        pass
+        self.coos.sort() # safety first ;)
 
+    # normalize only one dimension
+    def normalize_coo(self, coo):
+        min = self.coos[0][coo]
+        for i in range(1,5):
+            if min > self.coos[0][coo]:
+                min = self.coos[0][coo]
+        self.translate_coo( coo, -min )
+        self.coos.sort()
+
+    # normalize object
     def normalize(self):
-        pass
+        # find bounding box left bottom corner
+        minX = self.coos[0][0]
+        minY = self.coos[0][1]
+
+        for i in range(1,5):
+            if minX > self.coos[i][0]:
+                minX = self.coos[i][0]
+            if minY > self.coos[i][1]:
+                minY = self.coos[i][1]
+
+        # translate this object to origin
+        self.translate_by( [-minX,-minY] )
+        self.coos.sort()
 
     def flip(self, coo):
-        pass
+        for i in range(len(self.coos)):
+            self.coos[i][coo] = -self.coos[i][coo]
+        self.normalize(coo)
         
     def translate_one(self, coo):
-        pass
+        self.translate_coo(coo, 1)
 
     def translate_coo(self, coo, amount):
-        pass
+        for i in range(0,5):
+            self.coos[i][coo] += by_vector[coo]
 
     def translate_by(self, by_vector):
-        pass
+        for i in range(0,5):
+            self.coos[i][0] += by_vector[0]
+            self.coos[i][1] += by_vector[1]
 
     def turn90(self):
-        pass
+        # create a rotation matrix
+        rotMatrix = np.matrix([[0,1],[-1,0]])
+
+        # rotate each vector
+        for i in range(0,5):
+            convert = np.transpose(np.matrix(self.coos[i]))
+            self.coos[i] = np.transpose(rotMatrix * convert)
+
+        # convert back to native list
+        self.coos = np.array(self.coos).reshape(5,2).tolist()
+
+        # normale position
+        self.normalize()
 
     def max(self):
         pass
 
     def __hash__(self):
-        pass
+        return hash(str(self.coos))
 
     def __eq__(self, other):
-        pass
+        return hash(self) == hash(other)
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -119,5 +157,3 @@ class TileSet(object):
             rep += str(p.coos)
         rep += "]"
         return rep
-
-
