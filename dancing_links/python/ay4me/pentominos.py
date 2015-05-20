@@ -33,7 +33,7 @@ class Pentomino(object):
         for c in self.coos:
             offset = c[coo] - flip_value
             c[coo] = c[coo] - 2*offset
-        return self
+        return self.normalize()
         
     def translate_one(self, coo):
         #0: move one on x-axis
@@ -66,7 +66,7 @@ class Pentomino(object):
             c[1] = -x
         self.normalize()
         self.translate_by(ref_point) #move back to former position
-        return self
+        return self.normalize()
 
     #returns smallest field of bounding box
     def min_box(self):
@@ -237,7 +237,7 @@ class TileSet(object):
                 rep += ","
             else:
                 i = 1
-            rep += str(p.coos)
+            rep += str(p.representation()) #str(p.coos)
         rep += "]"
         return rep
 
