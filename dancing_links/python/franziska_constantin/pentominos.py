@@ -49,8 +49,7 @@ class Pentomino(object):
         return self
 
     def max(self):
-      self.coos = sorted(self.coos)
-      return max(self.coos)
+	return [max([c[0] for c in self.coos]), max([c[1] for c in self.coos])]
         
 
     def __hash__(self):
@@ -60,7 +59,7 @@ class Pentomino(object):
     def __eq__(self, other):
 	self.normalize()
 	other.normalize()
-        return self.coos == other.coos
+        return self.__hash__() == other.__hash__()
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -135,11 +134,16 @@ def all_fixed_pentominos():
     return TileSet(plist)
   
 class TileSet(object):
-    def __init__(self, plist=[]):
+    def __init__(self, plist=[], stock=None):
         self.set = set()
         for p in plist:
-            self.add(p)
-
+	    self.add(p)
+        if stock == None:
+	    self.stock = dict.fromkeys([p.name for p in plist],1)
+	else:
+	    self.stock = stock
+	    self.stock.update(dict.fromkeys([p.name for p in plist if p.name not in self.stock],0))
+	  
     def __iter__(self):
         return iter(self.set)
         
