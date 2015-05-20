@@ -1,6 +1,6 @@
 import copy
 
-max_coord = 999
+max_coord =999
 
 class Pentomino(object):
     def __init__(self, name, coos):
@@ -14,7 +14,6 @@ class Pentomino(object):
             returns an axis touching self, with only positiv coo-coordinates
             coo: given axis
         """
-        dist_to_axes = self.min()
         self.translate_coo(coo, (-1)*self.min()[coo])
         return self
     
@@ -241,14 +240,14 @@ class TileSet(object):
         return iter(self.set)
  
     def add(self, p):
-    """ adds the given pentomino to self
-    """
+        """ adds the given pentomino to self 
+        """
         if p not in self.set:
             self.set.add(copy.deepcopy(p))
     
     def add_TileSet(self, tileSet):
-    """ adds the given tileSet to self
-    """
+        """ adds the given tileSet to self
+        """
         for p in tileSet:
             if p not in self.set:
                 self.add(p)
@@ -258,8 +257,8 @@ class TileSet(object):
         return len(self.set)
                      
     def representation(self):
-    """ gives back a representation for tileSet
-    """
+        """ gives back a representation for tileSet
+        """
         rep = "["
         i = 0
         for p in self.set:
