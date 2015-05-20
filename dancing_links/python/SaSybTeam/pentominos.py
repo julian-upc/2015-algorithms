@@ -1,6 +1,6 @@
 import copy
 
-max_coord = 999
+max_coord =999
 
 class Pentomino(object):
     def __init__(self, name, coos):
@@ -14,7 +14,6 @@ class Pentomino(object):
             returns an axis touching self, with only positiv coo-coordinates
             coo: given axis
         """
-        dist_to_axes = self.min()
         self.translate_coo(coo, (-1)*self.min()[coo])
         return self
     
