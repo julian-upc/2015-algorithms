@@ -4,7 +4,7 @@ import copy
 
 class TestPentominoMethods(unittest.TestCase):
 
- #   def setUp(self):
+#    def setUp(self):
 
     def test_normalize(self):
         for p in pentominos.all_pentominos():
@@ -40,13 +40,10 @@ class TestPentominoMethods(unittest.TestCase):
         reps.add(p)
         self.assertEqual(reps.size(), 4)
         
-        reps = pentominos.TileSet([pentominos.I(),pentominos.X()],{'I': 3})
-        self.assertEqual({'I': 3, 'X': 0},reps.stock)
-        
 
     def test_turn90(self):
         c0 = copy.deepcopy(pentominos.I().coos)
-        self.assertEqual(c0, sorted(pentominos.I().turn90().turn90().coos))
+        self.assertEqual(c0, pentominos.I().turn90().turn90().coos)
 
         p = pentominos.Y()
         s = pentominos.TileSet()
@@ -54,11 +51,12 @@ class TestPentominoMethods(unittest.TestCase):
             s.add(p)
             p.turn90()
         self.assertEqual(4, s.size())
+        
 
     def test_max(self):
         self.assertEqual([0,4], pentominos.I().max())
         self.assertEqual([2,2], pentominos.F().max())
-    
+
     def test_set(self):
         s = set([pentominos.I(), pentominos.I()])
         self.assertEqual(len(s), 1)

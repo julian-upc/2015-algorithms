@@ -90,7 +90,8 @@ class IncidenceMatrix(object):
 
     def insertColumnObject(self, left, right, name):
         """ insert a column header object into the circular linked list that contains the "root" node """
-        pass
+        col = ColumnObject(left, right, None, None, name)
+        col.up = col.down = left.right = right.left = col
 
     def appendRow(self, tileName, placement):
         """ 
@@ -101,16 +102,47 @@ class IncidenceMatrix(object):
         These must be assembled into a circularly linked list, and each cell must be inserted into the 
         circular linked list of its corresponding column.
         """
-        pass
+        header = self.columnObjectOfName[tileName]
+        newName = tileName + "[" + str(self.indexOfPiecePlacement[tileName]) + "]"
+        cell = IncidenceCell(None, None, header.up, header, header, newName)
+        cell.left = cell.right = cell.up.down = cell.down.up = cell
+
+        header.size += 1
+        self.indexOfPiecePlacement[tileName] += 1
+
+        tmpCell = cell
+        for n in placement:
+            newHeader = self.columnObjectOfName[n]
+            newHeader.size += 1
+            newCell = IncidenceCell(tmpCell, tmpCell.right, newHeader.up, newHeader, newHeader, tileName + n)
+            newCell.left.right = newCell.right.left = newCell.up.down = newCell.down.up = newCell
+            tmpCell = newCell
 
     def coverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
+        # cover header
+        c.left.right = c.right
+        c.right.left = c.left
+        
+        rowCell = c.down
+        while rowCell is not c:
+            colCell = rowCell.right
+            while colCell is not rowCell:
+                colCell.down.up = colCell.up
+                colCell.up.down = colCell.down
+                colCell.listHeader.size -= 1
+                colCell = colCell.right
+            rowCell = rowCell.down
 
     def uncoverColumn(self, c):
         """ implement and document the algorithm in Knuth's paper. """
-        pass
-
-if __name__ == '__main__':
-    unittest.main()
+        rowCell = c.up
+        while rowCell is not c:
+            colCell = rowCell.left
+            while colCell is not rowCell:
+                colCell.listHeader.size += 1
+                colCell.up.down = colCell.down.up = colCell
+                colCell = colCell.left
+            rowCell = rowCell.up
+        c.left.right = c.right.left = c
 

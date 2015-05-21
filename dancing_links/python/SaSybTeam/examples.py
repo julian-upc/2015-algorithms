@@ -24,17 +24,3 @@ def scott_example():
                 names.append(str(i)+str(j))
     return incidence_matrix.IncidenceMatrix(names)
 
-def little_example():
-    names = ["L","U","V","Y"]
-    for i in range(5):
-        for j in range(4):
-            names.append(str(i)+str(j))
-    return incidence_matrix.IncidenceMatrix(names)
-
-def little_quadratic_example():
-    names = ["I","L","U","V","Y"]
-    for i in range(5):
-        for j in range(5):
-            names.append(str(i)+str(j))
-    return incidence_matrix.IncidenceMatrix(names)
-

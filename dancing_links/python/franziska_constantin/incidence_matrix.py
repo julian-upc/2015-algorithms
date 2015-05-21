@@ -104,7 +104,7 @@ class IncidenceMatrix(object):
         circular linked list of its corresponding column.
         """
         tileCell = IncidenceCell(None,None, self.columnObjectOfName[tileName].up, self.columnObjectOfName[tileName], self.columnObjectOfName[tileName], tileName + "["+ str(self.indexOfPiecePlacement[tileName]) + "]")
-        self.indexOfPiecePlacement[tileName] += 1	#?
+        self.indexOfPiecePlacement[tileName] += 1      
         self.columnObjectOfName[tileName].size += 1
         tileCell.left = tileCell.right = tileCell.down.up = tileCell.up.down = tileCell
         for coo in sorted(placement):
@@ -123,9 +123,9 @@ class IncidenceMatrix(object):
         
         #adjust all links in IncidenceCells which are in a row of c
         currRowCell = c.down
-        while currRowCell is not c:
+        while currRowCell != c:
 	    currColCell = currRowCell.right
-	    while currColCell is not currRowCell:
+	    while currColCell != currRowCell:
 		currColCell.down.up = currColCell.up
 		currColCell.up.down = currColCell.down
 		currColCell.listHeader.size -= 1
@@ -136,15 +136,15 @@ class IncidenceMatrix(object):
         """ implement and document the algorithm in Knuth's paper. """
         
         #adjust all links in IncidenceCells which are in a row of c
-        currRowCell = c.down
-        while currRowCell is not c:
+        currRowCell = c.up
+        while currRowCell != c:
 	    currColCell = currRowCell.left
-	    while currColCell is not currRowCell:
+	    while currColCell != currRowCell:
 		currColCell.down.up = currColCell
 		currColCell.up.down = currColCell
 		currColCell.listHeader.size += 1
 		currColCell = currColCell.left
-	    currRowCell = currRowCell.down
+	    currRowCell = currRowCell.up
 	
 	#adjust links of the column objects
         c.left.right = c
