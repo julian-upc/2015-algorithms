@@ -4,6 +4,8 @@
 *.pyc
 
 # c++ ignores
+Makefile
+test_orbits
 
 # Compiled Object files
 *.slo
