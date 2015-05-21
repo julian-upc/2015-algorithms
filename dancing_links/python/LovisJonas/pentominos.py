@@ -72,7 +72,7 @@ class Pentomino(object):
         return self
 
     def translate_by(self, by_vector):
-        for i in self.coos :
+        for i in range(5) :
             self.coos[i][0] = self.coos[i][0] + by_vector[0] 
             self.coos[i][1] = self.coos[i][1] + by_vector[1]
         return self
@@ -84,7 +84,22 @@ class Pentomino(object):
             self.coos[i][0]=coord
         self.flip(1)
         return self
-            
+
+    def legal(self):
+        for p in self.coos:
+            if p[0]<0:
+                return False
+            if p[0]>7:
+                return False
+            if p[1]<0:
+                return False
+            if p[1]>7:
+                return False
+        for p in [[3,3],[3,4],[4,3],[4,4]]:
+            if p in self.coos:
+                return False
+        return True
+
     def max(self):
         maxx=-1
         maxy=-1
@@ -172,6 +187,23 @@ class Z(Pentomino):
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
 
+def all_pentominos_names():
+    list=[]
+    for p in all_pentominos():
+        list.append(p.name)
+    return list
+
+def all_positions():
+    return ["00","01","02","03","04","05","06","07",
+            "10","11","12","13","14","15","16","17",
+            "20","21","22","23","24","25","26","27",
+            "30","31","32",          "35","36","37",
+            "40","41","42",          "45","46","47",
+            "50","51","52","53","54","55","56","57",
+            "60","61","62","63","64","65","66","67",
+            "70","71","72","73","74","75","76","77",]
+
+
 def all_fixed_pentominos():
     s = TileSet()
     for i in all_pentominos() :
@@ -188,6 +220,7 @@ def all_fixed_pentominos():
                 s.add(i.flip(0).normalize())
                 i.flip(1).normalize()
                 i.turn90().normalize()
+                k+=1
     return s
 
 def fixed_pentominos_of(p):
@@ -201,9 +234,11 @@ def fixed_pentominos_of(p):
                 s.add(i.flip(0).normalize())
                 i.flip(1).normalize()
                 i.turn90().normalize()
+                k+=1
     return s
 
 
+    
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
@@ -236,6 +271,8 @@ class TileSet(object):
                 i = 1
             rep += str(p.coos)
         rep += "]"
-        return rep
-
-
+        return rep           
+    
+    
+                
+        

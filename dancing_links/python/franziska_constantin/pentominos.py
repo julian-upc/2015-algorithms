@@ -7,34 +7,60 @@ class Pentomino(object):
         self.dim = len(coos[0])
         
     def normalize_coo(self, coo):
-        pass
+        if coo == 0:
+	    self.translate_by([-min([c[0] for c in self.coos]),0])
+	else:
+	    self.translate_by([0,-min([c[1] for c in self.coos])])
+
 
     def normalize(self):
-        pass
+	self.translate_by([-min([c[0] for c in self.coos]),-min([c[1] for c in self.coos])])
+	return self
 
     def flip(self, coo):
-        pass
+        if coo == 0:
+	    self.coos = [[c[0],-c[1]] for c in self.coos]
+	else:
+	    self.coos = [[-c[0],c[1]] for c in self.coos]
+	self.normalize()
+	return self
         
     def translate_one(self, coo):
-        pass
+	if coo == 0:	
+            self.coos = [[c[0]+1,c[1]] for c in self.coos]    
+	else:
+            self.coos = [[c[0],c[1]+1] for c in self.coos]    
+	return self
 
     def translate_coo(self, coo, amount):
-        pass
-
+        if coo == 0:	
+            self.coos = [[c[0]+amount,c[1]] for c in self.coos]    
+	else:
+            self.coos = [[c[0],c[1]+amount] for c in self.coos]
+	return self
+  
     def translate_by(self, by_vector):
-        pass
+        self.coos = [[c[0]+by_vector[0],c[1]+by_vector[1]] for c in self.coos]
+	return self
 
     def turn90(self):
-        pass
+        self.coos = [[-c[1],c[0]] for c in self.coos] 
+        self.normalize()
+        return self
 
     def max(self):
-        pass
+      self.coos = sorted(self.coos)
+      return max(self.coos)
+        
 
     def __hash__(self):
-        pass
+        self.coos = sorted(self.coos)
+        return hash(str(self.coos))
 
     def __eq__(self, other):
-        pass
+	self.normalize()
+	other.normalize()
+        return self.coos == other.coos
 
     def representation(self):
         return "[" + self.name + ":" + str(self.coos) + "]"
@@ -91,8 +117,23 @@ class Z(Pentomino):
 
 def all_pentominos():
     return [F(), I(), L(), P(), N(), T(), U(), V(), W(), X(), Y(), Z()]
-
-
+  
+def fixed_pentominos_of(p):
+    fp = TileSet()
+    for i in range(4):
+	p.turn90()
+	fp.add(p)
+	p.flip(0)
+	fp.add(p)
+	p.flip(0)
+    return fp
+    
+def all_fixed_pentominos():
+    plist = []
+    for p in all_pentominos():
+	plist += fixed_pentominos_of(p)
+    return TileSet(plist)
+  
 class TileSet(object):
     def __init__(self, plist=[]):
         self.set = set()
@@ -103,10 +144,11 @@ class TileSet(object):
         return iter(self.set)
         
     def add(self, p):
-        pass
+        self.set.add(copy.deepcopy(p))	#not desirable
+        return self
 
     def size(self):
-        pass
+        return len(self.set)
 
     def representation(self):
         rep = "["

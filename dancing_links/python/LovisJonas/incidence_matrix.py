@@ -1,4 +1,9 @@
+import pentominos
+import sudoku
+import copy
+
 from copy import deepcopy
+from sudoku import cal_square
 def is_number(string):
     try:
         float(string)
@@ -22,8 +27,7 @@ class IncidenceCell(object):
         for c in [self.left, self.right, self.up, self.down]:
             rep.append(c.name)
         return rep
-
-        
+    
 class ColumnObject(IncidenceCell):
     def __init__(self, left, right, up, down, name):
         IncidenceCell.__init__(self, left, right, up, down, self, name)
@@ -41,7 +45,6 @@ class ColumnObject(IncidenceCell):
             currentCell = currentCell.down
         
         return rep
-
 
 class IncidenceMatrix(object):
     def __init__(self, names):
@@ -104,6 +107,7 @@ class IncidenceMatrix(object):
         tileNameCell.up.down=tileNameCell
         columnTile.up=tileNameCell
         listOfPlacementCells = []
+        self.rows+=1
         for position in placement:
             columnPlacement=self.columnObjectOfName[position]
             listOfPlacementCells.append(IncidenceCell(columnPlacement, columnPlacement, columnPlacement.up, columnPlacement, columnPlacement, str(tileName)+str(position)))
@@ -116,9 +120,7 @@ class IncidenceMatrix(object):
         rep = [n]
         for k in listOfPlacementCells:
             rep.append(k.representation())
-        #print("vorher: " + str(rep))
         for i in range(n):
-            #print(str(i)+":vorher" + str(listOfPlacementCells[i].representation()))
             if i==0:
                 listOfPlacementCells[i].left=tileNameCell
             elif i in range(1,n):
@@ -127,43 +129,126 @@ class IncidenceMatrix(object):
                 listOfPlacementCells[i].right=tileNameCell
             elif i in range(n-1):
                 listOfPlacementCells[i].right=listOfPlacementCells[i+1]
-            #print("nachher" + str(listOfPlacementCells[i].representation()))
         rep = [n]
         for k in listOfPlacementCells:
             rep.append(k.representation())
-        #print("nachher: " + str(rep))
         tileNameCell.left=listOfPlacementCells[n-1]
         tileNameCell.right=listOfPlacementCells[0]
 
-        
-        
-        """ a placement is a list of coordinates that indicates which squares the piece named tileName covers"""
-    
-    def coverColumn(self, c):
-        columnTile=c
+            
+    def coverColumn(self, columnTile):
         columnTile.left.right=columnTile.right
         columnTile.right.left=columnTile.left
-        currentIncidentCell=columnTile.down
-        currentIncidentCellHorizontal=columnTile.down
-        while currentIncidentCell != columnTile:
-            currentIncidentCellHorizontal=currentIncidentCell.right
-            while currentIncidentCellHorizontal != currentIncidentCell:
-                currentIncidentCellHorizontal.up.down=currentIncidentCellHorizontal.down
-                currentIncidentCellHorizontal.down.up=currentIncidentCellHorizontal.up
-                currentIncidentCellHorizontal.listHeader.size-=1
-                currentIncidentCellHorizontal=currentIncidentCellHorizontal.right
-            currentIncidentCell=currentIncidentCell.down
+        currentCell=columnTile.down
+        currentCellHorizontal=columnTile.down
+        while currentCell != columnTile:
+            currentCellHorizontal=currentCell.right
+            while currentCellHorizontal != currentCell:
+                currentCellHorizontal.up.down=currentCellHorizontal.down
+                currentCellHorizontal.down.up=currentCellHorizontal.up
+                currentCellHorizontal.listHeader.size-=1
+                currentCellHorizontal=currentCellHorizontal.right
+            currentCell=currentCell.down
         
     def uncoverColumn(self, c):
-        currentIncidentCell=c.up
-        currentIncidentCellHorizontal=c.up
-        while currentIncidentCell != c:
-            currentIncidentCellHorizontal=currentIncidentCell.left
-            while currentIncidentCellHorizontal != currentIncidentCell:
-                currentIncidentCellHorizontal.up.down=currentIncidentCellHorizontal
-                currentIncidentCellHorizontal.down.up=currentIncidentCellHorizontal
-                currentIncidentCellHorizontal.listHeader.size+=1
-                currentIncidentCellHorizontal=currentIncidentCellHorizontal.left
-            currentIncidentCell=currentIncidentCell.up 
+        currentCell=c.up
+        currentCellHorizontal=c.up
+        while currentCell != c:
+            currentCellHorizontal=currentCell.left
+            while currentCellHorizontal != currentCell:
+                currentCellHorizontal.up.down=currentCellHorizontal
+                currentCellHorizontal.down.up=currentCellHorizontal
+                currentCellHorizontal.listHeader.size+=1
+                currentCellHorizontal=currentCellHorizontal.left
+            currentCell=currentCell.up 
         c.left.right=c
         c.right.left=c
+            
+    def insertAllPlacements(self, pentomino):
+        pentomino.normalize()
+        versionList=pentominos.fixed_pentominos_of(pentomino)
+        coordinatesAsStrings=[]
+        for p in versionList:
+            for i in range(8):
+                for k in range(8):
+                    if p.legal():
+                        for l in range(5):
+                            coordinatesAsStrings.append(str(p.coos[l][0])+str(p.coos[l][1]))
+                        self.appendRow(p.name, coordinatesAsStrings)
+                    p.translate_one(1)
+                    coordinatesAsStrings=[]
+                p.translate_by([0,-8])
+                p.translate_one(0)
+            
+        
+    def initializeTheIncidenceMatrix(self):
+        allPentos=pentominos.all_pentominos()
+        for p in allPentos:
+            self.insertAllPlacements(p)
+    
+    def initializeSudokuMatrix(self, sudoku):
+        self.sudokuListHeaders(sudoku)
+        pass
+  
+                            
+    def insertSudokuRows(self,givenSudoku,names):
+        for row in range(9) :
+            for column in range(9) :
+                for value in range(1,10):
+                    if [row,column,value] not in givenSudoku:
+                        if ((str(row)+str(column)) in names and ("r"+str(row)+str(value)) in names and ("c"+str(column)+str(value)) in names and ("sq"+str(cal_square(row,column))+str(value)) in names):
+                            self.appendRow(str(row)+str(column),["r"+str(row)+str(value),"c"+str(column)+str(value),"sq"+str(sudoku.cal_square(row,column))+str(value)])
+                        
+        
+    
+    
+    
+     
+        
+        
+        
+        
+    def smallestColumnObject(self):
+        currentColumn = self.h.right
+        currentSize = 10000
+        while currentColumn != self.h :
+            if currentSize > currentColumn.size :
+                currentSize = currentColumn.size                    
+                smallestColumn = currentColumn
+            currentColumn = currentColumn.right
+        return smallestColumn
+    
+    #Global variable for valid solutions 
+    solutions = []
+    zacka = []
+    def calculatePentominoSolution(self,k,solution):
+        if self.h == self.h.right:
+        
+            self.solutions.append(solution)
+            for n in solution:
+                self.zacka.append(n.name)
+            return
+        selectedColumn = self.smallestColumnObject()
+        
+        if selectedColumn.size <= 0:
+            return
+        
+        currentCell = selectedColumn.down
+        self.coverColumn(selectedColumn)
+        while currentCell != selectedColumn:
+            walkingCell = currentCell.right
+            solution.append(walkingCell)
+            while walkingCell != currentCell:
+                self.coverColumn(walkingCell.listHeader)
+                walkingCell = walkingCell.right
+            self.calculatePentominoSolution(k+1,solution)
+            solution.pop(k)
+            walkingCell=currentCell.left
+            while walkingCell!=currentCell:
+                self.uncoverColumn(walkingCell.listHeader)
+                walkingCell=walkingCell.left
+            currentCell=currentCell.down
+        self.uncoverColumn(selectedColumn)
+            
+        return       
+                    
