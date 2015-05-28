@@ -44,23 +44,26 @@ class Covering(object):
 	#initialize the appropriate incidence matrix
 	fields = [str(c[1])+str(c[4]) for c in self.board.capacities if self.board.capacities[c] > 0]
 	I = incidence_matrix.IncidenceMatrix([t.name for t in self.tileSet.set] + fields + ['constraint'])	#name collisions for tiles which are more than once available
+        tmpPent = None
         for p in self.tileSet.set:
 	    if p.name in self.fixedTiles:
 		for c in [coos for coos in self.fixedTiles[p.name] if self.board.valid_tile_placement(coos)]:
 		    I.appendRow(p.name,[str(coo[0])+str(coo[1]) for coo in c])
-                    #if c == [[1,2],[2,2],[2,1],[2,3],[3,2]]:
-                        #constraintCell = incidence_matrix.IncidenceCell(I.columnObjectOfName['X'].up.left,I.columnObjectOfName['X'].up,I.columnObjectOfName['constraint'].up,I.columnObjectOfName['constraint'], I.columnObjectOfName['constraint'],I.columnObjectOfName['X'].up.name + "_constraint")
-                        #constraintCell.left.right = constraintCell.right.left = constraintCell.up.down = constraintCell.down.up = constraintCell 
-	    else:
+                    if c == [[1,2],[2,2],[2,1],[2,3],[3,2]]:
+                        constraintCell = incidence_matrix.IncidenceCell(I.columnObjectOfName['X'].up.left,I.columnObjectOfName['X'].up,I.columnObjectOfName['constraint'].up,I.columnObjectOfName['constraint'], I.columnObjectOfName['constraint'],I.columnObjectOfName['X'].up.name + "_constraint")
+                        constraintCell.left.right = constraintCell.right.left = constraintCell.up.down = constraintCell.down.up = constraintCell 
+	    else:	
 		for q in pentominos.fixed_pentominos_of(p):
 		    #m = q.max()
 		    for i in range(8):#self.board.size[0]-m[0]-1):
 			for j in range(8):#self.board.size[1]-m[1]-1):
 			    if self.board.valid_tile_placement(q.coos):
 				I.appendRow(p.name,[str(c[0])+str(c[1]) for c in q.coos])
-                                #if q in [pentominos.P().flip(0), pentominos.P().flip(0).turn90(), pentominos.P().flip(0).turn90().turn90(), pentominos.P().flip(0).turn90().turn90().turn90()]:
-                                   #constraintCell = incidence_matrix.IncidenceCell(I.columnObjectOfName['P'].up.left,I.columnObjectOfName['P'].up,I.columnObjectOfName['constraint'].up,I.columnObjectOfName['constraint'], I.columnObjectOfName['constraint'],I.columnObjectOfName['P'].up.name + "_constraint")
-                                   #constraintCell.left.right = constraintCell.right.left = constraintCell.up.down = constraintCell.down.up = constraintCell
+				if 'constraint' in I.columnObjectOfName:
+				    tmpPent = copy.deepcopy(q).normalize()
+				    if tmpPent in [pentominos.P().flip(0), pentominos.P().flip(0).turn90(), pentominos.P().flip(0).turn90().turn90(), pentominos.P().flip(0).turn90().turn90().turn90()]:
+				      constraintCell = incidence_matrix.IncidenceCell(I.columnObjectOfName['P'].up.left,I.columnObjectOfName['P'].up,I.columnObjectOfName['constraint'].up,I.columnObjectOfName['constraint'], I.columnObjectOfName['constraint'],I.columnObjectOfName['P'].up.name + "_constraint")
+				      constraintCell.left.right = constraintCell.right.left = constraintCell.up.down = constraintCell.down.up = constraintCell
 			    q.translate_one(1)
 			q.normalize_coo(1)
 			q.translate_one(0)
