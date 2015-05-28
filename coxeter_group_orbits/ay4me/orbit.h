@@ -19,8 +19,11 @@
 
 #include <vector>
 #include <set>
+#include <fstream>
+#include <string>
 
 class NotImplementedException : public std::exception {};
+class InvalidInputException : public std::exception {};
 
 typedef int NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
@@ -39,6 +42,44 @@ GeneratorList simple_roots(char type, int dim)
       throw new NotImplementedException();
    }
 }
+
+Void input(std::string filename,bool outputOrbit)
+{
+   std::ifstream input( filename );
+   std::string line; 
+   getline( input, line );
+   if(line.length() != 2)
+   {
+      throw new InvalidInputException();
+   }
+   char letter = line[0]
+   int number = int(line[1])
+   switch(letter) { // because switch doesn't work on strings
+      case 'A':
+         coos = {{0,1},{1,0},{1,1},{1,2},{2,2}}; break;
+      case 'B':
+         coos = {{0,0},{0,1},{0,2},{0,3},{0,4}}; break;
+      case 'D':
+         coos = {{0,0},{0,1},{0,2},{0,3},{1,0}}; break;
+      case 'E':
+         coos = {{0,0},{0,1},{1,1},{1,2},{1,3}}; break;
+      case 'F':
+         coos = {{0,0},{0,1},{0,2},{1,1},{1,2}}; break;
+      case 'G':
+         coos = {{0,2},{1,0},{1,1},{1,2},{2,2}}; break;
+      case 'H':
+         coos = {{0,0},{0,1},{1,0},{2,0},{2,1}}; break;
+      case 'I':
+         coos = {{0,0},{1,0},{2,0},{2,1},{2,2}}; break;
+      default:
+         throw new InvalidInputException();
+      }
+   //process first line
+   getline( input, line );
+   //process second line
+}
+
+
 
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
@@ -65,7 +106,7 @@ Orbit recorbit(const GeneratorList& generators, const VectorType& v, int k)
 
 VectorType mirror(const VectorType& v, VectorType generators)
 {
-   
+
 }
 
 
