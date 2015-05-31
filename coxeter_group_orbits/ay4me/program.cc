@@ -1,32 +1,18 @@
-#include __ORBIT_H_
+#include "orbit.h"
+#include <fstream>
 
 
-//read input rom file
-//give input to generateNormalVectors
-//orbit(generators, v)
-//write size of orbit
-//write orbit if flag
-
-?? read(file)
-{
-   //read coxeter(type, n) from file
-   //read vector from file
-   //throw exeption when not a finite coxeter
-   //throw exeption when vector not of size n
-}
-
-GeneratorList generateNormalVectors(coxetertype, dim)
-{
+int main()
+{   
+	GeneratorList generators;
+	VectorType v;
+	input("file.txt", v, generators);
+	Orbit generatedOrbit = orbit(generators, v);
+	std::ofstream file;
+	file.open ("out.txt");
+	out(file, generatedOrbit, true);
 
 }
-
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
-{
-   return std::set<VectorType>();
-}
-
-
-#endif // __ORBIT_H_
 
 // Local Variables:
 // mode:C++
