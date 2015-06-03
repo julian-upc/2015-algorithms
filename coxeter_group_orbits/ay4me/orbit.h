@@ -99,6 +99,33 @@ void generateB(std::size_t dim, GeneratorList& generators)
   }
 }
 
+void generateD(std::size_t dim, GeneratorList& generators)
+{
+  generators.resize(dim, VectorType(dim));
+  for (std::size_t i=0; i<dim; ++i)
+  {
+    for (std::size_t j=0; j<dim; ++j)
+    {
+      if (i == j)
+      {
+        generators[i][j] = 1;
+      }
+      else if (i+1 == j)
+      {
+        generators[i][j] = -1;
+      }
+      else if (i == dim-1 && j == dim-2)
+      {
+        generators[i][j] = 1;
+      }
+      else
+      {
+        generators[i][j] = 0;
+      }
+    }
+  }
+}
+
 void input(std::string filename, VectorType& point, GeneratorList& generators)
 {
   std::ifstream input( filename );
@@ -120,6 +147,7 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
         generateB(dim, generators);
         break;
     case 'D':
+        generateD(dim, generators);
         break;
     case 'E':
         break;
