@@ -55,12 +55,23 @@ GeneratorList simple_roots(char type, std::size_t dim)
 
 void generateA(std::size_t dim, GeneratorList& generators)
 {
-  generators.resize(dim, VectorType(dim));
+  generators.resize(dim, VectorType(dim+1));
   for (std::size_t i=0; i<dim; ++i)
   {
-    for (std::size_t j=0; j<dim; ++j)
+    for (std::size_t j=0; j<dim+1; ++j)
     {
-      
+      if (i == j)
+      {
+        generators[i][j] = 1;
+      }
+      else if (i+1 == j)
+      {
+        generators[i][j] = -1;
+      }
+      else
+      {
+        generators[i][j] = 0;
+      }
     }
   }
 }
@@ -145,13 +156,13 @@ VectorType mirror(const VectorType& v, const VectorType& plane)
   //mirror v on plane discribed by vector plane
   double init = 0;
   double init2 = 0;
-  VectorType help = plane;
-  VectorType newPoint = v;
+  VectorType help(v.size());
   for (std::size_t i = 0; i<plane.size();++i)
   {
     help[i] = plane[i]*(2*std::inner_product(v.begin(), v.end(), plane.begin(), init)) /
       std::inner_product(plane.begin(), plane.end(), plane.begin(), init2);
   }
+  VectorType newPoint(v.size());
   for(std::size_t i = 0; i<v.size();++i)
   {
     newPoint[i] = v[i] - help[i];
