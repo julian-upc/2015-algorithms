@@ -14,7 +14,6 @@ int main() {
     unsigned int orbitLength;
     bool showOrbit;  
     bool renderOrbit;
-    int e;
 
     try {
         //input
@@ -40,6 +39,7 @@ int main() {
         //processing
         //function is in orbit.h
         pointOrbit = processing(coxeterDiagram, inputPoint);
+
         orbitLength = pointOrbit.size(); 
     } catch(errorTypes& e) {
         std::cerr << "Errorcode " << e << '\n';
@@ -53,17 +53,18 @@ int main() {
             std::set<VectorType>::iterator iter; 
             for (iter=pointOrbit.begin(); iter!=pointOrbit.end(); iter++) {
                 std::cout << "( ";
-                for (int j=0; j<(*iter).size()-1; j++) {
+                for (unsigned int j=0; j<(*iter).size()-1; j++) {
                     std::cout << (*iter)[j] << ',';
                 }
                 std::cout << (*iter).size()-1 << ")\n";
             }
-        if (inputPoint.size() == 3 || inputPoint.size() == 2) {
-            std::cout << "Render Orbit? Y=1, N=0: ";
-            std::cin >> renderOrbit; 
-        }
-        if (renderOrbit) {
+            if (inputPoint.size() == 3 || inputPoint.size() == 2) {
+                std::cout << "Render Orbit? Y=1, N=0: ";
+                std::cin >> renderOrbit; 
+            }
+            if (renderOrbit) {
             //..
         }
-    return 0;
+        }
+        return 0;
 }

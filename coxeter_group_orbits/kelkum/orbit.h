@@ -27,16 +27,16 @@ template<typename T> //only numeric types please
 class ImperciseVector: public std::vector<T> {
     public:
         ImperciseVector() {}
-        bool operator~ (const ImperciseVector& v) { //does not work yet
+        bool operator== (const ImperciseVector& v) { //does not work yet
            T l1sq=0.0, l2sq=0.0, l3sq=0.0;
 
-           if ((*this).length() != v.length() || (*this).length==0 || v.length()==0) return false; 
-           for (int j = 0; j<(*this).length; j++) {
+           if (this->size() != v.size() || this->size()==0 || v.size()==0) return false; 
+           for (unsigned int j = 0; j<(this->size()); j++) {
                l1sq += (*this)[j]*(*this)[j];
                l2sq += v[j]*v[j];
                l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
            }
-           //some estimate such that length of their  their difference (relative to their size) is small enough
+           //some estimate such that length of their their difference (relative to their size) is small enough
            if (l3sq/(l1sq*l2sq) <= 0.00001) return true; 
            return false;
         }
@@ -56,7 +56,7 @@ Orbit processing(std::string& coxeterDiagram, VectorType& inputPoint) {
 
     char diagramType;
     int normalNumber;
-    GeneratorList normals;
+    GeneratorList normalVectors;
     Orbit orbit; 
 
     ss >> diagramType >> normalNumber; //not sure but it seems to work
@@ -69,9 +69,9 @@ Orbit processing(std::string& coxeterDiagram, VectorType& inputPoint) {
     if (diagramType == 'A' || diagramType == 'a') { //make dimensions of normals and the point in this special case the same so one gets sensable dotproducts
         inputPoint.push_back(0.0);
     }
-    simple_roots(diagramType, normalNumber, normals); //modifies the normals Variable to get all the normals corresponding to a certain Coxeter diagram into the normals "matrix"
-    orbit = genorbit(normals, inputPoint);
-
+    simple_roots(diagramType, normalNumber, normalVectors); //modifies the normals Variable to get all the normals corresponding to a certain Coxeter diagram into the normals "matrix"
+    orbit = genorbit(normalVectors, inputPoint);
+    int a;
     return orbit; 
 
 }
@@ -121,8 +121,8 @@ double dotprod(const VectorType& v1, const VectorType& v2) {
         throw DotProdNotDefined;
         return 0.0;
     }
-    int d = 0;
-    for (int i = 0; i<v1.size(); i++) {
+    double d = 0.0;
+    for (unsigned int i = 0; i<v1.size(); i++) {
         d+=v1[i]*v2[i];
     }
     return d;
@@ -130,10 +130,10 @@ double dotprod(const VectorType& v1, const VectorType& v2) {
 
 //requires a VectorType as input that it can write the result of the reflection to, to try to avoid copying and reassigning as this is the function used the most often
 void reflect(const VectorType& normal, const VectorType& point, VectorType& result) {
-    VectorType result=point;
+    result=point;
     double pointDotNormal = dotprod(point, normal);
     double normalDotNormal = dotprod(normal, normal);
-    for (int i = 0; i<point.size(); i++) {
+    for (unsigned int i = 0; i<point.size(); i++) {
         result[i]-=2*(pointDotNormal/normalDotNormal)*normal[i];
     }
 }
@@ -149,23 +149,24 @@ Orbit genorbit(const GeneratorList& generators, const VectorType& v) {
     GeneratorList* writingBufferNewPoints = &buffer1;
     GeneratorList* readingBufferNewPoints = &buffer2;
 
-    int compositionLength=100;
+    int compositionLength=10;
 
     for (int i = 0; i<compositionLength; i++) {
-        for (int j = 0; j<(*readingBufferNewPoints).size(); j++) { //iterate through all new points
-            for (int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes
+        for (unsigned int j = 0; j<(*readingBufferNewPoints).size(); j++) { //iterate through all new points
+            for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes
                 tmpPoint.clear(); 
                 reflect(generators[k], (*readingBufferNewPoints)[j], tmpPoint);
                 //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to writingBufferNewPoints that will be read from in the next iteration of i
                 for (it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
-                    if (tmpVector~(*it2)) break; //approximate comparison
-                    pointOrbit.insert(tmpVector);
-                    (*writingBufferNewPoints).push_back(tmpVector);
+                    if (tmpPoint==(*it)) break; //approximate comparison
+                    pointOrbit.insert(tmpPoint);
+                    (*writingBufferNewPoints).push_back(tmpPoint);
                 }
             }
         }
         (*readingBufferNewPoints).clear(); 
         std::swap(writingBufferNewPoints, readingBufferNewPoints);
+
     }
 
 
