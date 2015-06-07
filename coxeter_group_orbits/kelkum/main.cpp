@@ -43,6 +43,7 @@ int main() {
         orbitLength = pointOrbit.size(); 
     } catch(errorTypes& e) {
         std::cerr << "Errorcode " << e << '\n';
+        return static_cast<int>(e);
     }
 
         //output
@@ -61,10 +62,13 @@ int main() {
             if (inputPoint.size() == 3 || inputPoint.size() == 2) {
                 std::cout << "Render Orbit? Y=1, N=0: ";
                 std::cin >> renderOrbit; 
+                if (renderOrbit) {
+                    //..
+                }
             }
-            if (renderOrbit) {
-            //..
-        }
+            int a;
+            std::cin>>a;
+
         }
         return 0;
 }

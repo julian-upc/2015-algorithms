@@ -20,7 +20,7 @@
 #include <vector>
 #include <set>
 #include <sstream>
-#include <set>
+#include <cmath>
 
 
 template<typename T> //only numeric types please
@@ -28,18 +28,27 @@ class ImperciseVector: public std::vector<T> {
     public:
         ImperciseVector() {}
         bool operator== (const ImperciseVector& v) { //does not work yet
-           T l1sq=0.0, l2sq=0.0, l3sq=0.0;
-
-           if (this->size() != v.size() || this->size()==0 || v.size()==0) return false; 
-           for (unsigned int j = 0; j<(this->size()); j++) {
-               l1sq += (*this)[j]*(*this)[j];
-               l2sq += v[j]*v[j];
-               l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
-           }
-           //some estimate such that length of their their difference (relative to their size) is small enough
-           if (l3sq/(l1sq*l2sq) <= 0.00001) return true; 
-           return false;
+            double epsilon = 0.0001;
+            unsigned int k = this->size(); 
+            for (unsigned int j = 0; j<k; j++) {
+               if( abs((*this)[j]-v[j]) > epsilon) return false; 
+            }
+            return true;
         }
+
+           
+        //   T l1sq=0.0, l2sq=0.0, l3sq=0.0;
+
+        //   if (this->size() != v.size() || this->size()==0 || v.size()==0) return false; 
+        //   for (unsigned int j = 0; j<(this->size()); j++) {
+        //       l1sq += (*this)[j]*(*this)[j];
+        //       l2sq += v[j]*v[j];
+        //       l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
+        //   }
+        //   some estimate such that length of their their difference (relative to their size) is small enough
+        //   if (l3sq/(l1sq*l2sq) <= 0.0001) return true; 
+        //   return false;
+        //}
 };
 
 typedef ImperciseVector<double> VectorType;
@@ -71,7 +80,6 @@ Orbit processing(std::string& coxeterDiagram, VectorType& inputPoint) {
     }
     simple_roots(diagramType, normalNumber, normalVectors); //modifies the normals Variable to get all the normals corresponding to a certain Coxeter diagram into the normals "matrix"
     orbit = genorbit(normalVectors, inputPoint);
-    int a;
     return orbit; 
 
 }
@@ -149,9 +157,10 @@ Orbit genorbit(const GeneratorList& generators, const VectorType& v) {
     GeneratorList* writingBufferNewPoints = &buffer1;
     GeneratorList* readingBufferNewPoints = &buffer2;
 
-    int compositionLength=10;
+    int compositionLength=50;
 
     for (int i = 0; i<compositionLength; i++) {
+        if ((*readingBufferNewPoints).size() == 0) break;
         for (unsigned int j = 0; j<(*readingBufferNewPoints).size(); j++) { //iterate through all new points
             for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes
                 tmpPoint.clear(); 
@@ -160,7 +169,11 @@ Orbit genorbit(const GeneratorList& generators, const VectorType& v) {
                 for (it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
                     if (tmpPoint==(*it)) break; //approximate comparison
                     pointOrbit.insert(tmpPoint);
+                    for (unsigned int l=0; l<(*writingBufferNewPoints).size(); l++) {//reading from the writingbuffer but this is only to ensure I have not already written the point to it
+                        if (tmpPoint==(*writingBufferNewPoints)[l]) goto escape;
+                    }
                     (*writingBufferNewPoints).push_back(tmpPoint);
+                    escape:;
                 }
             }
         }
@@ -168,8 +181,6 @@ Orbit genorbit(const GeneratorList& generators, const VectorType& v) {
         std::swap(writingBufferNewPoints, readingBufferNewPoints);
 
     }
-
-
     return pointOrbit;
 }
 
