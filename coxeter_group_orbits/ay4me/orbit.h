@@ -32,6 +32,11 @@ public:
   InvalidInputException():std::logic_error("no error message") {};
   InvalidInputException(const std::string& s):std::logic_error(s) {};
 };
+class InvalidGeneratorException : public std::logic_error {
+public:
+  InvalidGeneratorException():std::logic_error("no error message") {};
+  InvalidGeneratorException(const std::string& s):std::logic_error(s) {};
+};
 
 typedef int NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
@@ -176,6 +181,79 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
   for(std::size_t i = 0; i < dim; ++i)
   {
     lineIn >> point[i];
+  }
+}
+
+int factorial(int n)
+{
+  if (n == 0 || n == 1)
+  {
+    return 1;
+  }
+  return factorial(n-1)*n;
+}
+
+bool divisor(int d, int n)
+{
+  return n%d == 0;
+}
+
+void sanityCheck(int orbitSize, std::string filename)
+{
+  std::ifstream input( filename );
+  std::string line; 
+  getline( input, line );
+  char letter = line[0]; //get name of coxeter
+  std::size_t dim = line[1]-'0'; //get dimension of coxeter
+  int maxOrbit = 0;
+  switch(letter) {
+    case 'A':
+        maxOrbit = factorial(dim+1);
+        if (!divisor(orbitSize,maxOrbit))
+        {
+          throw InvalidGeneratorException("Orbitsize is not divisor of the maximum one.");
+        }
+        break;
+    case 'B':
+        if (dim < 4)
+        {
+          maxOrbit = factorial(dim+1);
+        }
+        else
+        {
+          maxOrbit = (1<<dim)*factorial(dim);
+        }
+        if (!divisor(orbitSize,maxOrbit))
+        {
+          throw InvalidGeneratorException("Orbitsize is not divisor of the maximum one.");
+        }
+        break;
+    case 'D':
+        if (dim < 4)
+        {
+          maxOrbit = factorial(dim+1);
+        }
+        else
+        {
+          maxOrbit = (1<<(dim-1))*factorial(dim);
+        }
+        if (!divisor(orbitSize,maxOrbit))
+        {
+          throw InvalidGeneratorException("Orbitsize is not divisor of the maximum one.");
+        }
+        break;
+    case 'E':
+        break;
+    case 'F':
+        break;
+    case 'G':
+        break;
+    case 'H':
+        break;
+    case 'I':
+        break;
+    default:
+       throw InvalidInputException("Infinite or unknown coxeter group.");
   }
 }
 
