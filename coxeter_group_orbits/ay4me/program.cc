@@ -8,6 +8,7 @@ int main()
 	VectorType v;
 	input("file.txt", v, generators);
 	Orbit generatedOrbit = orbit(generators, v);
+	//sanityCheck(generatedOrbit.size(),"file.txt");
 	std::ofstream file;
 	file.open ("out.txt");
 	out(file, generatedOrbit, true);
