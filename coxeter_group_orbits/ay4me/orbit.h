@@ -39,7 +39,7 @@ public:
   InvalidGeneratorException(const std::string& s):std::logic_error(s) {};
 };
 
-const static double epsilon = 0.00001;
+const static double epsilon = 0.00001; 
 
 template<typename T>
 T relativeError(const std::vector<T>& x, const std::vector<T>& y)
@@ -184,12 +184,14 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
   std::string line; 
   getline( input, line );
     //process first line
-  if(line.length() != 2)
+  if(line.length() < 2)
   {
-    throw InvalidInputException("Wrong number of lines.");
+    throw InvalidInputException("No valid coxeter.");
   }
   char letter = line[0];
-  std::size_t dim = line[1]-'0';
+  std::size_t dim;
+  std::istringstream s(line.substr(1));
+  s >> dim;
   point.resize(dim);
   switch(letter) {
     case 'A':
@@ -228,6 +230,10 @@ void input(std::string filename, VectorType& point, GeneratorList& generators)
   for(std::size_t i = 0; i < dim; ++i)
   {
     lineIn >> point[i];
+  }
+  if(getline( input, line ))
+  {
+    throw InvalidInputException("Wrong number of lines.");
   }
 }
 
@@ -338,10 +344,32 @@ void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& histo
   return;
 }
 
+void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
+{
+  std::set<VectorType, ImpreciseComp<NumberType>> unmirroredPoints = {v};
+  VectorType currentPoint(v.size());
+  while(!unmirroredPoints.empty())
+  {
+    std::set<VectorType>::iterator it = unmirroredPoints.begin();
+    currentPoint = *it;
+    history.insert(currentPoint);
+    for(const auto& plane : generators)
+    {
+      VectorType mirroredPoint = mirror(currentPoint,plane);
+      if(history.find(mirroredPoint) == history.end())
+      {
+        unmirroredPoints.insert(mirroredPoint);
+      }
+    }
+    unmirroredPoints.erase(currentPoint);
+  }
+  return;
+}
+
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
   Orbit solution = {};
-  recorbit(generators, v, solution);
+  iterorbit(generators, v, solution);
   return solution;
 }
 
