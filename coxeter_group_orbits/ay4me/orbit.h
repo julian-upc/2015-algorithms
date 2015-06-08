@@ -41,46 +41,6 @@ public:
 
 const static double epsilon = 0.00001;
 
-// template<typename T>
-// class ImpreciseVector : public std::vector<T>
-// {
-//   public:
-//     ImpreciseVector(){}
-//     //ImpreciseVector(const std::size_t& arg) : std::vector<T>(arg) {}
-
-//     double relativeError(const ImpreciseVector<T>& x, const ImpreciseVector<T>& y)
-//     {
-//       ImpreciseVector diff(x.size());
-//       for (int i=0;i < x.size();++i)
-//       {
-//         diff[i] = x[i]-y[i];
-//       }
-//       double maxDiff = 0.0;
-//       double maxVal = 0.0;
-//       for (int i=0;i < x.size();++i)
-//       {
-//         if (diff[i] > maxDiff)
-//         {
-//           maxDiff = diff[i];
-//         }
-//         if (x[i] > maxVal)
-//         {
-//           maxVal = x[i];
-//         }
-//       }
-//       return maxDiff/maxVal;
-//     }
-
-//     friend bool operator <(const ImpreciseVector<T>& x, const ImpreciseVector<T>& y)
-//     {
-//       if (relativeError(x,y) < epsilon)
-//       {
-//         return false;
-//       }
-//       return static_cast<std::vector<T>>(x) < static_cast<std::vector<T>>(y);
-//     }
-// };
-
 template<typename T>
 T relativeError(const std::vector<T>& x, const std::vector<T>& y)
 {
@@ -124,11 +84,6 @@ struct ImpreciseComp{
     return x < y;
   }
 };
-
-// typedef int NumberType;  // this probably isn't going to work
-// typedef std::vector<NumberType> VectorType;
-// typedef std::vector<VectorType> GeneratorList;
-// typedef std::set<VectorType> Orbit;
 
 typedef double NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
@@ -370,7 +325,6 @@ VectorType mirror(const VectorType& v, const VectorType& plane)
 
 void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 {
-  //out(std::cout, history, true);
   if(history.find(v) != history.end())
   {
     return;
