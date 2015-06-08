@@ -347,15 +347,16 @@ void recorbit(const GeneratorList& generators, const VectorType& v, Orbit& histo
 void iterorbit(const GeneratorList& generators, const VectorType& v, Orbit& history)
 {
   std::set<VectorType, ImpreciseComp<NumberType>> unmirroredPoints = {v};
-  VectorType currentPoint(v.size());
   while(!unmirroredPoints.empty())
   {
-    std::set<VectorType>::iterator it = unmirroredPoints.begin();
-    currentPoint = *it;
+    // std::set<VectorType>::iterator it = unmirroredPoints.begin();
+    // currentPoint = *it;
+    const VectorType& currentPoint(*(unmirroredPoints.begin()));
     history.insert(currentPoint);
     for(const auto& plane : generators)
     {
       VectorType mirroredPoint = mirror(currentPoint,plane);
+      //mirroredPoint = mirror(currentPoint,plane);
       if(history.find(mirroredPoint) == history.end())
       {
         unmirroredPoints.insert(mirroredPoint);
