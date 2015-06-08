@@ -14,21 +14,39 @@
 --------------------------------------------------------------------------------
 */
 
-#ifndef __ORBIT_H_
-#define __ORBIT_H_
+#ifndef __TYPES_H_
+#define __TYPES_H_
 
 #include <set>
-#include "types.h"
-#include "generators.h"
+#include <vector>
+
+class NotImplementedException : public std::exception {};
+class InvalidGroupException : public std::exception {};
+
+typedef long double NumberType;  // this might work
+typedef std::vector<NumberType> VectorType;
+typedef std::set<VectorType> Orbit;
+
+class GeneratorList : public std::vector<VectorType> {
+public:
+   GeneratorList(int r, int c) 
+      : std::vector<VectorType>(r)
+   {
+      for (int i=0; i<r; ++i)
+         (*this)[i] = VectorType(c);
+   }
+
+   NumberType& operator ()(int i, int j) {
+      return (*this)[i][j];
+   }
+
+   const NumberType& operator ()(int i, int j) const {
+      return (*this)[i][j];
+   }
+};
 
 
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
-{
-   return std::set<VectorType>();
-}
-
-
-#endif // __ORBIT_H_
+#endif // __TYPES_H_
 
 // Local Variables:
 // mode:C++
