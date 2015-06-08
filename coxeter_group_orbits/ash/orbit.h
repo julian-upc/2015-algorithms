@@ -40,11 +40,44 @@ GeneratorList simple_roots(char type, int dim)
    }
 }
 
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
+VectorType reflection(const VectorType& p, const VectorType& n)
 {
-   return std::set<VectorType>();
+   VectorType& p_ref;
+   p_ref = p - scalarMultiplication(n, 2 * (scalarProduct(p,n) / scalarProduct(n,n)));
+
+   return p_ref; 
 }
 
+NumberType scalarProduct(const VectorType& x, const VectorType& y)
+{   
+   NumberType sca = 0.0;
+
+   return std::inner_product(begin(x), end(x), begin(y), sca);
+}
+
+float scalarMultiplication(const VectorType& x, NumberType y)
+{   
+   return std::transform(begin(x), end(x), begin(x), std::bind1st (std::multiplies <NumberType> () , y));
+}
+
+Orbit orbit(const GeneratorList& generators, const VectorType& v)
+{
+
+   Orbit wholeOrbit;
+ 	
+   return orbitConstruction(gnerators, v, wholeOrbit);
+}
+
+Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit solution)
+{   
+   VectorType& ref;
+  
+   while(auto& n : generators){
+      ref = reflection(v,n);      
+      if(solution.
+   }
+   return solution;
+}
 
 #endif // __ORBIT_H_
 
