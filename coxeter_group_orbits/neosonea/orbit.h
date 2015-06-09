@@ -122,35 +122,52 @@ GeneratorList simple_roots(char type, int dim)
 	}
 }
 
-VectorType times( double factor, VectorType& vector ){
+VectorType times( double factor, const VectorType& vector ){
 	VectorType result(vector);
-	for( int i=0; i < vector.size(); i++ )
+	for( unsigned int i=0; i < vector.size(); i++ )
 		result[i] *= factor;
 	return result;
 }
-double scalar_prod( VectorType& vector1, VectorType& vector2 ){
+double operator *( const VectorType& vector1, const VectorType& vector2 ){
 	double sum = 0;
-	for( int i=0; i < vector1.size(); i++ )
+	for( unsigned int i=0; i < vector1.size(); i++ )
 		sum += vector1[i] * vector2[i];
 	return sum;
 }
-VectorType add( VectorType& vector1, VectorType& vector2 ){
+VectorType operator +( const VectorType& vector1, const VectorType& vector2 ){
 	VectorType sum(vector1);
-	for( int i=0; i < vector1.size(); i++ )
+	for( unsigned int i=0; i < vector1.size(); i++ )
 		sum[i] += vector2[i];
 	return sum;
+}
+
+void rec( const int i, const GeneratorList& gens, Orbit& orbit, Orbit& orbit_i ){
+	if( i != 0 ){//return;
+	Orbit orbit_i1;
+	for( const auto& g : gens ){
+		for( const auto& v : orbit_i ){
+			orbit.insert( v + times( -2.*(g*v)/sqrt(g*g)/sqrt(v*v), g ) );
+			orbit_i1.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
+			rec( i-1, gens, orbit, orbit_i1 );
+		}
+	}
+	}
 }
 
 Orbit orbit(const GeneratorList& generators, const VectorType& v)
 {
 	if ( v.size() != generators[0].size() ) throw new NotImplementedException();
 	Orbit mapped;
+	Orbit orbit_i0;
 	mapped.insert(v);
-	for( const auto& g : generators ){
-		//mapped.insert( times( -2. * (*scalar_prod(g,v)), g)  );
-	}
+	orbit_i0.insert(v);
+	rec( 6, generators, mapped, orbit_i0 );
+//	for( const auto& g : generators ){
+//		mapped.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
+//	}
 	return mapped;
 }
+
 
 
 #endif // __ORBIT_H_
