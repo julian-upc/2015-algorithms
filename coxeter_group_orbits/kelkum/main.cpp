@@ -16,6 +16,7 @@
 #include <sstream>
 #include <array>
 #include <vector>
+#include <iomanip> 
 #include "orbit.h"
 
 int main() {
@@ -62,14 +63,15 @@ int main() {
         std::cout << "Orbit size: " << orbitLength << "\n show orbit? Y=1, N=0: "; 
         std::cin >> showOrbit;
         if(showOrbit) {
-            std::cout.precision(5);
             std::set<VectorType>::iterator iter; 
             for (iter=pointOrbit.begin(); iter!=pointOrbit.end(); iter++) {
                 std::cout << "( ";
                 for (unsigned int j=0; j<(*iter).size()-1; j++) {
-                    std::cout << (*iter)[j] << ',';
+                    int a=0;
+                    a++;
+                    std::cout << std::setprecision(5) << (*iter)[j] << ',';
                 }
-                std::cout << (*iter).size()-1 << ")\n";
+                std::cout << std::setprecision(5)  << (*iter).size()-1 << ")\n";
             }
             if (inputPoint.size() == 3 || inputPoint.size() == 2) {
                 std::cout << "Render Orbit? Y=1, N=0: ";
@@ -84,3 +86,4 @@ int main() {
         }
         return 0;
 }
+

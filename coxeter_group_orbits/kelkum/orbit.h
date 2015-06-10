@@ -17,7 +17,7 @@
 #include <set>
 #include <sstream>
 #include <cmath>
-const static double epsilon = 0.0001; 
+const static double epsilon = 0.00001; 
 
 
 template<typename T> //only numeric types please
@@ -25,22 +25,32 @@ class ImpreciseVector: public std::vector<T> {
     public:
         ImpreciseVector() {}
         bool operator== (const ImpreciseVector& v) { //does not work yet
-           unsigned int k = this->size();          
-           T l1sq=static_cast<T>(0.0), l2sq=static_cast<T>(0.0), l3sq=static_cast<T>(0.0);
-
-           if (k != v.size() || k==0 || v.size()==0) return false; 
-           for (unsigned int j = 0; j<k; j++) {
-               l1sq += (*this)[j]*(*this)[j];
-               l2sq += v[j]*v[j];
-               l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
-           }
-           //some estimate such that length of their their difference (relative to their size) is small enough
-           if (l3sq/(l1sq*l2sq) <= epsilon) return true; 
-           return false;
+            unsigned int k = this->size();
+            T lsq=static_cast<T>(0.0);
+            if (k != v.size() || k==0 || v.size()==0) return false; 
+            for (unsigned int j = 0; j<k; j++) {
+                lsq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
+            }
+            if (lsq > epsilon) {return false;}
+            else {return true;}
         }
+
+        //   unsigned int k = this->size();          
+        //   T l1sq=static_cast<T>(0.0), l2sq=static_cast<T>(0.0), l3sq=static_cast<T>(0.0);
+
+        //   if (k != v.size() || k==0 || v.size()==0) return false; 
+        //   for (unsigned int j = 0; j<k; j++) {
+        //       l1sq += (*this)[j]*(*this)[j];
+        //       l2sq += v[j]*v[j];
+        //       l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
+        //   }
+        //   //some estimate such that length of their their difference (relative to their size) is small enough
+        //   if (l3sq/(l1sq*l2sq) <= epsilon) return true; 
+        //   return false;
+        //}
 };
 
-typedef ImpreciseVector<double> VectorType;
+typedef ImpreciseVector<float> VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
 enum errorTypes {NotImplemented, DimensionError, InputError, DotProdNotDefined};
@@ -136,22 +146,18 @@ Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
     pointOrbit.insert(v);
 
     VectorType tmpPoint;
-    GeneratorList buffer1, buffer2; 
-    buffer2.push_back(v);
-    GeneratorList* writingBufferNewPoints = &buffer1;
-    GeneratorList* readingBufferNewPoints = &buffer2;
+    GeneratorList readingBufferNewPoints, writingBufferNewPoints; 
+    readingBufferNewPoints.push_back(v);
 
-    unsigned int compositionLength=50;
+    unsigned int compositionLength=30;
 
     for (unsigned int i = 0; i<compositionLength; i++) {
-        if ((*readingBufferNewPoints).size() == 0) break;
-        for (unsigned int j = 0; j<(*readingBufferNewPoints).size(); j++) { //iterate through all new points
-            for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes
+        for (unsigned int j = 0; j<readingBufferNewPoints.size(); j++) { //iterate through all new points
+            for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes; having functions being called for comparison every iteration probably bad idea but it looks cleaner
                 tmpPoint.clear(); 
-                reflect(generators[k], (*readingBufferNewPoints)[j], tmpPoint);
+                reflect(generators[k], readingBufferNewPoints[j], tmpPoint);
                 //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to the newPointBuffer that will be read from in the next iteration of i
                 bool inOrbit = false;
-                bool inWritingBuffer=false;
                 for (std::set<VectorType>::iterator it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
                     if (tmpPoint==(*it)) {//approximate comparison
                         inOrbit = true;
@@ -160,18 +166,10 @@ Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
                 }
                 if (!inOrbit) { 
                     pointOrbit.insert(tmpPoint);
-                    for (unsigned int l=0; l<(*writingBufferNewPoints).size(); l++) {//reading from the writingbuffer but this is only to ensure I have not already written the point to it
-                        if (tmpPoint==(*writingBufferNewPoints)[l]) {
-                            inWritingBuffer = true;
-                            break;
-                        }
-                    }
+                    writingBufferNewPoints.push_back(tmpPoint);
                 }
-
-        
-                if (!inWritingBuffer) (*writingBufferNewPoints).push_back(tmpPoint);
             }
-            (*readingBufferNewPoints).clear(); 
+            readingBufferNewPoints.clear(); 
             std::swap(writingBufferNewPoints, readingBufferNewPoints);
         }
     }
