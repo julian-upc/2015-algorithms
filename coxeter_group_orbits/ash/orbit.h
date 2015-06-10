@@ -17,67 +17,68 @@
 #ifndef __ORBIT_H_
 #define __ORBIT_H_
 
+#include <numeric>
 #include <vector>
+#include <functional>
 #include <set>
+#include <initializer_list>
+#include "types.h"
+#include "generators.h"
 
-class NotImplementedException : public std::exception {};
 
-typedef int NumberType;  // this probably isn't going to work
-typedef std::vector<NumberType> VectorType;
-typedef std::vector<VectorType> GeneratorList;
-typedef std::set<VectorType> Orbit;
+   NumberType scalarProduct(const VectorType& x, const VectorType& y)
+   {   
+      NumberType sca = 0.0;
 
-GeneratorList simple_roots(char type, int dim)
-{
-   switch(type) {
-   case 'b':
-   case 'B':
-      if (dim != 3) throw new NotImplementedException();
-      return {{1,-1,0},{0,1,-1},{0,0,1}};
-
-   default:
-      throw new NotImplementedException();
+      return std::inner_product(x.begin(), x.end(), y.begin(), sca);
    }
-}
 
-VectorType reflection(const VectorType& p, const VectorType& n)
-{
-   VectorType& p_ref;
-   p_ref = p - scalarMultiplication(n, 2 * (scalarProduct(p,n) / scalarProduct(n,n)));
-
-   return p_ref; 
-}
-
-NumberType scalarProduct(const VectorType& x, const VectorType& y)
-{   
-   NumberType sca = 0.0;
-
-   return std::inner_product(begin(x), end(x), begin(y), sca);
-}
-
-float scalarMultiplication(const VectorType& x, NumberType y)
-{   
-   return std::transform(begin(x), end(x), begin(x), std::bind1st (std::multiplies <NumberType> () , y));
-}
-
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
-{
-
-   Orbit wholeOrbit;
- 	
-   return orbitConstruction(gnerators, v, wholeOrbit);
-}
-
-Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit solution)
-{   
-   VectorType& ref;
-  
-   while(auto& n : generators){
-      ref = reflection(v,n);      
-      if(solution.
+   VectorType scalarMultiplication(const VectorType& p, const NumberType a)
+   {   
+      VectorType tmp (p);  
+      for (VectorType::size_type i = 0; i != tmp.size(); i++){
+         tmp[i] *= a;
+      }
+      return tmp;
    }
-   return solution;
-}
+
+   VectorType vectorSubtraction(const VectorType& p, const VectorType& n)
+   {
+      VectorType tmp (p);  
+      for (VectorType::size_type i = 0; i != n.size(); i++){
+         tmp[i] -= n[i];
+      }
+      return tmp;
+   }
+
+   VectorType reflection(const VectorType& p, const VectorType& n)
+   {
+      VectorType p_ref = vectorSubtraction(p, scalarMultiplication(n, 2 * (scalarProduct(p,n) / scalarProduct(n,n))));
+
+      return p_ref; 
+   }
+
+
+   Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit solution)
+   {   
+      VectorType ref;
+     
+      for(VectorType::size_type i = 0; i != generators.size(); i++){
+         ref = reflection(v,generators[i]);      
+         if(solution.find(ref) == solution.end()){
+            solution.insert(ref);
+            orbitConstruction(generators, ref, solution);
+         }
+      }
+      return solution;
+   }
+
+   Orbit orbit(const GeneratorList& generators, const VectorType& v)
+   {
+      Orbit wholeOrbit;
+      return orbitConstruction(generators, v, wholeOrbit);
+   }
+
 
 #endif // __ORBIT_H_
 
