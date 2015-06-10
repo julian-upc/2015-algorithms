@@ -25,13 +25,9 @@
 class NotImplementedException : public std::exception {};
 
 const double eps = 10e-100;
-typedef std::vector<NumberType> VectorType;
-typedef std::vector<VectorType> GeneratorList;
-typedef std::set<VectorType> Orbit;
-//class Orbit : public std::set<VectorType>
 
-//typedef double NumberType;  // this probably isn't going to work
-class NumberType
+typedef long double NumberType;  // this probably isn't going to work
+/*class NumberType
 {
 	private:
 		double value;
@@ -40,8 +36,12 @@ class NumberType
 	{		//Pento: return coos < other.coos || name < other.name;
 		return abs( this - other ) < 0;
 	}
-};
+};*/
 
+typedef std::vector<NumberType> VectorType;
+typedef std::vector<VectorType> GeneratorList;
+typedef std::set<VectorType> Orbit;
+//class Orbit : public std::set<VectorType>
 
 GeneratorList simple_roots(char type, int dim)
 {
@@ -151,6 +151,7 @@ void rec( const int i, const GeneratorList& gens, Orbit& orbit, Orbit& orbit_i )
 	if( i != 0 ){//return;
 	Orbit orbit_i1;
 	for( const auto& g : gens ){
+		printf(" {%d, %d}",g[0], g[1]);
 		for( const auto& v : orbit_i ){
 			orbit.insert( v + times( -2.*(g*v)/sqrt(g*g)/sqrt(v*v), g ) );
 			orbit_i1.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
