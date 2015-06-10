@@ -18,22 +18,51 @@
 #define __TYPES_H_
 
 #include <set>
+#include <numeric>
 #include <vector>
+#include <functional>
+
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
 
 typedef long double NumberType;  // this might work
-typedef std::vector<NumberType> VectorType;
+/*
+class ImpreciseVector : std::vector<NumberType>
+{
+public:
+   using vector::vector;
+   using vector::push_back;
+   using vector::operator[];
+   using vector::begin;
+   using vector::end;
+   using vector::size;
+
+   friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 ){
+      float epsilon = 0.00001;
+      std::vector<NumberType> tmp(v1.size());
+
+      for (std::vector<NumberType>::size_type i = 0; i != tmp.size(); i++){
+         tmp[i] = v1[i] - v2[i];
+      }
+
+      if((std::inner_product(tmp.begin(), tmp.end(), tmp.begin(), 0.0) / (std::inner_product(v1.begin(), v1.end(), v1.begin(), 0.0) * std::inner_product(v2.begin(), v2.end(), v2.begin(), 0.0))) < epsilon) 
+         return false;
+      else
+         return static_cast<std::vector<NumberType>>(v1) < static_cast<std::vector<NumberType>>(v2);
+   }
+};*/
+
+typedef std::vector<NumberType> CoxeterVectorType;
+typedef std::vector<NumberType> VectorType;//ImpreciseVector VectorType;
 typedef std::set<VectorType> Orbit;
 
-class GeneratorList : public std::vector<VectorType> {
+class GeneratorList : public std::vector<CoxeterVectorType> {
 public:
-   GeneratorList(int r, int c) 
-      : std::vector<VectorType>(r)
+   GeneratorList(int r, int c) : std::vector<CoxeterVectorType>(r)
    {
       for (int i=0; i<r; ++i)
-         (*this)[i] = VectorType(c);
+         (*this)[i] = CoxeterVectorType(c);
    }
 
    NumberType& operator ()(int i, int j) {
@@ -44,26 +73,7 @@ public:
       return (*this)[i][j];
    }
 };
-/*
-class ImpreciseVector : std::vector<NumberType>
-{
-   ImpreciseVector(){}
 
-   friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 ){
-      float epsilon = 0.00001;
-      std::vector<T> tmp (v1);
-
-      for (std::vector<int>::size_type i = 0; i != tmp.size(); i++){
-         tmp[i] -= v2[i];
-      }
-
-      if((std::inner_product(begin(tmp), end(tmp), begin(tmp), 0.0) / (std::inner_product(begin(v1), end(v1), begin(v1), 0.0) * std::inner_product(begin(v2), end(v2), begin(v2), 0.0))) < epsilon) 
-         return false;
-      else
-         return static_cast<std::vector<T>>(v1) < static_cast<std::vector<T>>(v2);
-   }
-};
-*/
 #endif // __TYPES_H_
 
 // Local Variables:
