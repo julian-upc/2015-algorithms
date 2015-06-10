@@ -21,24 +21,29 @@
 #include <numeric>
 #include <vector>
 #include <functional>
-
+#include <initializer_list>
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
 
 typedef long double NumberType;  // this might work
-/*
-class ImpreciseVector : std::vector<NumberType>
+
+class ImpreciseVector : public std::vector<NumberType>
 {
 public:
-   using vector::vector;
-   using vector::push_back;
+   /*using std::vector<NumberType>::vector;
+   /*using vector::push_back;
    using vector::operator[];
    using vector::begin;
    using vector::end;
-   using vector::size;
+   using vector::size;*/
+   ImpreciseVector() : std::vector<NumberType>() {};
+   ImpreciseVector(int i) : std::vector<NumberType>(i) {};
+   ImpreciseVector(const std::vector<NumberType>& v) : std::vector<NumberType>(v) {};
+   ImpreciseVector(std::initializer_list<NumberType> v) : std::vector<NumberType>(v) {};
 
-   friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 ){
+   friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 )
+   {
       float epsilon = 0.00001;
       std::vector<NumberType> tmp(v1.size());
 
@@ -51,10 +56,10 @@ public:
       else
          return static_cast<std::vector<NumberType>>(v1) < static_cast<std::vector<NumberType>>(v2);
    }
-};*/
+};
 
 typedef std::vector<NumberType> CoxeterVectorType;
-typedef std::vector<NumberType> VectorType;//ImpreciseVector VectorType;
+typedef ImpreciseVector VectorType; //std::vector<NumberType> VectorType;//
 typedef std::set<VectorType> Orbit;
 
 class GeneratorList : public std::vector<CoxeterVectorType> {
