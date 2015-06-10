@@ -24,16 +24,23 @@
 
 class NotImplementedException : public std::exception {};
 
-typedef double NumberType;  // this probably isn't going to work
+const double eps = 10e-100;
 typedef std::vector<NumberType> VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
-//class Orbit : std::set<VectorType>{
-//	bool operator<(const Orbit& other) const {
-		//Pento: return coos < other.coos || name < other.name;
-//		return this. < other.;
-//	}
-//};
+//class Orbit : public std::set<VectorType>
+
+//typedef double NumberType;  // this probably isn't going to work
+class NumberType
+{
+	private:
+		double value;
+	public:
+	bool operator<(const NumberType& other) const override
+	{		//Pento: return coos < other.coos || name < other.name;
+		return abs( this - other ) < 0;
+	}
+};
 
 
 GeneratorList simple_roots(char type, int dim)
@@ -98,10 +105,11 @@ GeneratorList simple_roots(char type, int dim)
 		case 'H':{//TODO
 			if (dim < 2 || dim > 4) throw new std::exception();
 			GeneratorList gens (dim, VectorType (dim, 0));
-			const double a = -2. - sqrt(3);
+			const double a = -2. - sqrt(3);//???
 			for( int i=0; i < dim-1; i++ ){
 				gens[i][i] = 1;
 				gens[i][i+1] = -1;
+				gens[dim-1][i] = 1;
 			}
 			gens[dim-1][dim-1] = a;
 			return gens;
@@ -109,11 +117,9 @@ GeneratorList simple_roots(char type, int dim)
 		case 'i':
 		case 'I':{
 			GeneratorList gens (2, VectorType (dim, 0));
-			for( int i=0; i < dim-1; i++ ){
-				gens[0][0] = 1;
-				gens[1][0] = -cos(PI/dim);
-				gens[1][1] = sin(PI/dim);
-			}
+			gens[0][0] = 1;
+			gens[1][0] = -cos(PI/dim);
+			gens[1][1] = sin(PI/dim);
 			return gens;
 			}
 
