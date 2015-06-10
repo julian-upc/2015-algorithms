@@ -59,7 +59,7 @@
    }
 
 
-   Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit solution)
+   Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit& solution)
    {   
       VectorType ref;
      
