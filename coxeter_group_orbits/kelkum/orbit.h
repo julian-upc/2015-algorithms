@@ -24,38 +24,28 @@ template<typename T> //only numeric types please
 class ImpreciseVector: public std::vector<T> {
     public:
         ImpreciseVector() {}
-        bool operator== (const ImpreciseVector& v) { //does not work yet
-            unsigned int k = this->size();
-            T lsq=static_cast<T>(0.0);
-            if (k != v.size() || k==0 || v.size()==0) return false; 
-            for (unsigned int j = 0; j<k; j++) {
-                lsq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
-            }
-            if (lsq > epsilon) {return false;}
-            else {return true;}
+        ImpreciseVector(unsigned int a, T iniValue) { //constructor not inherited...
+            this->resize(a, iniValue);
         }
-
-        //   unsigned int k = this->size();          
-        //   T l1sq=static_cast<T>(0.0), l2sq=static_cast<T>(0.0), l3sq=static_cast<T>(0.0);
-
-        //   if (k != v.size() || k==0 || v.size()==0) return false; 
-        //   for (unsigned int j = 0; j<k; j++) {
-        //       l1sq += (*this)[j]*(*this)[j];
-        //       l2sq += v[j]*v[j];
-        //       l3sq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
-        //   }
-        //   //some estimate such that length of their their difference (relative to their size) is small enough
-        //   if (l3sq/(l1sq*l2sq) <= epsilon) return true; 
-        //   return false;
-        //}
+            bool operator== (const ImpreciseVector& v) { //does not work yet
+                unsigned int k = this->size();
+                T lsq=static_cast<T>(0.0), lsq2=static_cast<T>(0.0);
+                if (k != v.size()) return false; 
+                for (unsigned int j = 0; j<k; j++) {
+                    lsq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
+                    lsq2+= ((*this)[j])*((*this)[j]);
+                }
+                if (lsq/lsq2 > epsilon) {return false;}
+                return true;
+            }
 };
 
-typedef ImpreciseVector<float> VectorType;
+typedef ImpreciseVector<double> VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
-enum errorTypes {NotImplemented, DimensionError, InputError, DotProdNotDefined};
+enum errorTypes {NotImplemented, DimensionError, InputError, DotProdNotDefined, RenderError};
 
-void simple_roots(char type, unsigned int dim, GeneratorList& normals); //forward declaration of function
+void simple_roots(const char& type, const unsigned int& dim, GeneratorList& normals); //forward declaration of function
 Orbit genOrbit(const GeneratorList& generators, const VectorType& v); //forward declaration of function
 
 Orbit giveOrbit(const std::string& coxeterDiagram, VectorType& inputPoint) {
@@ -80,21 +70,18 @@ Orbit giveOrbit(const std::string& coxeterDiagram, VectorType& inputPoint) {
     return genOrbit(normalVectors, inputPoint);
 }
 
-void simple_roots(char type, unsigned int dim, GeneratorList& normals)
+void simple_roots(const char& type, const unsigned int& dim, GeneratorList& normals)
 {
    double tmpEntry;
    normals.clear();
-   VectorType tmpVector;
 
    switch(type) { 
        case 'a': case 'A':
            for (unsigned int i = 0; i<dim; i++) {
-               tmpVector.clear();
+               VectorType tmpVector (dim, 0.0);
                for (unsigned int j = 0; j<dim+1; j++) {
-                   if (i==j) tmpEntry = 1.0; 
-                   else if (i==j-1) tmpEntry = -1.0;
-                   else tmpEntry = 0.0;
-                   tmpVector.push_back(tmpEntry);
+                   if (i==j) tmpVector[i]=1.0;
+                   if (i==j-1) tmpVector[i]=-1;
                }
                normals.push_back(tmpVector);
            }
@@ -102,18 +89,33 @@ void simple_roots(char type, unsigned int dim, GeneratorList& normals)
 
        case 'b': case 'B':
           for (unsigned int i = 0; i<dim; i++) {
-               tmpVector.clear();
+              VectorType tmpVector(dim, 0.0); 
                for (unsigned int j = 0; j<dim; j++) {
-                   if (i==j) tmpEntry = 1.0; 
-                   else if (i==j-1) tmpEntry = -1.0;
-                   else tmpEntry = 0.0;
-                   tmpVector.push_back(tmpEntry);
+                   if (i==j) tmpVector[j] = 1.0; 
+                   else if (i==j-1) tmpVector[j] = -1.0;
                }
                normals.push_back(tmpVector);
            }
            break;
 
-           //other diagrams need to be implemented
+       case 'd': case 'D': 
+           {
+           for (unsigned int i = 0; i<dim-1; i++) {
+              VectorType tmpVector(dim, 0.0); 
+               for (unsigned int j = 0; j<dim; j++) {
+                   if (i==j) tmpVector[j] = 1.0; 
+                   else if (i==j-1) tmpVector[j] = -1.0;
+               }
+               normals.push_back(tmpVector);
+           }
+           VectorType tmpVector2 (dim, 0.0);
+           tmpVector2[dim-1]=1;
+           tmpVector2[dim-2]=1;
+           normals.push_back(tmpVector2);
+           break;
+           }
+
+           //other diagrams not yet implemented
 
        default:
           throw NotImplemented;
@@ -145,16 +147,16 @@ Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
     std::set<VectorType> pointOrbit;
     pointOrbit.insert(v);
 
-    VectorType tmpPoint;
     GeneratorList readingBufferNewPoints, writingBufferNewPoints; 
     readingBufferNewPoints.push_back(v);
 
-    unsigned int compositionLength=30;
+    unsigned int compositionLength=1000;
 
     for (unsigned int i = 0; i<compositionLength; i++) {
+        if (readingBufferNewPoints.size()==0) break;
         for (unsigned int j = 0; j<readingBufferNewPoints.size(); j++) { //iterate through all new points
             for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes; having functions being called for comparison every iteration probably bad idea but it looks cleaner
-                tmpPoint.clear(); 
+                VectorType tmpPoint;
                 reflect(generators[k], readingBufferNewPoints[j], tmpPoint);
                 //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to the newPointBuffer that will be read from in the next iteration of i
                 bool inOrbit = false;
@@ -169,9 +171,9 @@ Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
                     writingBufferNewPoints.push_back(tmpPoint);
                 }
             }
-            readingBufferNewPoints.clear(); 
-            std::swap(writingBufferNewPoints, readingBufferNewPoints);
         }
+        std::swap(writingBufferNewPoints, readingBufferNewPoints);
+        writingBufferNewPoints.clear();
     }
     return pointOrbit;
 }

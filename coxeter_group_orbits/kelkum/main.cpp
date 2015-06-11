@@ -18,6 +18,7 @@
 #include <vector>
 #include <iomanip> 
 #include "orbit.h"
+//#include "render.cpp" //does not work yet
 
 int main() {
     std::string coxeterDiagram = "";
@@ -69,15 +70,15 @@ int main() {
                 for (unsigned int j=0; j<(*iter).size()-1; j++) {
                     int a=0;
                     a++;
-                    std::cout << std::setprecision(5) << (*iter)[j] << ',';
+                    std::cout << std::fixed << std::setprecision(5) << (*iter)[j] << ',';
                 }
-                std::cout << std::setprecision(5)  << (*iter).size()-1 << ")\n";
+                std::cout << std::fixed << std::setprecision(5) << (*iter)[(*iter).size()-1] << ")\n";
             }
             if (inputPoint.size() == 3 || inputPoint.size() == 2) {
                 std::cout << "Render Orbit? Y=1, N=0: ";
                 std::cin >> renderOrbit; 
                 if (renderOrbit) {
-                    //..
+                    //
                 }
             }
             int a;
