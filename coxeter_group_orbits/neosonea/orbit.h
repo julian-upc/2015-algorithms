@@ -21,12 +21,13 @@
 #include <numeric>
 #include <set>
 #include <math.h>
+//#include <stl_wrappers.h>
 
 class NotImplementedException : public std::exception {};
 
 const double eps = 10e-100;
 
-typedef long double NumberType;  // this probably isn't going to work
+typedef double NumberType;  // this probably isn't going to work
 /*class NumberType
 {
 	private:
@@ -151,10 +152,14 @@ void rec( const int i, const GeneratorList& gens, Orbit& orbit, Orbit& orbit_i )
 	if( i != 0 ){//return;
 	Orbit orbit_i1;
 	for( const auto& g : gens ){
-		printf(" {%d, %d}",g[0], g[1]);
+//		std::ostringstream oss;
+//		oss << g;
+//		printf(" %s ",oss.str());
+//		printf(" g={%f,%f,%f,%f}\n",g[0], g[1],g[2],g[3]);
 		for( const auto& v : orbit_i ){
-			orbit.insert( v + times( -2.*(g*v)/sqrt(g*g)/sqrt(v*v), g ) );
-			orbit_i1.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
+//			printf("\t v={%f,%f,%f,%f}\n",v[0], v[1],v[2],v[3]);
+			orbit.insert( v + times( -2.*(g*v)/(g*g), g ) );
+			orbit_i1.insert( v + times( -2.*(g*v)/(g*g), g ) );
 			rec( i-1, gens, orbit, orbit_i1 );
 		}
 	}
@@ -168,10 +173,14 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
 	Orbit orbit_i0;
 	mapped.insert(v);
 	orbit_i0.insert(v);
-	rec( 6, generators, mapped, orbit_i0 );
+	rec( 7, generators, mapped, orbit_i0 );
 //	for( const auto& g : generators ){
 //		mapped.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
 //	}
+	printf("\n\n\n %i",mapped.size());
+	for( const auto& m : mapped ){
+		printf("\n\t %i  {%f,%f,%f}",m.size(), m[0],m[1],m[2]);
+	}
 	return mapped;
 }
 
