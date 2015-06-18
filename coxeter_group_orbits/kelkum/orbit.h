@@ -18,7 +18,7 @@
 #include <sstream>
 #include <cmath>
 const static double epsilon = 0.00001; 
-
+//#include "generators.h"
 
 template<typename T> //only numeric types please
 class ImpreciseVector: public std::vector<T> {
@@ -27,23 +27,24 @@ class ImpreciseVector: public std::vector<T> {
         ImpreciseVector(unsigned int a, T iniValue) { //constructor not inherited...
             this->resize(a, iniValue);
         }
-            bool operator== (const ImpreciseVector& v) { //does not work yet
-                unsigned int k = this->size();
-                T lsq=static_cast<T>(0.0), lsq2=static_cast<T>(0.0);
-                if (k != v.size()) return false; 
-                for (unsigned int j = 0; j<k; j++) {
-                    lsq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
-                    lsq2+= ((*this)[j])*((*this)[j]);
-                }
-                if (lsq/lsq2 > epsilon) {return false;}
-                return true;
+        bool operator== (const ImpreciseVector& v) { //does not work yet
+            unsigned int k = this->size();
+            T lsq=static_cast<T>(0.0), lsq2=static_cast<T>(0.0);
+            if (k != v.size()) return false; 
+            for (unsigned int j = 0; j<k; j++) {
+                lsq+= ((*this)[j]-v[j])*((*this)[j]-v[j]);
+                lsq2+= ((*this)[j])*((*this)[j]);
             }
+            if (lsq/lsq2 > epsilon) {return false;}
+            return true;
+        }
 };
 
 typedef ImpreciseVector<double> VectorType;
-typedef std::vector<VectorType> GeneratorList;
+typedef std::vector<VectorType> GeneratorList; 
 typedef std::set<VectorType> Orbit;
-enum errorTypes {NotImplemented, DimensionError, InputError, DotProdNotDefined, RenderError};
+
+enum errorTypes {NotImplemented, DimensionError, InputError, DotProdNotDefined};
 
 void simple_roots(const char& type, const unsigned int& dim, GeneratorList& normals); //forward declaration of function
 Orbit genOrbit(const GeneratorList& generators, const VectorType& v); //forward declaration of function
@@ -61,22 +62,28 @@ Orbit giveOrbit(const std::string& coxeterDiagram, VectorType& inputPoint) {
     if (dimensionPoint != normalNumber || normalNumber<=0) {
         throw DimensionError;
     }
-    if (diagramType == 'A' || diagramType == 'a') { //make dimensions of normals and the point in this special case the same so one gets sensable dotproducts
-        inputPoint.push_back(0.0);
-    }
 
     GeneratorList normalVectors;
     simple_roots(diagramType, normalNumber, normalVectors); //modifies the normals Variable to get all the normals corresponding to a certain Coxeter diagram into the normals "matrix"
     return genOrbit(normalVectors, inputPoint);
 }
 
+//using the given version from the given but slightly modified headerfile instead of the following own code: 
 void simple_roots(const char& type, const unsigned int& dim, GeneratorList& normals)
 {
-   double tmpEntry;
    normals.clear();
 
    switch(type) { 
+
        case 'a': case 'A':
+
+           //Read rowwise, these simple root vectors are
+           //1 -1  0 0 ... 0  0
+           //0  1 -1 0 ... 0  0
+           //...
+           //0  0  0 0 ... 1 -1
+           //In particular, they lie in the plane (sum of coordinates = 0)
+            
            for (unsigned int i = 0; i<dim; i++) {
                VectorType tmpVector (dim, 0.0);
                for (unsigned int j = 0; j<dim+1; j++) {
@@ -88,6 +95,18 @@ void simple_roots(const char& type, const unsigned int& dim, GeneratorList& norm
            break;
 
        case 'b': case 'B':
+
+          //Read rowwise, these simple root vectors are
+          //1 -1  0 0 ... 0  0
+          //0  1 -1 0 ... 0  0
+          //...
+          //0  0  0 0 ... 1 -1
+          //0  0  0 0 ... 0  1
+
+          //The Dynkin diagram is:
+
+          //0 ---- 1 ---- ... ---- n-2 --(4)--> n-1,
+
           for (unsigned int i = 0; i<dim; i++) {
               VectorType tmpVector(dim, 0.0); 
                for (unsigned int j = 0; j<dim; j++) {
@@ -97,9 +116,17 @@ void simple_roots(const char& type, const unsigned int& dim, GeneratorList& norm
                normals.push_back(tmpVector);
            }
            break;
+       case 'c': case 'C':
 
-       case 'd': case 'D': 
-           {
+          //Read rowwise, these simple root vectors are
+          //1 -1  0 0 ... 0  0
+          //0  1 -1 0 ... 0  0
+          //...
+          //0  0  0 0 ... 1 -1
+          //0  0  0 0 ... 0  2
+          //The Dynkin diagram is:
+          //0 ---- 1 ---- ... ---- n-2 <--(4)-- n-1,
+
            for (unsigned int i = 0; i<dim-1; i++) {
               VectorType tmpVector(dim, 0.0); 
                for (unsigned int j = 0; j<dim; j++) {
@@ -109,8 +136,37 @@ void simple_roots(const char& type, const unsigned int& dim, GeneratorList& norm
                normals.push_back(tmpVector);
            }
            VectorType tmpVector2 (dim, 0.0);
-           tmpVector2[dim-1]=1;
-           tmpVector2[dim-2]=1;
+           tmpVector2[dim-1]=2;
+           normals.push_back(tmpVector2);
+           break;
+
+       case 'd': case 'D': 
+           //Read rowwise, these simple root vectors are
+           //1 -1  0 0 ... 0 0
+           //0  1 -1 0 ... 0 0
+           //...
+           //0  0  0 0 ... 1 -1
+           //0  0  0 0 ... 1  1
+           //The indexing of the Dynkin diagram is
+
+           //                      n-2
+           //                      /
+           //0 - 1 - 2 - ... - n-3
+           //                      \
+           //                      n-1
+
+           {
+           for (unsigned int i = 0; i<dim-1; i++) {
+              VectorType tmpVector(dim, 0.0); 
+               for (unsigned int j = 0; j<dim; j++) {
+                   if (i==j) tmpVector[j] = 1.0; 
+                   else if (i==j-1) tmpVector[j] = -1.0;
+               }
+               normals.push_back(tmpVector);
+           }
+           VectorType tmpVector3 (dim, 0.0);
+           tmpVector3[dim-1]=1;
+           tmpVector3[dim-2]=1;
            normals.push_back(tmpVector2);
            break;
            }
@@ -121,6 +177,7 @@ void simple_roots(const char& type, const unsigned int& dim, GeneratorList& norm
           throw NotImplemented;
    }
 }
+
 
 double dotprod(const VectorType& v1, const VectorType& v2) {
     if (v1.size()!=v2.size()) {
@@ -150,22 +207,24 @@ Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
     GeneratorList readingBufferNewPoints, writingBufferNewPoints; 
     readingBufferNewPoints.push_back(v);
 
-    unsigned int compositionLength=1000;
-
-    for (unsigned int i = 0; i<compositionLength; i++) {
-        if (readingBufferNewPoints.size()==0) break;
+    while(readingBufferNewPoints.size()!=0) {
         for (unsigned int j = 0; j<readingBufferNewPoints.size(); j++) { //iterate through all new points
             for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes; having functions being called for comparison every iteration probably bad idea but it looks cleaner
                 VectorType tmpPoint;
                 reflect(generators[k], readingBufferNewPoints[j], tmpPoint);
                 //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to the newPointBuffer that will be read from in the next iteration of i
                 bool inOrbit = false;
-                for (std::set<VectorType>::iterator it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
-                    if (tmpPoint==(*it)) {//approximate comparison
-                        inOrbit = true;
-                        break; //I hope this breaks the lit loop and not the if statement
-                    }
-                }
+                std::set<VectorType>::iterator it = pointOrbit.find(tmpPoint); //I hope this uses the ==operator from the ImperciseVector (VectorType) class
+                if (it != pointOrbit.end()) inOrbit = true;
+
+                //before I used this to make sure it uses the self written == operator, but its runtime is bad
+                //for (std::set<VectorType>::iterator it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
+                //    if (tmpPoint==(*it)) {//approximate comparison
+                //        inOrbit = true;
+                //        break; //I hope this breaks the lit loop and not the if statement
+                //    }
+                //}
+
                 if (!inOrbit) { 
                     pointOrbit.insert(tmpPoint);
                     writingBufferNewPoints.push_back(tmpPoint);
