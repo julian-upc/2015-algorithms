@@ -17,9 +17,12 @@
 #ifndef __ORBIT_H_
 #define __ORBIT_H_
 
+#include <stdio.h>
 #include <vector>
 #include <numeric>
 #include <set>
+#include <list>
+#include <queue>
 #include <math.h>
 //#include <stl_wrappers.h>
 
@@ -42,7 +45,6 @@ typedef double NumberType;  // this probably isn't going to work
 typedef std::vector<NumberType> VectorType;
 typedef std::vector<VectorType> GeneratorList;
 typedef std::set<VectorType> Orbit;
-//class Orbit : public std::set<VectorType>
 
 GeneratorList simple_roots(char type, int dim)
 {
@@ -149,24 +151,18 @@ VectorType operator +( const VectorType& vector1, const VectorType& vector2 ){
 }
 
 void rec( const int i, const GeneratorList& gens, Orbit& orbit, Orbit& orbit_i ){
-	if( i != 0 ){//return;
+	if( i == 0 ) return;
 	Orbit orbit_i1;
 	for( const auto& g : gens ){
-//		std::ostringstream oss;
-//		oss << g;
-//		printf(" %s ",oss.str());
-//		printf(" g={%f,%f,%f,%f}\n",g[0], g[1],g[2],g[3]);
 		for( const auto& v : orbit_i ){
-//			printf("\t v={%f,%f,%f,%f}\n",v[0], v[1],v[2],v[3]);
 			orbit.insert( v + times( -2.*(g*v)/(g*g), g ) );
 			orbit_i1.insert( v + times( -2.*(g*v)/(g*g), g ) );
 			rec( i-1, gens, orbit, orbit_i1 );
 		}
 	}
-	}
 }
 
-Orbit orbit(const GeneratorList& generators, const VectorType& v)
+Orbit orbit_rec(const GeneratorList& generators, const VectorType& v)
 {
 	if ( v.size() != generators[0].size() ) throw new NotImplementedException();
 	Orbit mapped;
@@ -174,9 +170,6 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
 	mapped.insert(v);
 	orbit_i0.insert(v);
 	rec( 7, generators, mapped, orbit_i0 );
-//	for( const auto& g : generators ){
-//		mapped.insert( v + times( -2.*(g*v)/(g*g)/(v*v), g ) );
-//	}
 	printf("\n\n\n %i",mapped.size());
 	for( const auto& m : mapped ){
 		printf("\n\t %i  {%f,%f,%f}",m.size(), m[0],m[1],m[2]);
@@ -184,6 +177,34 @@ Orbit orbit(const GeneratorList& generators, const VectorType& v)
 	return mapped;
 }
 
+Orbit orbit(const GeneratorList& generators, const VectorType& v)
+{
+	if ( v.size() != generators[0].size() ) throw new NotImplementedException();
+	Orbit orbit;
+	orbit.insert(v);
+
+	std::queue<VectorType,std::deque<VectorType> > queue;
+	queue.push(v);
+
+	VectorType curr;
+	VectorType refl;
+
+	while( ! queue.empty() )
+	{
+		curr = queue.front();
+		queue.pop();
+
+		for( const auto g : generators )
+		{
+			refl = curr + times( -2.*(g*curr)/(g*g), g );
+			//insert returns std::pair<iterator,bool>
+			if( orbit.insert(refl).second ){
+				queue.push(refl);
+			}
+		}
+	}
+	return orbit;
+}
 
 
 #endif // __ORBIT_H_
