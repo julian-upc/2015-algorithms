@@ -48,9 +48,7 @@
    bool GaussianElimination(GeneratorList& A, VectorType& b){
       const int n = A.size();
       const int m = b.size();
-      assert(n!=m);
-
-      std::cout << "Größe n: " << n << "\n";
+      assert(n == m);
 
       for(int k = 1; k < n-1; ++k){
          /*//Pivoting
@@ -63,14 +61,11 @@
          b[k] = b[imax];
          b[imax] = x; 
          */
-         std::cout << "1.Schleife - " << k << "\n";
          for(int i = k + 1; i < n; ++i) {
             NumberType c = A[i][k]/A[k][k]; // coefficient to scale row
             A[i][k] = 0;
-            std::cout << "2.Schleife - " << i <<"\n";
             for(int j = k + 1; j < n; ++j){
                A[i][j] = A[i][j] - c*A[k][j];
-               std::cout << "3.Schleife - " << j <<"\n";
 
             }
             b[i] = b[i] - c*b[k];
@@ -95,30 +90,52 @@
       return BackSubstitution(A, b);
    }
 /////////////////////////////////////////////////////////////////////////////////////////
-VectorType checkOrbitSize(char type, int dim1, int dim2){
+void checkOrbitSize(char type, int dim1, int dim2){
    GeneratorList g1 = simple_roots(type, dim1);
    GeneratorList g2 = g1;
+   GeneratorList g3 = g1;
    //GeneratorList g3 = simple_roots(type, dim1-dim2);
    
-   VectorType x1(dim2);
-   VectorType x2(dim2);
+   VectorType x1(dim1);
+   VectorType x2(dim1);
 
    for (VectorType::size_type i = 0; i != x1.size(); i++){
-      if(i < (dim1 - dim2)){
+      if(i < (dim2)){
          x2[i] = 0.0;
       }else{
          x2[i] = 1.0;
       }
-      x1[i] = 1;
+      x1[i] = 1.0;
    }
-   GaussianElimination(g1, x1);
-   /*
-   Orbit o1 = orbit(g1, x1);
+     
+   Orbit o1 = orbit(g1, SystemEquations(g3, x1));
    Orbit o2 = orbit(g1, SystemEquations(g2, x2));
-   std::cout << "Orbit "<< type << dim1 << "- vector on " << dim2 << "hyperplanes: " <<o1.size() << " - "<< o2.size(); 
-   */
+   std::cout << "Orbit "<< type << dim1 << ": \n vector on " << dim2 << " hyperplanes: " <<o2.size() << " \n vector in general positions: "<< o1.size() <<"\n"; 
+  
 } 
 
+Orbit checkOrbitGeneralPosition(char type, int dim1){
+   GeneratorList g1 = simple_roots(type, dim1);
+   GeneratorList g2 = g1;
+   //GeneratorList g3 = simple_roots(type, dim1-dim2);
+   
+   VectorType x1(dim1);
 
+   for (VectorType::size_type i = 0; i != x1.size(); i++){
+      x1[i] = 1.0;
+   }
+   return orbit(g1, SystemEquations(g2, x1));	
+}
+
+VectorType getVectorGeneralPosition(char type, int dim1){
+   GeneratorList g1 = simple_roots(type, dim1);
+   
+   VectorType x1(dim1);
+
+   for (VectorType::size_type i = 0; i != x1.size(); i++){
+      x1[i] = 1.0;
+   }
+   return SystemEquations(g1, x1);	
+}
 
 #endif // __ORBITSIZE_H_
