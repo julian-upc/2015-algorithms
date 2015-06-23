@@ -53,43 +53,46 @@ int main(int arg, const char* argv[]){
 	Orbit o = orbit(g,v);
 	time(&end);
 	f1 << "Coxeter Group E6: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	/*//E7
-	g = simple_roots('E', 7);
+	//E7
+	/*g = simple_roots('E', 7);
 	v = getVectorGeneralPosition('E',7);
 	time(&start);
 	o = orbit(g, v);
 	time(&end);
-	f1 << "Coxeter Group E7: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	//E8
+	f1 << "Coxeter Group E7: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";*/
+	/*E8
 	g = simple_roots('E', 8);
 	time(&start);
 	o = orbit(g, {1,2,3,4,5,6,7,8});
 	time(&end);
-	f1 << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	*/f1.close();
+	f1 << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";*/
+	f1.close();
 ////////////////////////////////////////////////////////////
 //Coxeter Group F
 	/*std::ofstream f2 ("timesGroupF.txt");
 	//F4
-	g = simple_roots('F', 4);
+	GeneratorList g = simple_roots('F', 4);
+        VectorType v = getVectorGeneralPosition('F',4);
 	time(&start);
-	o = orbit(g, {1,2,3,4});
+	Orbit o = orbit(g, v);
 	time(&end);
 	f2 << "Coxeter Group F4: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
-	f2.close();
+	f2.close();*/
 ////////////////////////////////////////////////////////////
 //Coxeter Group H
-	std::ofstream f3 ("timesGroupH.txt");
+/*	std::ofstream f3 ("timesGroupH.txt");
 	//H3
-	g = simple_roots('H', 3);
+	GeneratorList g = simple_roots('H', 3);
+        VectorType v = getVectorGeneralPosition('H',3);
 	time(&start);
-	o = orbit(g, {1,2,3});
+	Orbit o = orbit(g, v);
 	time(&end);
 	f3 << "Coxeter Group H3: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 	//H4
 	g = simple_roots('H', 4);
+        v = getVectorGeneralPosition('H',4);
 	time(&start);
-	o = orbit(g, {1,2,3,4});
+	o = orbit(g, v);
 	time(&end);
 	f3 << "Coxeter Group H4: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 	f3.close();*/
