@@ -54,7 +54,9 @@ int main() {
         pointOrbit = giveOrbit(coxeterDiagram, inputPoint);
         orbitLength = pointOrbit.size(); 
     } catch(errorTypes& e) {
-        std::cerr << "Errorcode " << e << '\n';
+        std::cerr << "Errorcode " << e << '\n' << "Enter any integer to exit";
+        int a;
+        std::cin >> a;
         return static_cast<int>(e);
     }
 
@@ -78,10 +80,4 @@ int main() {
         std::cin >> a;
         return 0;
 }
-//A few Runtime tests for generic Orbits
-//  1    2    3    4    5    6    7
-//A 
-//B
-//C
-//D
 
