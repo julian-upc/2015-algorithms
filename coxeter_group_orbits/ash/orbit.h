@@ -59,7 +59,7 @@
    }
 
 
-   Orbit orbitConstruction(const GeneratorList& generators, const VectorType& v, Orbit& solution)
+   Orbit orbitConstructionRec(const GeneratorList& generators, const VectorType& v, Orbit& solution)
    {   
       VectorType ref;
      
@@ -67,16 +67,38 @@
          ref = reflection(v,generators[i]);      
          if(solution.find(ref) == solution.end()){
             solution.insert(ref);
-            orbitConstruction(generators, ref, solution);
+            orbitConstructionRec(generators, ref, solution);
          }
       }
       return solution;
    }
 
-   Orbit orbit(const GeneratorList& generators, const VectorType& v)
+   Orbit orbitRec(const GeneratorList& generators, const VectorType& v)
    {
       Orbit wholeOrbit;
-      return orbitConstruction(generators, v, wholeOrbit);
+      return orbitConstructionRec(generators, v, wholeOrbit);
+   }
+
+   Orbit orbit(const GeneratorList& generators, const VectorType& v)
+   {
+      Orbit wholeOrbit = {v};
+      Orbit toReflect = {v};
+      VectorType ref;
+      std::set<VectorType>::iterator it;
+
+      while(!toReflect.empty()){
+         it = toReflect.begin();
+         for(VectorType::size_type i = 0; i != generators.size(); i++){
+            ref = reflection(*it,generators[i]);  
+            if(wholeOrbit.find(ref) == wholeOrbit.end()){
+               wholeOrbit.insert(ref);
+               toReflect.insert(ref);
+            }     
+         } 
+         toReflect.erase(it);
+      }
+
+      return wholeOrbit;
    }
 
 
