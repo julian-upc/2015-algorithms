@@ -19,30 +19,59 @@
 
 #include <set>
 #include <vector>
+#include <cmath>
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
 
 typedef long double NumberType;  // this might work
-typedef std::vector<NumberType> VectorType;
+//typedef std::vector<NumberType> VectorType;
+class ImpreciseVector : public std::vector<NumberType>
+{
+	public:
+
+	ImpreciseVector() : std::vector<NumberType>() {}; 
+	ImpreciseVector(int i) : std::vector<NumberType>(i) {}; 
+	ImpreciseVector(size_type dim, const NumberType& value) : std::vector<NumberType>(dim, value) {}; 
+	ImpreciseVector(const std::vector<NumberType>& v) : std::vector<NumberType>(v) {}; 
+	ImpreciseVector(std::initializer_list<NumberType> v) : std::vector<NumberType>(v) {}; 
+
+	friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 )
+	{   
+		const NumberType eps = 1.0e-3;
+
+		for( unsigned int i = 0; i != v1.size(); i++)
+		{
+			if( std::fabs( v1[i]-v2[i] ) > eps )
+			{
+				return static_cast<std::vector<NumberType>>(v1) < static_cast<std::vector<NumberType>>(v2);
+			}
+		}
+		return false;
+	}   
+};
+typedef ImpreciseVector VectorType;
+
 typedef std::set<VectorType> Orbit;
+
+//typedef std::vector<VectorType> GeneratorList ;
 
 class GeneratorList : public std::vector<VectorType> {
 public:
    GeneratorList(int r, int c) 
       : std::vector<VectorType>(r)
-   {
-      for (int i=0; i<r; ++i)
-         (*this)[i] = VectorType(c);
-   }
+	{
+	for (int i=0; i<r; ++i)
+		(*this)[i] = VectorType(c);
+	}
 
-   NumberType& operator ()(int i, int j) {
-      return (*this)[i][j];
-   }
+	NumberType& operator ()(int i, int j) {
+		return (*this)[i][j];
+	}
 
-   const NumberType& operator ()(int i, int j) const {
-      return (*this)[i][j];
-   }
+	const NumberType& operator ()(int i, int j) const {
+		return (*this)[i][j];
+	}
 };
 
 
