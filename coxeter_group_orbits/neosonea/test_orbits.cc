@@ -56,6 +56,20 @@ struct b3_fixture {
   GeneratorList generators;
 };
 
+struct e6_fixture {
+  e6_fixture() 
+    : generators(simple_roots('E', 6)) 
+  {}
+  GeneratorList generators;
+};
+
+struct h3_fixture {
+  h3_fixture() 
+    : generators(simple_roots('H', 3)) 
+  {}
+  GeneratorList generators;
+};
+
 
 BOOST_FIXTURE_TEST_CASE( b3_orbit_012, b3_fixture )
 {
@@ -81,7 +95,6 @@ BOOST_FIXTURE_TEST_CASE( b3_orbit_0, b3_fixture )
   BOOST_CHECK_EQUAL(orbit(generators, {1, 0, 0}).size(), (size_t) 6);
 }
 
-/*
 BOOST_FIXTURE_TEST_CASE( b3_orbit_1, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 0}).size(), (size_t) 12);
@@ -90,7 +103,21 @@ BOOST_FIXTURE_TEST_CASE( b3_orbit_1, b3_fixture )
 BOOST_FIXTURE_TEST_CASE( b3_orbit_2, b3_fixture )
 {
   BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 1}).size(), (size_t) 8);
-}*/
+}
+//E6
+BOOST_FIXTURE_TEST_CASE( e6_orbit, e6_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 1, 1, 1, 1}).size(), (size_t) 8); 
+}
+//H3
+BOOST_FIXTURE_TEST_CASE( h3_orbit, h3_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 1, 1}).size(), (size_t) 8); 
+}
+BOOST_FIXTURE_TEST_CASE( h3_orbit_123, h3_fixture )
+{
+  BOOST_CHECK_EQUAL(orbit(generators, {1, 2, 3}).size(), (size_t) 8); 
+}
 
 
 // Local Variables:

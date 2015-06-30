@@ -42,7 +42,7 @@ public:
       NumberType  epsilon =1.0E-3;
 
       for (std::vector<NumberType>::size_type i = 0; i != v1.size(); i++){
-        if(  abs(v1[i] - v2[i]) >  epsilon){
+        if(  fabs(v1[i] - v2[i]) >  epsilon){
            return static_cast<std::vector<NumberType>>(v1) < static_cast<std::vector<NumberType>>(v2);
 	}
       }
