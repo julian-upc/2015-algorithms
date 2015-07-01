@@ -1,20 +1,18 @@
     A     B     C     D     E     F     G     H
-1   -     <1    <1    <1    -     -     -     -
-2   -     <1    <1    <1    -     -     <1    -
-3   -     <1    <1    <1    -     -     -     <1
-4   -     <1    <1    <1    -     7     -     970
-5   -      5     5     2    -     -     -     -
-6   -     80    78    38    -     -     -     -
+1   <1     <1    <1    <1    -     -     -     -
+2   <1     <1    <1    <1    -     -     <1    -
+3   <1     <1    <1    <1    -     -     -     <1
+4   <1     <1    <1    <1    -     <1    -     3
+5   -      1     2     1     -     -     -     -
+6   -      25    23    11    23    -     -     -
 
 Comments: 
 
 1)|G| for the last row (wikipedia)
-A6-5040 B6-46080 C6-46080 D6-23040 
+A6-5040 B6-46080 C6-46080 D6-23040 E6-51840
 
-2) The generic Orbitlengths for A-D were all in agreement with 1) but the code was flawed as it did unintentionally not use the self written == comparison for points. This caused problems with the other groups. 
-Changing to the self written comparison makes it that we can not use the advantages of std::set any longer (quick log time search of a point in Orbit).
-We are still using a set for the Orbit despite the disadvantage of log time insertion (instead of const. time) but this makes it so that the coordinates are lexicographically ordered. There are |G| insertions anyways so the cost is log(1)+log(2)+...+log(|G|)=log(gamma(|G|+1))
-The F G and H times are taken with the newer version (bad runtime, more correct). The generic Orbitsizes from the F,G,H experiments are in agreement with wikipedia.
+2) The generic Orbitlengths for B-H were all in agreement with wikipedia.
+However for A there seems to be a problem.
 
 3)
 Current code in short: 
@@ -24,14 +22,18 @@ new_points_write = {} is Array
 Orbit = {} is Ordered Set
 
 for(point in new_points_read!={})                   <- Say worst Case 1 New Point each iteration so |G| iterations
-  for (reflectionplanes)                            <-Dim iterations because there are Dim reflectionplanes
-    reflection=reflect(point in reflectionplane)    <- do c*dim~dim operations where c=constant
-    search(Orbit for reflection)                    <- using linear search here so sizeOfOrbit Comparisons and Each comparison uses 2*c*dim~dim calculations (not written down here), maybe std::find() can offer slight improvement,
+  for (all reflectionplanes)                        <-Dim iterations because there are Dim reflectionplanes
+    reflection=reflect(point in reflectionplane)    <- ~c*dim operations where the code for reflecting is not written here
+    search(Orbit for reflection)                    <- ~log(sizeOfOrbit) comparisons and every
+                                                       comparison uses up to c*dim calculations (comparison code not written down here), 
     if (reflection is not in Orbit)
-      add reflection to Orbit                       <- worst case log(sizeofOrbit) insertion time
+      add reflection to Orbit                       <- worst case ~log(sizeofOrbit) insertion time
       add reflection to new_Points_Write            <- const time
     swap(new_Points_read, new_points_write)         <- const time
-    clear(new_points_write)                         <- it was said 1 New point each iteration so const time, however in general linear with the size of new_points_write
+    clear(new_points_write)                         <- it was said 1 New point each iteration so const time, 
+                                                       however in general linear with the size of new_points_write
 
 All together (every summand is a iteration of the outer loop)
-~dim*(dim+1*dim+log(1)) + dim*(dim+2*dim+log(2)) + ... + dim*(dim+|G|*dim + log|G|) = sum(dim^2 + dim^2*k + dim*log(k),k=1..|G|) ~ |G|*dim^2 + (|G|)*(|G|+1)dim^2/2 + dim*log(gamma(|G|+1))
+~dim*(c*dim+2log(1)) + dim*(c*dim+2log(2)) + ... + dim*(c*dim+ 2log|G|) = sum(c*dim^2 + dim*2*log(k),k=1..|G|) = |G|*dim^2 + 2*dim*log(|G|!) ~ |G|*dim^2 + 2*dim*(|G|ln(|G|)-|G|)
+
+Eine möglichkeit die Laufzeit zu verbessern wäre die suche im Orbit und die insertion zum Orbit zu vereinen.

@@ -18,7 +18,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
-const static double epsilon = 0.00001; 
+const static double epsilon = 0.0000001; 
 //#include "generators.h"
 
 template<typename T> //only numeric types please
@@ -28,7 +28,7 @@ class ImpreciseVector: public std::vector<T> {
         ImpreciseVector(unsigned int a, T iniValue) { //constructor not inherited, need to write it again
             this->resize(a, iniValue);
         }
-        bool operator== (const ImpreciseVector& v) { //does not work yet
+        bool operator== (const ImpreciseVector& v) { 
             unsigned int k = this->size();
             T lsq=static_cast<T>(0.0), lsq2=static_cast<T>(0.0);
             if (k != v.size()) return false; 
@@ -38,6 +38,19 @@ class ImpreciseVector: public std::vector<T> {
             }
             if (lsq/lsq2 > epsilon) {return false;}
             return true;
+        }
+
+        bool operator< (const ImpreciseVector& v) const { 
+            unsigned int k = this->size();
+            T lsq=static_cast<T>(0.0), lsq2=static_cast<T>(0.0);
+            for (unsigned int j = 0; j<k; j++) {
+                if ((*this)[j] < v[j]-epsilon)
+                    return true; 
+                else
+                    if ((*this)[j] > v[j]+epsilon)
+                        return false;
+            }
+            return false;
         }
 };
 
@@ -63,14 +76,19 @@ Orbit giveOrbit(const std::string& coxeterDiagram, VectorType& inputPoint) {
     if (dimensionPoint != normalNumber || normalNumber<=0) {
         throw DimensionError;
     }
-    if (diagramType == 'a' || diagramType == 'A' || (diagramType == 'G' & normalNumber == 2)) inputPoint.push_back(0.0); //dotproduct makes sense now
+    //dotproduct with normals needs to make sense
+    if (diagramType == 'a' || diagramType == 'A' || (diagramType == 'G' & normalNumber == 2)) inputPoint.push_back(0.0); 
 
     GeneratorList normalVectors;
-    simple_roots(diagramType, normalNumber, normalVectors); //modifies the normals Variable to get all the normals corresponding to a certain Coxeter diagram into the normals "matrix"
+    simple_roots(diagramType, normalNumber, normalVectors); //modifies the normals Variable to get all 
+                                                            //the normals corresponding to a certain 
+                                                            //Coxeter diagram into the normals "matrix"
     return genOrbit(normalVectors, inputPoint);
 }
 
-//long function (architecture of the switch statement should probably not have the computations in it), the function modifies the normals that it is given as input
+//long function (architecture of the switch statement should probably not have the computations 
+//in it for readability) the function clears and modifies the normals variable that it is 
+//given as input
 void simple_roots(const char& type, const int& dim, GeneratorList& normals)
 {
    normals.clear();
@@ -166,7 +184,7 @@ void simple_roots(const char& type, const int& dim, GeneratorList& normals)
                normals.push_back(tmpVector);
            }
            if ((dim-1)>=0) individualVector[dim-1]=1; 
-           if ((dim-2)>=0) individualVector[dim-2]=1; //say dim=1 the loop before is skipped completely and there is no individualVector[dim-2]
+           if ((dim-2)>=0) individualVector[dim-2]=1; //for dim=1 the loop before is skipped completely but there is no individualVector[dim-2]
            normals.push_back(individualVector);
            break;
 
@@ -360,7 +378,8 @@ double dotprod(const VectorType& v1, const VectorType& v2) {
     return d;
 }
 
-//requires a VectorType as input that it can write the result of the reflection to, to try to avoid copying and reassigning as this is the function used the most often
+//requires a VectorType as input that it can write the result of the reflection to, 
+//to try to avoid copying and reassigning as this is the function used the most often
 void reflect(const VectorType& normal, const VectorType& point, VectorType& result) {
     result=point;
     const double pointDotNormal = dotprod(point, normal);
@@ -371,29 +390,29 @@ void reflect(const VectorType& normal, const VectorType& point, VectorType& resu
 }
 
 Orbit genOrbit(const GeneratorList& generators, const VectorType& v) {
-    std::set<VectorType> pointOrbit; //in this current version no advantage of the set (that its ordered, quick search) is used only the disadvantages (slow insertion) hence bad idea
+    std::set<VectorType> pointOrbit; 
+    //in this current version no advantage of the set (that its ordered, quick search) 
+    //is used only the disadvantages (slow insertion) hence bad idea
     pointOrbit.insert(v);
     GeneratorList readingBufferNewPoints, writingBufferNewPoints; 
     readingBufferNewPoints.push_back(v);
 
     while(readingBufferNewPoints.size()!=0) {
         for (unsigned int j = 0; j<readingBufferNewPoints.size(); j++) { //iterate through all new points
-            for (unsigned int k=0; k<generators.size(); k++) { //reflect each individual new point in all planes; having functions being called for comparison every iteration probably bad idea but it looks cleaner
+            //reflect each individual new point in all planes
+            for (unsigned int k=0; k<generators.size(); k++) {
                 VectorType tmpPoint;
                 reflect(generators[k], readingBufferNewPoints[j], tmpPoint);
-                //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to the newPointBuffer that will be read from in the next iteration of i
+                //now check if new creation is already in pointOrbit, if not add it to the pointOrbit and to 
+                //newPointBuffer that will be read from in the next iteration of i
                 bool inOrbit = false;
 
-                //the following would yield better runtime but is not correct as it does not use the == operator in the class, need to define a <(VectorType 1,VectorType v2) operator to use it
-                //std::set<VectorType>::iterator it = pointOrbit.find(tmpPoint);
-                //if (it != pointOrbit.end()) inOrbit = true;
+                //the following would yield better runtime but is not correct as it does not use the == operator in the class,
+                //need to define a <(VectorType 1,VectorType v2) operator to use it
 
-                for (std::set<VectorType>::iterator it=pointOrbit.begin(); it!=pointOrbit.end(); it++) {
-                    if (tmpPoint==(*it)) {//approximate comparison
-                        inOrbit = true;
-                        break; //I hope this breaks the lit loop and not the if statement
-                    }
-                }
+                std::set<VectorType>::iterator it = pointOrbit.find(tmpPoint);
+                it = pointOrbit.find(tmpPoint);
+                if (it != pointOrbit.end()) inOrbit = true;
 
                 if (!inOrbit) { 
                     pointOrbit.insert(tmpPoint);
