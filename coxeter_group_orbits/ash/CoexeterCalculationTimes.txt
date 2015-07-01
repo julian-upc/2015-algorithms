@@ -1,0 +1,15 @@
+Coxeter Group B3: 0 sec - size: 48
+Coxeter Group B4: 0 sec - size: 384
+Coxeter Group B5: 0 sec - size: 3840
+Coxeter Group B6: 2 sec - size: 46080
+Coxeter Group B7: 28 sec - size: 645120
+Coxeter Group B8: 648 sec - size: 10321920
+Coxeter Group D3: 7 sec - size: 24
+Coxeter Group D4: 0 sec - size: 192
+Coxeter Group D5: 0 sec - size: 1920
+Coxeter Group D6: 1 sec - size: 23040
+Coxeter Group E6: 1 sec - size: 51840
+Coxeter Group E7: 124 sec - size: 2903040
+Coxeter Group F4: 2 sec - size: 1152
+Coxeter Group H3: 0 sec - size: 120
+Coxeter Group H4: 0 sec - size: 14400
