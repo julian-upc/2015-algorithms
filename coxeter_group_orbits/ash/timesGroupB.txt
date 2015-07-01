@@ -1,5 +1,0 @@
-Coxeter Group B3: 0 sec - size: 48
-Coxeter Group B4: 0 sec - size: 384
-Coxeter Group B5: 1 sec - size: 3840
-Coxeter Group B6: 11 sec - size: 46080
-Coxeter Group B7: 237 sec - size: 645120
