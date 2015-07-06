@@ -21,14 +21,6 @@
 #include <stdio.h>
 #include "orbit.h"
 
-/*
-struct b3_fixture {
-  b3_fixture() 
-    : generators(simple_roots('B', 3)) 
-  {}
-  GeneratorList generators;
-};
-*/
 //int main( int size, int[] args )
 int main()
 {
@@ -65,32 +57,32 @@ int main()
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
 
+	/*
 	fprintf( outfile, "B7 tests:\n" );
 	time (&start);
 	fprintf( outfile, "645120 %d", orbit(simple_roots('B', 7), {1, 2, 3, 4, 5, 6, 7}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
 
-	/*
 	fprintf( outfile, "B8 tests:\n" );
 	time (&start);
 	fprintf( outfile, "10321920 %d", orbit(simple_roots('B', 8), {1, 2, 3, 4, 5, 6, 7, 8}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
 */
-/*
 	fprintf( outfile, "E6 tests:\n" );
 	time (&start);
-	fprintf( outfile, "51840 %d", orbit(simple_roots('E', 6), {1, 0, 0, 0, 0, 0}).size() );
+	fprintf( outfile, "51840 %d", orbit(simple_roots('E', 6), {1, 2, 3, 4, 5, 6}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
+/*
+*/
 	fprintf( outfile, "E7 tests:\n" );
 	time (&start);
-	fprintf( outfile, "2903040 %d", orbit(simple_roots('E', 7), {0, 0, 0, 0, 0, 0, 0}).size() );
+	fprintf( outfile, "2903040 %d", orbit(simple_roots('E', 7), {1, 2, 3, 4, 5, 6, 7}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
 
-*/
 	fprintf( outfile, "F4 tests:\n" );
 	time (&start);
 	fprintf( outfile, "1152 %d", orbit(simple_roots('F', 4), {1, 3, 5, 7}).size() );
@@ -99,16 +91,16 @@ int main()
 
 	fprintf( outfile, "H3 tests:\n" );
 	time (&start);
-	fprintf( outfile, "365 %d", orbit(simple_roots('H', 3), {1, 2, 3}).size() );
+	fprintf( outfile, "120 %d", orbit(simple_roots('H', 3), {1, 2, 3}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
 
-	/*
 	fprintf( outfile, "H4 tests:\n" );
 	time (&start);
 	fprintf( outfile, "14400 %d", orbit(simple_roots('H', 4), {1, 2, 3, 4}).size() );
 	time (&end);
 	fprintf( outfile, "\n(in %.3lf sec)\n\n", difftime(end,start) );
+	/*
 	*/
 
 	fclose(outfile);

@@ -38,16 +38,16 @@ class ImpreciseVector : public std::vector<NumberType>
 
 	friend bool operator <(const ImpreciseVector& v1, const ImpreciseVector& v2 )
 	{   
-		const NumberType eps = 1.0e-3;
+		const NumberType eps = 1.0e-14;
 
 		for( unsigned int i = 0; i != v1.size(); i++)
 		{
-			if( std::fabs( v1[i]-v2[i] ) > eps )
-			{
-				return static_cast<std::vector<NumberType>>(v1) < static_cast<std::vector<NumberType>>(v2);
-			}
+			if( v1[i] < v2[i] - eps )
+				return true; //v1 < v2
+			else if( v1[i] > v2[i] + eps )
+				return false; //v1 > v2
 		}
-		return false;
+		return false; //v1 == v2
 	}   
 };
 typedef ImpreciseVector VectorType;
