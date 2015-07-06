@@ -24,12 +24,13 @@
 #include <iostream>
 #include <initializer_list>
 #include <math.h>
+#include "stl_wrappers.h"
 
 class NotImplementedException : public std::exception {};
 class InvalidGroupException : public std::exception {};
 
 typedef long double NumberType;
-const static NumberType epsilon = 1.0E-14;
+const static NumberType epsilon = .5;
 
 class ImpreciseVector : public std::vector<NumberType>
 {
@@ -62,7 +63,34 @@ public:
       }
       return true;
    }
+
 };
+
+void output_vector(const ImpreciseVector& item)
+   {
+      std::cout << "[1,";
+      bool first = true;
+      for (auto const& element : item) {
+         std::cout << (!first ? "," : "") << element;
+         first = false;
+      }
+      std::cout << ']';
+   }
+
+template<typename ElementType>
+void output_set(const std::set<ElementType>& item)
+{
+      std::cout << '[';
+      bool first = true;
+      for (const auto& e : item) {
+         std::cout << (!first ? "," : "");
+         output_vector(e);
+         first = false;
+      }
+      std::cout << ']';
+}
+
+
 
 typedef ImpreciseVector VectorType; //std::vector<NumberType, ImpreciseComp> VectorType;//
 typedef std::set<VectorType> Orbit;

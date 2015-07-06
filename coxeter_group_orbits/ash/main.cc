@@ -4,11 +4,13 @@
 #include "orbit.h"
 #include "test_orbitSize.h"
 
+
 int main(int arg, const char* argv[]){
 	time_t start;
 	time_t end;
- 
+
 	std::ofstream f ("CoexeterCalculationTimes.txt");
+	/* 
 ////////////////////////////////////////////////////////////
 //Coxeter Group B
 	//B3
@@ -106,7 +108,7 @@ int main(int arg, const char* argv[]){
 	time(&start);
 	o = orbit(g, {1,2,3,4,5,6,7,8});
 	time(&end);
-	f1 << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";*/
+	f1 << "Coxeter Group E8: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 ////////////////////////////////////////////////////////////
 //Coxeter Group F
 	//F4
@@ -119,10 +121,15 @@ int main(int arg, const char* argv[]){
 //////////////////////////////////////////////////////////
 //Coxeter Group H
 	//H3
-	g = simple_roots('H', 3);
-        v = getVectorGeneralPosition('H',3);
+*/
+	GeneratorList g = simple_roots('H', 3);
+        VectorType v = getVectorGeneralPosition('H',3);
 	time(&start);
-	o = orbit(g, v);
+	Orbit o = orbit(g, v);
+	std::cout << "polymake 'new Polytope(POINTS=>";
+
+	output_set(o);
+	std::cout << ")->VISUAL;'\n" << o.size() << std::endl;
 	time(&end);
 	f << "Coxeter Group H3: " << difftime(end, start) << " sec - size: " << o.size() <<"\n";
 	//H4
