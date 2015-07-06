@@ -22,6 +22,7 @@
 #include <functional>
 #include <set>
 #include <initializer_list>
+#include <iostream>
 #include "types.h"
 #include "generators.h"
 
@@ -97,7 +98,6 @@
          } 
          toReflect.erase(it);
       }
-
       return wholeOrbit;
    }
 
